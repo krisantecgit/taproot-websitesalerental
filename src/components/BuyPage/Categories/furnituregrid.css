@@ -1,0 +1,31 @@
+.buypage-container {
+    margin-top: 100px;
+    padding: 0 60px;
+}
+.buypage-container h2 {
+    display: flex;
+    justify-content: center;
+}
+.buypage-category {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.card-buy {
+  width: 120px;
+  text-align: center;
+}
+
+.card-buy img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.card-buy h3 {
+  margin-top: 10px;
+  font-size: 14px;
+}

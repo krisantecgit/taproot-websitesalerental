@@ -1,0 +1,155 @@
+.section {
+  width: 100%;
+  padding: 30px 60px;
+  position: relative;
+  background: #fff;
+  margin-top: 70px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.section-header p {
+  font-size: 14px;
+  color: gray;
+}
+
+.view-all {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  /* color: #00aaff; */
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.carousel-wrapper {
+  position: relative;
+}
+
+.carousel {
+  display: flex;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  gap: 20px;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 250px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+
+.card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 12px;
+}
+
+.card-body h4 {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  height: 40px;
+  overflow: hidden;
+}
+
+.price-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tag {
+  background: #d6dcdf;
+  color: black;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  margin-left: -20px;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.discount {
+  background-color: #f7e4ab;
+  border-radius: 20px;
+  padding: 2px 5px;
+  font-size: 10px;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: gray;
+  font-size: 10px;
+}
+
+.arrow {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid rgb(119, 119, 119);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 20px;
+  z-index: 10;
+}
+
+/* .arrow:hover {
+  background: #00aaff;
+  color: #fff;
+} */
+
+.arrow.left {
+  left: -15px;
+}
+
+.arrow.right {
+  right: -15px;
+}
+
+.arrow-icons {
+    font-weight: 300;
+    color: rgb(119, 119, 119);
+}

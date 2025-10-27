@@ -1,0 +1,108 @@
+.banner-section {
+  width: 100%;
+  padding: 30px 60px;
+  position: relative;
+  background: #fff;
+}
+
+.banner-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.banner-header p {
+  font-size: 14px;
+  color: gray;
+}
+
+.banner-carousel-wrapper {
+  position: relative;
+}
+
+.banner-carousel {
+  display: flex;
+  overflow-x: scroll;
+  gap: 20px;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.banner-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.banner-card {
+  flex: 0 0 450px;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+
+.banner-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.banner-btn {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1.5px solid white;
+  z-index: 5;
+  color: #FFFF;
+}
+.banner-btn-icon {
+  font-size: 30px;
+}
+.banner-btn .buy{
+  background-color: #424E99;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+  padding: 16px 32px 16px 40px;
+}
+.banner-btn .rent{
+  background-color: #EE5921;
+  padding: 16px 32px 16px 40px;
+}
+.banner-btn .unlmtd{
+  background-color: #57275B;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 16px 32px 16px 40px;
+}
+.banner-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid #777;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #777;
+  background: #fff;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-arrow.left {
+  left: -15px;
+}
+
+.banner-arrow.right {
+  right: -15px;
+}

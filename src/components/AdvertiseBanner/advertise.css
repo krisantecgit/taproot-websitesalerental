@@ -1,0 +1,9 @@
+.adv-banner {
+    width: 100%;
+    padding: 20px 60px;
+}
+.adv-banner img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}

@@ -1,0 +1,103 @@
+.hc-container {
+  position: relative;
+  width: calc(100% - 120px); /* 60px gap on both sides */
+  margin: 0 auto;
+  height: auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.hc-slider {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+  width: 100%;
+}
+
+.hc-slide {
+  min-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* --- Navigation Arrows --- */
+.hc-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  /* background-color: rgba(255, 255, 255, 0.85); */
+  border: 2px solid #7777;
+  /* border: none; */
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.hc-arrow:hover {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* Keep arrows inside the visible area */
+.hc-left {
+  left: 20px;
+}
+
+.hc-right {
+  right: 20px;
+}
+
+.hc-arrow-icon {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .hc-container {
+    width: calc(100% - 80px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hc-container {
+    width: calc(100% - 40px);
+  }
+  .hc-arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .hc-arrow-icon {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hc-container {
+    width: calc(100% - 20px);
+  }
+  .hc-arrow {
+    width: 32px;
+    height: 32px;
+  }
+  .hc-arrow-icon {
+    font-size: 1rem;
+  }
+}
