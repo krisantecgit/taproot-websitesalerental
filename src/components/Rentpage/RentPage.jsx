@@ -1,15 +1,15 @@
 import React from 'react'
+import Category from '../Category/Category'
 import Header from '../header/Header'
-import BuyPageBanner from './BuypageBanner/BuypageBanner'
+import BuyPageBanner from '../BuyPage/BuypageBanner/BuypageBanner'
 import OffersSection from '../offersection/Offersection'
 import Footer from '../Footer/Footer'
-import Category from '../Category/Category'
 
-function BuyPage() {
+function RentPage() {
   return (
     <div>
         <Header />
-        <Category listingType="buy" />
+        <Category listingType="rent" />
         <BuyPageBanner />
         <OffersSection />
         <Footer />
@@ -17,4 +17,4 @@ function BuyPage() {
   )
 }
 
-export default BuyPage
+export default RentPage

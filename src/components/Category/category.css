@@ -17,8 +17,14 @@
 .card-buy {
   width: 120px;
   text-align: center;
+  cursor: pointer;
 }
-
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+}
 .card-buy img {
   width: 100px;
   height: 100px;

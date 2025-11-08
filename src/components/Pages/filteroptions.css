@@ -1,0 +1,198 @@
+/* Overlay */
+.filter-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+}
+
+/* Right Drawer */
+.filter-canvas {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 760px;
+  height: 100vh;
+  background: #f7fafb;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+  transition: right 0.35s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-canvas.open {
+  right: 0;
+}
+
+/* Header */
+.filter-header {
+  background: #ffffff;
+  padding: 18px 24px;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-icon {
+  font-size: 26px;
+  cursor: pointer;
+  color: #444;
+}
+
+.close-icon:hover {
+  color: #000;
+}
+
+/* Layout */
+.filter-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.filter-columns {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+/* Left Variant List */
+.variants-section {
+  background: #ffffff;
+  border-right: 1px solid #e6e6e6;
+  padding: 20px 0;
+}
+
+.variants-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-item {
+  padding: 14px 22px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #444;
+  border-left: 4px solid transparent;
+  transition: 0.25s ease;
+  border-bottom: 1px solid #b7d7e2;
+}
+
+.variant-item:hover {
+  background: #f4f4f4;
+  /* transform: translateX(10px); */
+}
+
+.variant-item.active {
+  background: #ecfaff;
+  color: #6BAFC8;
+  font-weight: 600;
+  border-left: 4px solid #6BAFC8;
+}
+
+/* Right Options */
+.options-section {
+  padding: 22px 24px;
+    background-color: #a9cad6;
+}
+/* Checkbox List */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #444;
+}
+
+.option-item input {
+  display: none;
+}
+
+/* Checkbox styling */
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 1.7px solid #444;
+  border-radius: 3px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-item:hover .checkmark {
+  border-color: #6BAFC8;
+}
+
+.option-item input:checked+.checkmark {
+  background-color: #6BAFC8;
+  border-color: #6BAFC8;
+}
+
+.option-item input:checked+.checkmark::after {
+  content: "✓";
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Footer Buttons */
+.filter-footer {
+  background: #ffffff;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 24px 24px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  position: sticky;
+  bottom: 0;
+}
+
+.clear-all-btn {
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  color: #6BAFC8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.show-results-btn {
+  /* flex: 1; */
+  padding: 5px 15px;
+  border: none;
+  background: #6BAFC8;
+  color: #fff;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+/* Scrollbar */
+.filter-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-body::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 3px;
+}

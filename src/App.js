@@ -1,7 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './components/Home/Home';
 import BuyPage from './components/BuyPage/BuyPage';
-import Product from './components/Products/Product';
+import Cartpage from './components/CartPage/Cartpage';
+import RentPage from './components/Rentpage/RentPage';
+import FriendlyUrlComponent from './components/Pages/FriendlyUrl';
+import SearchedData from './components/Pages/SearchedData';
 
 function App() {
   return (
@@ -9,7 +12,13 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/buy' element={<BuyPage />} />
-        <Route path='/rent' element={<Product />} />
+        <Route path='/rent' element={<RentPage />} />
+        <Route path='/cart' element={<Cartpage />} />
+        <Route path="/search/results" element={<SearchedData />} />
+        <Route path="/:friendlyurl" element={<FriendlyUrlComponent />} />
+        <Route path='/:categoryurl/:friendlyurl' element={<FriendlyUrlComponent />} />
+        <Route path='/:categoryurl/product/:friendlyurl' element={<FriendlyUrlComponent />} />
+        <Route path='/product/:friendlyurl' element={<FriendlyUrlComponent />} />
       </Routes>
     </BrowserRouter>
   );

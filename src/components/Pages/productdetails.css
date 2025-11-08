@@ -1,0 +1,272 @@
+.product-details {
+    display: flex;
+    gap: 10px;
+    padding: 10px 60px;
+    margin-top: 100px;
+}
+
+.product-left {
+    position: relative;
+    width: 62%;
+}
+
+.image-slider {
+    display: flex;
+    gap: 5px;
+    width: 95%;
+    height: 400px;
+}
+
+.main-image-wrapper {
+    flex: 0 0 80%;
+}
+
+.next-image-wrapper {
+    flex: 0 0 25%;
+    /* narrower width for 2nd image */
+    overflow: hidden;
+    /* crop overflow */
+    position: relative;
+}
+
+.next-image {
+    width: 200%;
+    /* show from left portion of full image */
+    height: 100%;
+    object-fit: cover;
+    object-position: left;
+    /* start from left side */
+    transform: translateX(-25%);
+    /* adjust visible portion */
+}
+
+
+.main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-plus {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    cursor: pointer;
+    color: #6BAFC8;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 50%;
+    font-size: 26px;
+}
+
+.product-name {
+    font-family: "Work Sans", sans-serif;
+    color: rgb(34, 34, 34);
+    font-size: 18px;
+    font-weight: 500;
+    margin: 40px 0 16px;
+}
+
+.zoom-container {
+    position: relative;
+}
+
+.zoom-preview {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 800px;
+    height: auto;
+    display: none;
+    padding: 20px;
+    text-align: center;
+    z-index: 9999;
+}
+
+.zoom-container:hover .zoom-preview {
+    display: block;
+    cursor: pointer;
+}
+
+
+.zoom-preview img {
+    max-width: 80%;
+    border: 1px solid #c4bfbf;
+    height: 480px;
+}
+
+.arrow {
+    /* position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    border: none;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 5; */
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 30%;
+    background: rgb(255, 255, 255);
+    /* background: rgba(255, 255, 255, 0.8); */
+    transform: translateY(-50%);
+    /* border: 2px solid rgb(119, 119, 119); */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+    border: none;
+}
+
+
+.arrow.left {
+    left: 10px;
+    color: #6BAFC8;
+}
+
+.arrow.right {
+    right: 10px;
+    color: #6BAFC8;
+}
+
+.thumbnail-section {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.thumbnail {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    object-fit: cover;
+    /* border: 2px solid; */
+    transition: border 0.2s ease;
+}
+
+.thumbnail.active {
+    border: 1px solid #6BAFC8;
+}
+
+.product-right {
+    width: 38%;
+    background-color: rgb(238, 241, 250);
+    padding: 32px;
+}
+
+.single-option {
+    color: rgb(34, 34, 34);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Work Sans", sans-serif;
+}
+
+.product-right-listingtype {
+    text-transform: uppercase;
+    font-family: "Work Sans", sans-serif;
+    color: #999999;
+    font-size: 12px;
+}
+
+.product-right-title {
+    font-size: 24px;
+    font-family: 'Recline', sans-serif;
+}
+
+.product-old-price-right {
+    color: rgb(119, 119, 119);
+    font-family: "Work Sans";
+    font-size: 12px;
+    font-weight: 400;
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+/* input[type="radio"] {
+  accent-color: #069baa;
+} */
+
+.product-discount-right {
+    color: #777777;
+    font-size: 14px;
+    color: rgb(34, 34, 34);
+    font-weight: 600;
+}
+.radio-group > div + div {
+  margin-top: 20px;
+  border-top: 1px solid #909090;
+  border-bottom: 1px solid #909090;
+  padding-bottom: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  cursor: pointer;
+}
+.radio-group > div + div:hover {
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(114, 113, 113, 0.1);
+}
+.cart-btn {
+    display: flex;
+    justify-content: space-between;
+    background: rgb(6, 155, 170);
+    font-size: 14px;
+    font-weight: 600;
+    color: rgb(255, 255, 255);
+    font-family: "Work Sans", sans-serif;
+    border-radius: 25px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgb(6, 155, 170);
+}
+
+.cart-btn:hover {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(6, 155, 170);
+    color: black;
+}
+.rent-date-section {
+  margin-top: 10px;
+}
+
+.date-picker-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.date-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.date-field label {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.custom-date-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #deecf1;
+  outline: none;
+  cursor: pointer;
+}
+
+/* make calendar popup stay above other elements */
+.react-datepicker-popper {
+  z-index: 1000 !important;
+}

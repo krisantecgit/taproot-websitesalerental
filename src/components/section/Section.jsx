@@ -1,70 +1,47 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import "./section.css";
 import { IoIosArrowRoundForward } from "react-icons/io";
-
-function Section() {
+import axiosConfig from "../../Services/axiosConfig"
+import { useNavigate } from "react-router-dom";
+function Section({ listingType }) {
   const scrollRef = useRef(null);
-
-  const products = [
-    {
-      id: 1,
-      name: "Hako Solid Wood Bedside Table in Timeless Teak Finish",
-      price: "₹209/mo",
-      oldPrice: "₹316/mo",
-      discount: "-34%",
-      tag: "Rent",
-      img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/plutus/products/6673/thumbnail/gallery_1.jpg",
-    },
-    {
-      id: 2,
-      name: "Taki Solid Wood Bedside Table in Timeless Teak Finish",
-      price: "₹209/mo",
-      oldPrice: "₹316/mo",
-      discount: "-34%",
-      tag: "Rent",
-      img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/plutus/products/6972/thumbnail/Furlenco%202.0-13312.jpg",
-    },
-    {
-      id: 3,
-      name: "Slay Engineered Wood Center Table",
-      price: "₹209/mo",
-      oldPrice: "₹316/mo",
-      discount: "-34%",
-      tag: "Rent",
-      img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/plutus/products/4434/thumbnail/gallery_1.jpg",
-    },
-    {
-      id: 4,
-      name: "Kapa Engineered Wood Center Table",
-      price: "₹259/mo",
-      oldPrice: "₹391/mo",
-      discount: "-34%",
-      tag: "Rent",
-      img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/plutus/products/398/thumbnail/gallery_1.jpg",
-    },
-    {
-      id: 5,
-      name: "Kapa Engineered Wood Center Table",
-      price: "₹259/mo",
-      oldPrice: "₹391/mo",
-      discount: "-34%",
-      tag: "Rent",
-      img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/plutus/products/7513/thumbnail/plp_1.jpg",
-    },
-  ];
-
+  const [products, setProducts] = useState([])
+  let navigate = useNavigate();
+  const fetchProducts = async () => {
+    try {
+      const res = await axiosConfig.get(`/catlog/category-variants/?listing_type=${listingType}`)
+      setProducts(res?.data?.results);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  function handleNavigate(product) {
+    navigate(`/${listingType}/product/${product.slug}`, {
+      state: { item: product, listingType: product.varient_listing_type }
+    });
+  }
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+  console.log(products, "poiuyf")
   const scroll = (dir) => {
     const { current } = scrollRef;
     if (current) {
-      const scrollAmount = current.offsetWidth; // one full view width
+      const scrollAmount = current.offsetWidth;
       current.scrollBy({
         left: dir === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
     }
   };
-
+  const formatPrice = (price) =>
+    price?.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).replace("$", "$ ");
   return (
     <div className="section">
       <div className="section-header">
@@ -78,22 +55,36 @@ function Section() {
       </div>
 
       <div className="carousel-wrapper">
-        <button className="arrow left" onClick={() => scroll("left")}>
+        <button className="arrow-section left" onClick={() => scroll("left")}>
           <IoChevronBack className="arrow-icons" />
         </button>
 
         <div className="carousel" ref={scrollRef}>
-          {products.map((item) => (
-            <div className="card" key={item.id}>
-              <img src={item.img} alt={item.name} />
+          {products.map((product) => (
+            <div className="card" key={product.id} onClick={() => handleNavigate(product)}>
+              {product.images && product.images.length > 0 && (
+                <img
+                  src={product.images[0]?.image?.image}
+                  alt={product.name}
+                />
+              )}
               <div className="card-body">
-                <h4>{item.name}</h4>
+                <h4>{product.name}</h4>
                 <div className="price-box">
-                  <span className="tag">{item.tag}</span>
+                  <span className="tag">{product.varient_listing_type}</span>
                   <div className="price-row">
-                    <span className="price">{item.price}</span>
-                    <span className="discount">{item.discount}</span>
-                    <span className="old-price">{item.oldPrice}</span>
+                    <span className="price">{formatPrice(product.prices.sale_offer_price)}</span>
+                    <span className="discount">
+
+                      {Math.round(
+                        ((product?.prices?.sale_offer_price -
+                          product?.prices?.sale_price) /
+                          product?.prices?.sale_offer_price) *
+                        100
+                      )}
+                      % OFF
+                    </span>
+                    <span className="old-price">{formatPrice(product?.prices?.sale_price)}</span>
                   </div>
                 </div>
               </div>
@@ -101,7 +92,7 @@ function Section() {
           ))}
         </div>
 
-        <button className="arrow right" onClick={() => scroll("right")}>
+        <button className="arrow-section right" onClick={() => scroll("right")}>
           <IoChevronForward className="arrow-icons" />
         </button>
       </div>

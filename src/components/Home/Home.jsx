@@ -12,7 +12,7 @@ function Home() {
     return (
         <div>
             <Header />
-            <Section />
+            <Section listingType="buy" />
             <BannerSection />
             <OffersSection />
             <HeroCarousel />
