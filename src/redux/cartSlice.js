@@ -111,7 +111,16 @@ const cartSlice = createSlice({
         clearRentCart: (state) => {
             state.rentCart = [];
             localStorage.removeItem("rentCart");
-        }
+        },
+        setRentDates: (state, action) => {
+            const { id, fromDate, toDate } = action.payload;
+            const existing = state.rentCart.find(item => item.id === id);
+            if (existing) {
+                existing.fromDate = fromDate;
+                existing.toDate = toDate;
+            }
+            localStorage.setItem("rentCart", JSON.stringify(state.rentCart));
+        },
     }
 });
 
@@ -123,7 +132,8 @@ export const {
     removeFromBuyCart,
     removeFromRentCart,
     clearBuyCart,
-    clearRentCart
+    clearRentCart,
+    setRentDates
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

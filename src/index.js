@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "../node_modules/bootstrap/dist/css/bootstrap.css"
+import "../node_modules/bootstrap/dist/js/bootstrap.bundle.js"
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import { ToastContainer } from 'react-toastify';
@@ -12,8 +13,9 @@ const toastStyle = {
   background: "#6BAFC8",
   color: "#fff",
   borderRadius: "6px",
-  padding: "8px 14px",
-  fontWeight: 500,
+  padding: "0px 14px",
+  fontWeight: 400,
+  marginTop : "80px"
 };
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

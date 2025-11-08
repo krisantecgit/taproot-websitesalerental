@@ -1,0 +1,56 @@
+.month-wrapper {
+  padding: 20px;
+}
+
+.month-box {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f8f9fa;
+  transition: 0.3s ease;
+}
+
+.month-box:hover {
+  background: #e7f1ff;
+  border-color: #0d6efd;
+}
+
+.datepicker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.datepicker-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.datepicker-input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.confirm-btn-month {
+  margin-top: 20px;
+  width: 100%;
+  background-color: rgb(6, 155, 170);
+  color: white;
+  border: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.confirm-btn-month:hover {
+  background: rgb(61, 141, 148);
+}
