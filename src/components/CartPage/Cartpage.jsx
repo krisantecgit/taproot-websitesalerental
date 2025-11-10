@@ -11,13 +11,15 @@ import { BiCheckCircle, BiChevronDown } from 'react-icons/bi'
 import MonthOffcanvas from './MonthCanva'
 import axiosConfig from "../../Services/axiosConfig"
 import { IoArrowForward, IoTime } from 'react-icons/io5'
+import LoginModal from '../Login/Login'
 
 function Cartpage() {
     const { buyCart, rentCart } = useSelector(store => store.cart)
     const [showMonth, setShowMonth] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [rentalData, setRentalData] = useState([])
-
+    const [loginModal, setLoginModal] = useState(false)
+    const [userId, setUserId] = useState(localStorage.getItem("userid"))
     const dispatch = useDispatch();
     let navigate = useNavigate()
     const formatPrice = (price) =>
@@ -48,9 +50,17 @@ function Cartpage() {
 
         getRentalData();
     }, [rentCart]);
-    const totalRentPrice = rentCart.reduce((acc, ele) => acc + ele.rentPerDay * ele.qty, 0);
+    const totalRentPrice = rentalData.reduce((acc, ele) => acc + ele.final_cost, 0);
     const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice * ele.qty, 0);
     const totalAmount = (buyCart.length ? totalBuyPrice : 0) + (rentCart.length ? totalRentPrice : 0);
+    useEffect(() => {
+        const id = localStorage.getItem("userid")
+        setUserId(id)
+    }, [])
+    const handleLoginSuccess = (userId) => {
+    setUserId(userId);
+    setLoginModal(false);
+}
     return (
         <>
             <Header />
@@ -240,12 +250,15 @@ function Cartpage() {
                     <div className='cart-btn mt-3'>
                         <div>{formatPrice(totalAmount)}</div>
                         <div>
-                            CHECK OUT <IoArrowForward size={17} />
+                            {
+                                userId ? <div> CHECK OUT <IoArrowForward size={17} /></div> : <div onClick={() => setLoginModal(true)}>Login To Proceed</div>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
             <MonthOffcanvas showMonth={showMonth} handleClose={() => setShowMonth(false)} selectedItemId={selectedItemId} />
+            {!userId && <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
         </>
     )
 }

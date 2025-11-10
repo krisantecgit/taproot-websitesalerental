@@ -35,6 +35,8 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
 
     const [showFilter, setShowFilter] = useState(false);
+    const [appliedFilters, setAppliedFilters] = useState({});
+
     const priceRanges = [
         { id: 1, label: "₹0 - ₹5000", min: 0, max: 5000 },
         { id: 2, label: "₹5000 - ₹10,000", min: 5000, max: 10000 },
@@ -76,7 +78,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         setLoadingMore(true);
         try {
             const res = await axiosConfig.get(nextUrl);
-            onProductsChange(prev => [...prev, ...res.data.results]); // 👈 append results
+            onProductsChange(prev => [...prev, ...res.data.results]);
             setNextUrl(res.data.next || null);
         } catch (err) {
             console.error("loadMoreProducts", err);
@@ -146,7 +148,10 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                 priceMin = Math.min(...allMins);
                 priceMax = Math.max(...allMaxs);
             }
-
+            setAppliedFilters({
+                options: selectedOptions,
+                price: selectedPriceRanges,
+            });
             setSearchParams({
                 options: optionNames || "",
                 price_min: priceMin || "",
@@ -279,11 +284,23 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     // useEffect(() => {
     //     fetchCategories();
     //     fetchFilterData();
-    //     fetchInitialProducts();
+
+    //     const hasFilters =
+    //         params.get("price_min") ||
+    //         params.get("price_max") ||
+    //         params.get("options") ||
+    //         params.get("subcategory");
+
+    //     if (hasFilters) {
+    //         fetchProductsFromURL();
+    //     } else {
+    //         fetchInitialProducts();
+    //     }
 
     //     if (friendlyData?.product_data?.id) {
     //         fetchSubcategories(friendlyData.product_data.id);
     //     }
+
     //     if (category.length > 0 && friendlyurl) {
     //         const activeCategory = category.find(cat => cat.slug === friendlyurl);
     //         if (activeCategory) {
@@ -295,19 +312,44 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         fetchCategories();
         fetchFilterData();
 
-        // if URL already has filters, apply them directly
-        const hasFilters =
-            params.get("price_min") ||
-            params.get("price_max") ||
-            params.get("options") ||
-            params.get("subcategory");
+        // ✅ Read filters from URL
+        const price_min = params.get("price_min");
+        const price_max = params.get("price_max");
+        const optionsParam = params.get("options");
+        const subcategoryParam = params.get("subcategory");
 
+        const filtersFromURL = {};
+
+        // ✅ Handle price range
+        if (price_min && price_max) {
+            filtersFromURL.price = [{ min: Number(price_min), max: Number(price_max) }];
+            setSelectedPriceRanges([{ id: 1, min: Number(price_min), max: Number(price_max) }]);
+        }
+
+        // ✅ Handle options (comma separated list like "Red,Large")
+        if (optionsParam) {
+            const optionNames = decodeURIComponent(optionsParam).split(",").filter(Boolean);
+            // Convert to state format: { randomId: [{ name: "Red" }, { name: "Large" }] }
+            const optionsObj = {};
+            if (optionNames.length > 0) {
+                optionsObj["fromURL"] = optionNames.map((name, i) => ({ id: i + 1, name }));
+            }
+            filtersFromURL.options = optionsObj;
+            setSelectedOptions(optionsObj);
+        }
+
+        // ✅ Save to state
+        setAppliedFilters(filtersFromURL);
+
+        // ✅ Load filtered products if any URL filters exist
+        const hasFilters = price_min || price_max || optionsParam || subcategoryParam;
         if (hasFilters) {
             fetchProductsFromURL();
         } else {
             fetchInitialProducts();
         }
 
+        // ✅ Fetch subcategories for active category
         if (friendlyData?.product_data?.id) {
             fetchSubcategories(friendlyData.product_data.id);
         }
@@ -319,6 +361,83 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             }
         }
     }, [friendlyData, categoryurl]);
+
+useEffect(() => {
+  const price_min = searchParams.get("price_min");
+  const price_max = searchParams.get("price_max");
+  const subcategoryParam = searchParams.get("subcategory");
+  const optionsParam = searchParams.get("options");
+
+  // Price from URL
+  if (price_min && price_max) {
+    const min = Number(price_min);
+    const max = Number(price_max);
+    const matched = priceRanges.find(r => r.min === min && r.max === max);
+    setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `₹${min} - ₹${max}` }]);
+  }
+
+  // Subcategories from URL
+  if (subcategoryParam) {
+    const selectedSubcatsFromURL = decodeURIComponent(subcategoryParam).split(",").filter(Boolean);
+    setSelectedSubcats(selectedSubcatsFromURL);
+  }
+
+  // Options from URL
+  if (optionsParam) {
+    try {
+      const decodedOptions = JSON.parse(decodeURIComponent(optionsParam));
+      setSelectedOptions(decodedOptions);
+    } catch {
+      console.warn("Invalid options format in URL");
+    }
+  }
+
+  fetchProductsFromURL();
+}, []);
+
+    const formatPrice = (price) =>
+        price?.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).replace("$", "$ ");
+const handleRemoveFilter = (type, value) => {
+  const params = new URLSearchParams(searchParams);
+
+  if (type === "price") {
+    setSelectedPriceRanges([]);
+    setAppliedFilters(prev => ({ ...prev, price: [] }));
+    params.delete("price_min");
+    params.delete("price_max");
+  }
+
+  if (type === "subcategory") {
+    const current = decodeURIComponent(params.get("subcategory") || "").split(",").filter(Boolean);
+    const updated = current.filter(item => item !== value);
+    setSelectedSubcats(updated);
+    if (updated.length) params.set("subcategory", encodeURIComponent(updated.join(",")));
+    else params.delete("subcategory");
+  }
+
+  if (type === "option") {
+    const updatedOptions = { ...selectedOptions };
+    Object.keys(updatedOptions).forEach(key => {
+      updatedOptions[key] = updatedOptions[key].filter(opt => opt.name !== value);
+      if (updatedOptions[key].length === 0) delete updatedOptions[key];
+    });
+    setSelectedOptions(updatedOptions);
+    setAppliedFilters(prev => ({ ...prev, options: updatedOptions }));
+
+    if (Object.keys(updatedOptions).length)
+      params.set("options", encodeURIComponent(JSON.stringify(updatedOptions)));
+    else params.delete("options");
+  }
+
+  setSearchParams(params);
+  applyFilters();
+};
+
 
     return (
         <>
@@ -355,6 +474,34 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                     <IoChevronForward className="arrow-icons" />
                 </button> */}
             </div>
+
+            <div className="filter-sections">
+  <div className="applied-filters">
+    <p className="applied-filter">Applied Filters:</p>
+
+    {selectedSubcats.map((sub) => (
+      <span key={sub} className="filter-tags">
+        {sub}
+        <span className="remove-icon" onClick={() => handleRemoveFilter("subcategory", sub)}>×</span>
+      </span>
+    ))}
+
+    {selectedPriceRanges.map((p) => (
+      <span key={`${p.min}-${p.max}`} className="filter-tags">
+        ₹{p.min} - ₹{p.max}
+        <span className="remove-icon" onClick={() => handleRemoveFilter("price", `${p.min}-${p.max}`)}>×</span>
+      </span>
+    ))}
+
+    {Object.values(selectedOptions).flat().map((opt) => (
+      <span key={opt.name} className="filter-tags">
+        {opt.name}
+        <span className="remove-icon" onClick={() => handleRemoveFilter("option", opt.name)}>×</span>
+      </span>
+    ))}
+  </div>
+</div>
+
 
             <div className="filter-section">
                 <div className="filters-left">
