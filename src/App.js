@@ -6,6 +6,8 @@ import RentPage from './components/Rentpage/RentPage';
 import FriendlyUrlComponent from './components/Pages/FriendlyUrl';
 import SearchedData from './components/Pages/SearchedData';
 import AddressPage from './components/Pages/AddressPage';
+import Checkout from './components/Pages/Checkout';
+import Payment from './components/Pages/Payment';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
         <Route path='/:categoryurl/product/:friendlyurl' element={<FriendlyUrlComponent />} />
         <Route path='/product/:friendlyurl' element={<FriendlyUrlComponent />} />
         <Route path='/address' element={<AddressPage />} />
+        <Route path='/checkout' element={<Checkout />} />
+        <Route path='/payment' element={<Payment />} />
       </Routes>
     </BrowserRouter>
   );

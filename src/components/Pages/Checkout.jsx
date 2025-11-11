@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { TbTruckDelivery } from 'react-icons/tb'
 import { FaArrowRight, FaRegClock } from 'react-icons/fa6'
 import Header from '../header/Header'
-import "./cartpage.css"
+// import "./cartpage.css"
+import "../CartPage/cartpage.css"
 import { useDispatch, useSelector } from 'react-redux'
 import { FiTrash2 } from 'react-icons/fi'
 import { addToBuyCart, addToRentCart, decreaseBuyQty, decreaseRentQty, removeFromBuyCart, removeFromRentCart } from '../../redux/cartSlice'
 import { useNavigate } from 'react-router-dom'
 import { BiCheckCircle, BiChevronDown } from 'react-icons/bi'
-import MonthOffcanvas from './MonthCanva'
 import axiosConfig from "../../Services/axiosConfig"
 import { IoArrowForward, IoTime } from 'react-icons/io5'
 import LoginModal from '../Login/Login'
 import { toast } from 'react-toastify'
+import MonthOffcanvas from '../CartPage/MonthCanva'
 
-function Cartpage() {
+function Checkout() {
     const { buyCart, rentCart } = useSelector(store => store.cart)
     const [showMonth, setShowMonth] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
@@ -99,14 +100,14 @@ function Cartpage() {
         try {
             const oredrId = localStorage.getItem("orderId");
             if (oredrId) {
-                const res = await axiosConfig.patch(`/accounts/orders/${oredrId}/`, payload);
-                navigate('/checkout');
+               const res = await axiosConfig.patch(`/accounts/orders/${oredrId}/`, payload);
+                navigate('/payment');
             } else {
-                const res = await axiosConfig.post(`/accounts/orders/`, payload);
-                localStorage.setItem("orderId", res?.data?.id)
-                if (res.data.success) {
-                    navigate('/checkout');
-                }
+                 const res = await axiosConfig.post(`/accounts/orders/`, payload);
+                 localStorage.setItem("orderId", res?.data?.id)
+            if (res.data.success) {
+                navigate('/payment');
+            }
             }
         } catch (error) {
             console.log(error)
@@ -335,13 +336,13 @@ function Cartpage() {
                                 </div>
                             )
                         }
-                        <div className='cart-btn mt-3' onClick={proceedToCheckout}>
+                        <div className='cart-btn mt-3'  onClick={proceedToCheckout}>
                             <div>{formatPrice(totalAmount)}</div>
                             <div>
                                 {
                                     userId ?
                                         <div>
-                                            CHECK OUT <IoArrowForward size={17} />
+                                            PROCEED <IoArrowForward size={17} />
                                         </div>
                                         :
                                         <div onClick={() => setLoginModal(true)}>Login To Proceed</div>
@@ -357,4 +358,4 @@ function Cartpage() {
     )
 }
 
-export default Cartpage
+export default Checkout

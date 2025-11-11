@@ -184,6 +184,7 @@
     width: 700px;
     height: 400px;
     margin-top: 20px;
+    border-radius: 17px;
 }
 
 .selected-address {
@@ -256,21 +257,21 @@
 }
 
 .address-form-box {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
 }
 
 .input-double {
-  display: flex;
-  gap: 20px;
+    display: flex;
+    gap: 20px;
 }
 
 .input-field {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .input-field label {
@@ -281,35 +282,38 @@
 }
 
 .input-box-address {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #dcdcdc;
-  border-radius: 5px;
-  background-color: #f6f6f6;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.2s, background-color 0.2s;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
+    background-color: #f6f6f6;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
 .input-box-address::placeholder {
-  color: #9a9a9a;
-  text-transform: capitalize;
+    color: #9a9a9a;
+    text-transform: capitalize;
 }
 
 .input-box-address:focus {
-  border-color: #00aacc;
-  background-color: #fff;
+    border-color: #00aacc;
+    background-color: #fff;
 }
+
 .tabs-address {
     display: flex;
     gap: 10px;
 }
+
 .label-title label {
     color: rgb(85, 85, 85);
     font-family: "Work Sans";
     font-size: 12px;
     font-weight: 600;
 }
+
 .tabs-address button {
     padding: 8px 25px !important;
     color: rgba(0, 0, 0, 0.87);
@@ -326,4 +330,95 @@
     color: #00aacc;
     font-size: 18px;
     margin-right: 4px;
+}
+
+.address-proceed-btn {
+    background-color: transparent;
+    font-family: "Work Sans", Recline;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: rgb(6, 155, 170);
+    padding: 5px 15px;
+    border-width: 1px;
+    border-color: rgba(6, 155, 170, 0.5);
+    border-radius: 30px;
+    margin-top: 20px;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: -60px;
+  overflow-y: auto;
+}
+
+.address-box {
+  color: rgba(0, 0, 0, 0.87);
+    border: none;
+    border-radius: 8px;
+    box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
+    transition: 1s ease-in-out;
+    background: white;
+    padding: 15px 20px;
+    width: 700px;
+    cursor: pointer;
+}
+
+.address-box.active {
+  color: rgba(0, 0, 0, 0.87);
+    border: none;
+    border-radius: 8px;
+    box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
+    transition: 1s ease-in-out;
+    background: linear-gradient(rgb(180, 225, 229) 0%, rgb(206, 237, 240) 100%);
+}
+
+.checked {
+    color: #00aacc;
+    font-weight: bold;
+}
+.user-name {
+    font-family: "Work Sans";
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.user-city {
+    padding-bottom: 8px;
+    font-family: "Work Sans";
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.user-address {
+    padding-bottom: 12px;
+    font-family: "Work Sans";
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.default-badge {
+    margin-left: 8px;
+    font-family: "Work Sans";
+    font-size: 10px;
+    font-weight: 400;
+    background: rgb(249, 249, 249);
+    border-radius: 8px;
+    padding: 2px 7px;
+}
+
+.user-mob-no {
+    font-family: "Work Sans";
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.user-mob {
+    font-size: 14px;
+    font-weight: 600;
 }

@@ -5,6 +5,8 @@ import "./address.css";
 import { IoLocationOutline } from "react-icons/io5";
 import axiosConfig from "../../Services/axiosConfig"
 import { toast } from "react-toastify";
+import { FaCheckCircle, FaRegCircle } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const API_KEY = "AIzaSyDD8frd15FoMhemosVqGvVBCHaRjLgNszc";
 
@@ -15,7 +17,12 @@ export default function AddressPage() {
     const [suggestions, setSuggestions] = useState([]);
     const [selected, setSelected] = useState(null);
     const [scriptLoaded, setScriptLoaded] = useState(false);
+    const [addresses, setAddresses] = useState([]);
+    const [selectedIndex, setSelectedIndex] = useState(0)
     const inputRef = useRef();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const addressType = location.state?.addressType || 'sale';
     const [formData, setFormData] = useState({
         name: "",
         address_line_1: "",
@@ -29,7 +36,7 @@ export default function AddressPage() {
         country: "",
         state: "",
         city: "",
-        user : userId
+        user: userId
     })
     useEffect(() => {
         if (window.google) return setScriptLoaded(true);
@@ -39,7 +46,17 @@ export default function AddressPage() {
         script.onload = () => setScriptLoaded(true);
         document.head.appendChild(script);
     }, []);
-
+    useEffect(() => {
+        async function fetchAddress() {
+            try {
+                const res = await axiosConfig.get(`/accounts/address/?user=${userId}`)
+                setAddresses(res?.data?.results)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchAddress()
+    }, [userId])
     const getSuggestions = (val) => {
         if (!window.google || val.length < 2) return setSuggestions([]);
         new window.google.maps.places.AutocompleteService().getPlacePredictions(
@@ -83,33 +100,86 @@ export default function AddressPage() {
         });
     }, [step, selected]);
     async function formSubmit(e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    const fd = new FormData();
+        const payload = {
+            ...formData,
+            latitude: selected?.lat || "",
+            longitude: selected?.lng || "",
+            full_address: selected?.address || "",
+        };
 
-    for (const key in formData) {
-        fd.append(key, formData[key]);
-    }
+        try {
+            const res = await axiosConfig.post("/accounts/address/", payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-    fd.append("latitude", selected?.lat || "");
-    fd.append("longitude", selected?.lng || "");
-    fd.append("full_address", selected?.address || "");
-
-    try {
-        const res = await axiosConfig.post("/accounts/address/", fd, {
-            withCredentials : true,
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if(res.data.success) {
-            toast.success(res.data.message)
+            if (res.data.success) {
+                toast.success(res.data.message);
+            }
+            setStep("default")
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
-}
+    async function handleValidate() {
+        const selectedAddress = addresses[selectedIndex];
 
+        if (!selectedAddress) {
+            toast.error(`Please select ${addressType} delivery address`);
+            return;
+        }
+
+        if (!selectedAddress.zipcode) {
+            toast.error("Selected address doesn't have a zipcode");
+            return;
+        }
+        try {
+            const result = await validateZipcode(selectedAddress.zipcode);
+
+            const isAvailable =
+                addressType === "sale"
+                    ? result.sale_zipcode?.status === "Available"
+                    : result.rental_zipcode?.status === "Available";
+
+            if (isAvailable) {
+                if (addressType === 'sale') {
+                    localStorage.setItem('saleAddress', JSON.stringify(selectedAddress));
+                    toast.success("Sale delivery available for this zipcode!");
+                } else {
+                    localStorage.setItem('rentalAddress', JSON.stringify(selectedAddress));
+                    toast.success("Rental delivery available for this zipcode!");
+                }
+
+                navigate(-1);
+            } else {
+                toast.error(`Delivery not available for zipcode: ${selectedAddress.zipcode}`);
+            }
+
+        } catch (error) {
+            toast.success(error?.response?.data?.message)
+        }
+    }
+
+    async function validateZipcode(zipcode) {
+        try {
+            let url = `/masters/check-zipcode-availability/?`;
+
+            if (addressType === 'sale') {
+                url += `sale_zipcode=${zipcode}`;
+            } else {
+                url += `rental_zipcode=${zipcode}`;
+            }
+
+            const response = await axiosConfig.get(url);
+            return response.data;
+        } catch (error) {
+            console.error("Zipcode validation error:", error);
+            throw error;
+        }
+    }
     return (
         <div className="address-container">
             <div className="address-left">
@@ -119,6 +189,48 @@ export default function AddressPage() {
                         <button onClick={() => setStep("add")} className="address-add-btn">
                             + Add new address
                         </button>
+                        <div className="address-container">
+                            <div className="address-list">
+                                {addresses.map((add, ind) => (
+                                    <div
+                                        key={ind}
+                                        className={`address-box ${selectedIndex === ind ? "active" : ""}`}
+                                        onClick={() => {
+                                            setSelectedIndex(ind);
+                                            if (addressType === 'sale') {
+                                                localStorage.setItem('saleAddress', JSON.stringify(add));
+                                            } else {
+                                                localStorage.setItem('rentalAddress', JSON.stringify(add));
+                                            }
+                                        }}
+                                    >
+                                        <div className="user-name">
+                                            {selectedIndex === ind ? (
+                                                <FaCheckCircle className="check-icon checked" />
+                                            ) : (
+                                                <FaRegCircle className="check-icon" />
+                                            )}
+                                            {add.name}{" "}
+                                            {ind === 0 && <span className="default-badge">Default</span>}
+                                        </div>
+
+                                        <div className="user-city">
+                                            {add?.city} {add?.pincode}
+                                        </div>
+
+                                        <div className="user-address">
+                                            {add.flat_no}, {add.address_line_1}, {add.address_line_2}, {add.city},{" "}
+                                            {add.state}, {add.country} - {add.zipcode}
+                                        </div>
+
+                                        <div className="user-mob-no">
+                                            Contact Number : <span className="mob">{add.user.mobileno}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
                     </>
                 )}
 
@@ -299,7 +411,7 @@ export default function AddressPage() {
                                 </div>
                             </div>
                         </div>
-                        <button type="submit">Proceed</button>
+                        <button type="submit" className="address-proceed-btn">Proceed</button>
                     </form>
                 )}
             </div>
@@ -314,6 +426,12 @@ export default function AddressPage() {
                             : "Add a new address to get a delivery estimate."}
                     </div>
                 </div>
+                <button
+                    className="address-proceed-btn"
+                    onClick={handleValidate}
+                >
+                    {addressType === 'sale' ? 'Use for Sale Delivery' : 'Use for Rental Delivery'}
+                </button>
             </div>
         </div>
     );

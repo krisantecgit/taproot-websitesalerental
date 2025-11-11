@@ -245,4 +245,8 @@
     width: 20px;
     border-radius: 50%;
     padding: 2px 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }

@@ -147,7 +147,8 @@ function Header() {
         <FiHeart className="icon" />
         <div className="cart" onClick={() => navigate("/cart")}>
           <FiShoppingCart className="icon" />
-          <span className="cart-count">{(buyCart.length) + (rentCart.length)}</span>
+          {(buyCart.length) + (rentCart.length) > 0 && <span className="cart-count">{(buyCart.length) + (rentCart.length)}</span>}
+          
         </div>
       </div>
     </div>
