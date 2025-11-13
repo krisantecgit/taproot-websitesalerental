@@ -65,13 +65,18 @@ function Cartpage() {
     const saleAddress = localStorage.getItem("saleAddress") ? JSON.parse(localStorage.getItem("saleAddress")) : null
     const rentalAddress = localStorage.getItem("rentalAddress") ? JSON.parse(localStorage.getItem("rentalAddress")) : null
     async function proceedToCheckout() {
-        if (!saleAddress && buyCart.length > 0) {
+        if (!userId) {
+        toast.error("Please log in to proceed");
+        setLoginModal(true);
+        return;
+    }
+        if (userId && !saleAddress && buyCart.length > 0) {
             toast.error("Please select sale delivery address");
             navigate('/address', { state: { addressType: 'sale' } });
             return;
         }
 
-        if (!rentalAddress && rentCart.length > 0) {
+        if (userId && !rentalAddress && rentCart.length > 0) {
             toast.error("Please select rental delivery address");
             navigate('/address', { state: { addressType: 'rental' } });
             return;
@@ -104,9 +109,7 @@ function Cartpage() {
             } else {
                 const res = await axiosConfig.post(`/accounts/orders/`, payload);
                 localStorage.setItem("orderId", res?.data?.id)
-                if (res.data.success) {
-                    navigate('/checkout');
-                }
+                navigate('/checkout');
             }
         } catch (error) {
             console.log(error)

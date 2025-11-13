@@ -2,6 +2,7 @@
     margin: 20px 60px;
     display: flex;
     justify-content: space-between;
+    margin-top: 100px;
 }
 
 .select-address {

@@ -3,7 +3,7 @@ import logo from "../Assets/taproot.png"
 import { LuCircleCheck, LuClock3 } from 'react-icons/lu'
 import { IoChevronDownOutline, IoLocationOutline } from 'react-icons/io5'
 import { FiSearch, FiUser, FiHeart, FiShoppingCart } from "react-icons/fi"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { useEffect, useRef, useState } from "react"
 import useDebouncedValue from "../../utils/Debounce"
 import axiosConfig from "../../Services/axiosConfig"
@@ -134,14 +134,11 @@ function Header() {
         <div className="user-box">
           <FiUser className="icon" />
           <div className="user-modal">
-            <div>Hello!sairam</div>
-            <div>Contact Us</div>
-            <div>Track Product Issue Request</div>
-            <div>Find Store</div>
+            <div>Hello! User</div>
+            <div>My Orders</div>
+            <div>Address</div>
             <div>Wishlist</div>
-            <div>Refunds</div>
-            <div>Help Centre</div>
-            <div>Logout</div>
+            <div><Link to="/logout">Logout</Link></div>
           </div>
         </div>
         <FiHeart className="icon" />

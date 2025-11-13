@@ -7,24 +7,34 @@ import FriendlyUrlComponent from './components/Pages/FriendlyUrl';
 import SearchedData from './components/Pages/SearchedData';
 import AddressPage from './components/Pages/AddressPage';
 import Checkout from './components/Pages/Checkout';
-import Payment from './components/Pages/Payment';
+import Payment from './components/Pages/Paymentpage';
+import AccountLayout from './components/AccountLayout/AccountLayout';
+import Orders from './components/Pages/Orders';
+import Logout from './utils/Logout';
+import ProtectedRoute from './utils/ProtectedRoutes';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/logout' element={<Logout />} />
         <Route path='/buy' element={<BuyPage />} />
         <Route path='/rent' element={<RentPage />} />
         <Route path='/cart' element={<Cartpage />} />
+        <Route path='' element={<ProtectedRoute />}>
+          <Route path='/address' element={<AddressPage />} />
+          <Route path='/checkout' element={<Checkout />} />
+          <Route path='/payment' element={<Payment />} />
+          <Route path='/account' element={<AccountLayout />}>
+            <Route path="orders" element={<Orders />} />
+          </Route>
+        </Route>
         <Route path="/search/results" element={<SearchedData />} />
         <Route path="/:friendlyurl" element={<FriendlyUrlComponent />} />
         <Route path='/:categoryurl/:friendlyurl' element={<FriendlyUrlComponent />} />
         <Route path='/:categoryurl/product/:friendlyurl' element={<FriendlyUrlComponent />} />
         <Route path='/product/:friendlyurl' element={<FriendlyUrlComponent />} />
-        <Route path='/address' element={<AddressPage />} />
-        <Route path='/checkout' element={<Checkout />} />
-        <Route path='/payment' element={<Payment />} />
       </Routes>
     </BrowserRouter>
   );

@@ -5,7 +5,7 @@ import "./monthofcanvas.css";
 import { Offcanvas } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { setRentDates } from "../../redux/cartSlice";
-function MonthOffcanvas({ showMonth, handleClose, selectedItemId }) {
+function MonthOffcanvas({ showMonth, handleClose, selectedItemId,onConfirmDates  }) {
     const { rentCart } = useSelector(item => item.cart)
     const currentItem = rentCart.find(item => item.id === selectedItemId)
     const dispatch = useDispatch()
@@ -17,24 +17,24 @@ function MonthOffcanvas({ showMonth, handleClose, selectedItemId }) {
             setToDate(currentItem.toDate || null)
         }
     }, [currentItem])
-    function handleConfirm() {
-        dispatch(
-            setRentDates({
-                id: selectedItemId,
-                fromDate: fromDate
-                    ? (fromDate instanceof Date
-                        ? fromDate.toISOString().split("T")[0]
-                        : fromDate)
-                    : null,
-                toDate: toDate
-                    ? (toDate instanceof Date
-                        ? toDate.toISOString().split("T")[0]
-                        : toDate)
-                    : null,
-            })
-        );
-        handleClose();
+   function handleConfirm() {
+    const formattedFrom =
+        fromDate instanceof Date ? fromDate.toISOString().split("T")[0] : fromDate;
+    const formattedTo =
+        toDate instanceof Date ? toDate.toISOString().split("T")[0] : toDate;
+
+    // ✅ Update Redux / localStorage
+    dispatch(setRentDates({ id: selectedItemId, fromDate: formattedFrom, toDate: formattedTo }));
+
+    // ✅ Call parent to handle API update
+    if (onConfirmDates) {
+        onConfirmDates(selectedItemId);
     }
+
+    // ✅ Close the drawer
+    handleClose();
+}
+
 
     return (
         <div className="month-wrapper">

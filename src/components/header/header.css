@@ -194,8 +194,13 @@
     border-bottom: 1px solid #eee;
     cursor: pointer;
     color: #333;
+    /* display: flex;
+    justify-content: center; */
 }
-
+.user-modal div a {
+    text-decoration: none;
+    color: inherit;
+}
 .user-modal div:last-child {
     border-bottom: none;
 }

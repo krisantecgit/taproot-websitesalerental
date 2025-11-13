@@ -1,0 +1,98 @@
+.order-overflow {
+    /* border-left: 1px solid #eee; */
+    overflow-y: scroll;
+    height: 80vh;
+}
+
+.sticky-container {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    padding: 0px 30px;
+    background: white;
+}
+
+.order-history {
+    font-size: 25px;
+    font-weight: 500;
+    padding: 15px;
+    background-color: #F8F8F8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loader-container {
+    text-align: center;
+}
+
+.loader-container img {
+    width: 200px;
+    padding-top: 60px;
+}
+
+.order {
+    margin: 2rem 30px;
+    font-family: "Work Sans";
+    padding: 0 10px;
+}
+
+.order-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.order-data {
+     display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.order_id {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.image {
+    max-width: 26px;
+}
+
+.status_badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status_badge.green {
+    background-color: #aed5e3;
+    border-radius: 30px;
+    color: #000;
+}
+
+.status_badge.grey {
+    background-color: grey;
+    color: white;
+    border-radius: 30px;
+}
+
+.status_badge>div {
+    border-radius: 44px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: center;
+}
+
+.order-view-button {
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    border: 1px solid rgb(6, 155, 170);
+    border-radius: 6px;
+}
+
+.order-view-button:hover {
+    background: rgb(6, 155, 170);
+    color: #FFFF;
+    border: 1px solid rgb(6, 155, 170);
+}

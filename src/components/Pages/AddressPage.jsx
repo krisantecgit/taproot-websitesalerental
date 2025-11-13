@@ -7,6 +7,9 @@ import axiosConfig from "../../Services/axiosConfig"
 import { toast } from "react-toastify";
 import { FaCheckCircle, FaRegCircle } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setAddress } from "../../redux/addressSlice";
+import CheckoutNavbar from "../CheckoutNavbar/CheckoutNavbar";
 
 const API_KEY = "AIzaSyDD8frd15FoMhemosVqGvVBCHaRjLgNszc";
 
@@ -21,6 +24,7 @@ export default function AddressPage() {
     const [selectedIndex, setSelectedIndex] = useState(0)
     const inputRef = useRef();
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const location = useLocation();
     const addressType = location.state?.addressType || 'sale';
     const [formData, setFormData] = useState({
@@ -51,6 +55,7 @@ export default function AddressPage() {
             try {
                 const res = await axiosConfig.get(`/accounts/address/?user=${userId}`)
                 setAddresses(res?.data?.results)
+                dispatch(setAddress(res?.data?.results))
             } catch (error) {
                 console.log(error)
             }
@@ -181,7 +186,9 @@ export default function AddressPage() {
         }
     }
     return (
-        <div className="address-container">
+        <div>
+            <CheckoutNavbar />
+            <div className="address-container">
             <div className="address-left">
                 {step === "default" && (
                     <>
@@ -433,6 +440,7 @@ export default function AddressPage() {
                     {addressType === 'sale' ? 'Use for Sale Delivery' : 'Use for Rental Delivery'}
                 </button>
             </div>
+        </div>
         </div>
     );
 }
