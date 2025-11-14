@@ -3,6 +3,7 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { FaArrowRight } from "react-icons/fa";
 import "./bannersection.css";
 import { IoIosArrowRoundForward } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function BannerSection() {
   const scrollRef = useRef(null);
@@ -29,7 +30,7 @@ function BannerSection() {
       img: "https://assets.furlenco.com/image/upload/dpr_2.0,f_auto,q_auto/v1/s3-furlenco-images/evolve_2_0/newbrand_banner_genz_rent_desktop_2.jpg",
     },
   ];
-
+  let navigate = useNavigate()
   const scroll = (dir) => {
     const { current } = scrollRef;
     if (current) {
@@ -56,9 +57,9 @@ function BannerSection() {
             </div>
           ))}
           <div className="banner-btn">
-            <div className="buy">Buy Product <IoIosArrowRoundForward className="banner-btn-icon" /> </div>
-            <div className="rent">Rent product <IoIosArrowRoundForward className="banner-btn-icon" /></div>
-            <div className="unlmtd">UNLMTD <IoIosArrowRoundForward className="banner-btn-icon" /></div>
+            <div className="buy" onClick={() => {navigate("/buy"); window.scrollTo({top : 0, behavior:"smooth"})} }>Buy Product <IoIosArrowRoundForward className="banner-btn-icon" /> </div>
+            <div className="rent" onClick={() => {navigate("/rent"); window.scrollTo({top : 0, behavior:"smooth"})}}>Rent product <IoIosArrowRoundForward className="banner-btn-icon" /></div>
+            {/* <div className="unlmtd">UNLMTD <IoIosArrowRoundForward className="banner-btn-icon" /></div> */}
           </div>
         </div>
 

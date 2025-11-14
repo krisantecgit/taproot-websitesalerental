@@ -8,10 +8,13 @@ import { useEffect, useRef, useState } from "react"
 import useDebouncedValue from "../../utils/Debounce"
 import axiosConfig from "../../Services/axiosConfig"
 import { useSelector } from "react-redux"
+import LoginModal from "../Login/Login"
 
 function Header() {
   const searchRef = useRef(null)
   let navigate = useNavigate();
+  const [loginModal, setLoginModal] = useState(false)
+  const [userId, setUserId] = useState(localStorage.getItem("userid"))
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("query");
   const [query, setQuery] = useState(search);
@@ -69,7 +72,10 @@ function Header() {
     setQuery(valueToSearch)
   }
 };
-
+ const handleLoginSuccess = (userId) => {
+        setUserId(userId);
+        setLoginModal(false);
+    }
 
   return (
     <div className="header">
@@ -136,9 +142,13 @@ function Header() {
           <div className="user-modal">
             <div>Hello! User</div>
             <div>My Orders</div>
-            <div>Address</div>
+            <div><Link to="/account/addresses">Address</Link></div>
             <div>Wishlist</div>
-            <div><Link to="/logout">Logout</Link></div>
+            <div>
+              {
+                !userId ? <Link onClick={() => setLoginModal(true)}>Login</Link> : <Link to="/logout">Logout</Link>
+              }
+            </div>
           </div>
         </div>
         <FiHeart className="icon" />
@@ -148,6 +158,7 @@ function Header() {
           
         </div>
       </div>
+      <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />
     </div>
   )
 }

@@ -1,0 +1,75 @@
+.add-wrapper {
+  padding: 10px 60px;
+}
+
+.add-btn {
+  display: inline-flex;
+  background: transparent;
+  cursor: pointer;
+  font-family: "Work Sans";
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: rgb(6,155,170);
+  padding: 5px 15px;
+  border: 1px solid rgba(6, 155, 170, 0.5);
+  border-radius: 30px;
+  margin-bottom: 20px;
+}
+
+.add-container {
+  display: flex;
+}
+
+.add-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.addres-action-icon {
+  font-size: 18px;
+  cursor: pointer;
+}
+.add-box {
+  width: 700px;
+  background: linear-gradient(rgb(180, 225, 229) 0%, rgb(206, 237, 240) 100%);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
+}
+
+.add-username {
+  font-family: "Work Sans";
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-default {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: #fff;
+  border-radius: 8px;
+  margin-left: 10px;
+}
+
+.add-city {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.add-fulladdress {
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 12px;
+}
+
+.add-phone {
+  font-size: 12px;
+  font-weight: 500;
+}

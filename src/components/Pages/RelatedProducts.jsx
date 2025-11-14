@@ -116,7 +116,7 @@ function RelatedProducts({ productId }) {
 
                         {listingType === "rent" && item.prices?.rental_price && (
                           <span className="rel-price">
-                            {formatPrice(item.prices.rental_price)}
+                            {formatPrice(item.prices.rental_price)} / Day
                           </span>
                         )}
 

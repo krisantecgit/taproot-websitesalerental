@@ -66,10 +66,10 @@ function Cartpage() {
     const rentalAddress = localStorage.getItem("rentalAddress") ? JSON.parse(localStorage.getItem("rentalAddress")) : null
     async function proceedToCheckout() {
         if (!userId) {
-        toast.error("Please log in to proceed");
-        setLoginModal(true);
-        return;
-    }
+            toast.error("Please log in to proceed");
+            setLoginModal(true);
+            return;
+        }
         if (userId && !saleAddress && buyCart.length > 0) {
             toast.error("Please select sale delivery address");
             navigate('/address', { state: { addressType: 'sale' } });
@@ -141,17 +141,22 @@ function Cartpage() {
                                     ) : (
                                         <div className='cart-delivery-estimate'>
                                             <div className='cart-delivery-estimate-left'>
-                                                <TbTruckDelivery className='truck-icon' />
+                                                {/* <TbTruckDelivery className='truck-icon' />
                                                 <div>
                                                     <p className='delivery-title'>Delivery Estimate</p>
                                                     <p className='delivery-detail'>
                                                         Delivery by <strong>31 Oct</strong> to <span>500457</span>
                                                     </p>
-                                                </div>
+                                                </div> */}
+                                                <p className='delivery-detail'>
+                                                    Select address
+                                                </p>
+
                                             </div>
                                             <div className='cart-delivery-estimate-right'>
-                                                <p className='price-cut'><strike>₹499</strike></p>
-                                                <p className='price-free'>FREE</p>
+                                                {/* <p className='price-cut'><strike>₹499</strike></p>
+                                                <p className='price-free'>FREE</p> */}
+                                                <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>Choose</button>
                                             </div>
                                         </div>
                                     )
@@ -225,17 +230,23 @@ function Cartpage() {
                                     ) : (
                                         <div className='cart-delivery-estimate'>
                                             <div className='cart-delivery-estimate-left'>
-                                                <TbTruckDelivery className='truck-icon' />
+                                                {/* <TbTruckDelivery className='truck-icon' /> */}
+                                                <p className='delivery-detail'>
+                                                        Select address
+                                                    </p>
                                                 <div>
-                                                    <p className='delivery-title'>Delivery Estimate</p>
+                                                    {/* <p className='delivery-title'>Delivery Estimate</p>
                                                     <p className='delivery-detail'>
                                                         Delivery by <strong>31 Oct</strong> to <span>500457</span>
-                                                    </p>
+                                                    </p> */}
+                                                    
+                                                    
                                                 </div>
                                             </div>
                                             <div className='cart-delivery-estimate-right'>
-                                                <p className='price-cut'><strike>₹499</strike></p>
-                                                <p className='price-free'>FREE</p>
+                                                {/* <p className='price-cut'><strike>₹499</strike></p>
+                                                <p className='price-free'>FREE</p> */}
+                                            <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>change</button>
                                             </div>
                                         </div>
                                     )

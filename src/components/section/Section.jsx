@@ -77,9 +77,9 @@ function Section({ listingType }) {
                     <span className="discount">
 
                       {Math.round(
-                        ((product?.prices?.sale_offer_price -
-                          product?.prices?.sale_price) /
-                          product?.prices?.sale_offer_price) *
+                        ((product?.prices?.sale_price - product?.prices?.sale_offer_price
+                        ) /
+                          product?.prices?.sale_price) *
                         100
                       )}
                       % OFF

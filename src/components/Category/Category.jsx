@@ -35,7 +35,7 @@ const Category = ({ listingType }) => {
 
   return (
     <div className="buypage-container">
-      <h2>{listingType === "buy" ? "Buy Equipments" : "Rent Equipments"}</h2>
+      <h2>{listingType === "buy" ? "Buy Furniture" : "Rent Furniture"}</h2>
       <div className="buypage-category">
         {
           categories.length > 0 ? (categories.map((item) => (

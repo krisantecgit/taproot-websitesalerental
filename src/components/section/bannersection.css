@@ -61,6 +61,7 @@
   border: 1.5px solid white;
   z-index: 5;
   color: #FFFF;
+  cursor: pointer;
 }
 .banner-btn-icon {
   font-size: 30px;
@@ -74,6 +75,8 @@
 .banner-btn .rent{
   background-color: #EE5921;
   padding: 16px 32px 16px 40px;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
 }
 .banner-btn .unlmtd{
   background-color: #57275B;

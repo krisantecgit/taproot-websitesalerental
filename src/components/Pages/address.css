@@ -346,17 +346,23 @@
     border-radius: 30px;
     margin-top: 20px;
 }
-
+.spinner-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
 .address-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-left: -60px;
-  overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: -60px;
+    overflow-y: auto;
+    margin-top: -60px;
 }
 
 .address-box {
-  color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87);
     border: none;
     border-radius: 8px;
     box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
@@ -368,7 +374,7 @@
 }
 
 .address-box.active {
-  color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87);
     border: none;
     border-radius: 8px;
     box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
@@ -380,6 +386,7 @@
     color: #00aacc;
     font-weight: bold;
 }
+
 .user-name {
     font-family: "Work Sans";
     font-size: 14px;

@@ -13,7 +13,7 @@ function AccountLayout() {
                         <p>Sairam</p>
                     </div>
                     <div><Link to="/account/orders">Orders</Link></div>
-                    <div>Address</div>
+                    <div><Link to="/account/addresses">Address</Link></div>
                     <div>Wishlist</div>
                     <div><Link to="/logout">Logout</Link></div>
                 </div>

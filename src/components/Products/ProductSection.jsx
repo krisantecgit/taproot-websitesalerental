@@ -115,7 +115,7 @@ function ProductSection({ products = [], loading = false }) {
                     {/* For rental products */}
                     {listingType === "rental" && product.prices?.rental_price && (
                       <div className="offer-price">
-                        {formatPrice(product.prices.rental_price)}
+                        {formatPrice(product.prices.rental_price)} / Day
                       </div>
                     )}
                   </div>

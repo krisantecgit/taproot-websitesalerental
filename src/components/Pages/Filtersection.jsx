@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axiosConfig from "../../Services/axiosConfig";
 import { IoChevronBack, IoChevronForward, IoArrowDown, IoArrowForward } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import FilterOptions from "../Pages/FilterOptions";
 import { sort_map } from "../../utils/sort_map";
 import "../Products/product.css"
@@ -16,7 +16,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     console.log(friendlyurl, "frrrrrs")
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
-
+    const location = useLocation()
     const carouselRef = useRef(null);
 
     const [category, setCategory] = useState([]);
@@ -86,8 +86,26 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             setLoadingMore(false);
         }
     };
+    // useEffect(() => {
+    //     const handleScroll = () => {
+    //         if (
+    //             window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
+    //             !loadingMore &&
+    //             nextUrl
+    //         ) {
+    //             loadMoreProducts();
+    //         }
+    //     };
+    //     window.addEventListener("scroll", handleScroll);
+    //     return () => window.removeEventListener("scroll", handleScroll);
+    // }, [nextUrl, loadingMore]);
     useEffect(() => {
         const handleScroll = () => {
+
+            // STOP load-more on search page completely
+            if (location.pathname.includes("/search/results")) return;
+
+            // Normal infinite scroll
             if (
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
                 !loadingMore &&
@@ -96,9 +114,11 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                 loadMoreProducts();
             }
         };
+
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [nextUrl, loadingMore]);
+    }, [nextUrl, loadingMore, location.pathname]);
+
 
     async function fetchSubcategories(categoryId) {
         if (!categoryId) return;
@@ -263,7 +283,9 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         try {
             onLoading(true);
 
-            const selectedCategory = friendlyData?.product_data?.slug || friendlyData?.product_data?.name || "";
+            // const selectedCategory = friendlyData?.product_data?.slug || friendlyData?.product_data?.name || "";
+            const selectedCategory = friendlyData?.product_data?.name || "";
+
             const priceMin = params.get("price_min") || "";
             const priceMax = params.get("price_max") || "";
             const options = params.get("options") || "";
@@ -362,38 +384,38 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         }
     }, [friendlyData, categoryurl]);
 
-useEffect(() => {
-  const price_min = searchParams.get("price_min");
-  const price_max = searchParams.get("price_max");
-  const subcategoryParam = searchParams.get("subcategory");
-  const optionsParam = searchParams.get("options");
+    useEffect(() => {
+        const price_min = searchParams.get("price_min");
+        const price_max = searchParams.get("price_max");
+        const subcategoryParam = searchParams.get("subcategory");
+        const optionsParam = searchParams.get("options");
 
-  // Price from URL
-  if (price_min && price_max) {
-    const min = Number(price_min);
-    const max = Number(price_max);
-    const matched = priceRanges.find(r => r.min === min && r.max === max);
-    setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `₹${min} - ₹${max}` }]);
-  }
+        // Price from URL
+        if (price_min && price_max) {
+            const min = Number(price_min);
+            const max = Number(price_max);
+            const matched = priceRanges.find(r => r.min === min && r.max === max);
+            setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `₹${min} - ₹${max}` }]);
+        }
 
-  // Subcategories from URL
-  if (subcategoryParam) {
-    const selectedSubcatsFromURL = decodeURIComponent(subcategoryParam).split(",").filter(Boolean);
-    setSelectedSubcats(selectedSubcatsFromURL);
-  }
+        // Subcategories from URL
+        if (subcategoryParam) {
+            const selectedSubcatsFromURL = decodeURIComponent(subcategoryParam).split(",").filter(Boolean);
+            setSelectedSubcats(selectedSubcatsFromURL);
+        }
 
-  // Options from URL
-  if (optionsParam) {
-    try {
-      const decodedOptions = JSON.parse(decodeURIComponent(optionsParam));
-      setSelectedOptions(decodedOptions);
-    } catch {
-      console.warn("Invalid options format in URL");
-    }
-  }
+        // Options from URL
+        if (optionsParam) {
+            try {
+                const decodedOptions = JSON.parse(decodeURIComponent(optionsParam));
+                setSelectedOptions(decodedOptions);
+            } catch {
+                console.warn("Invalid options format in URL");
+            }
+        }
 
-  fetchProductsFromURL();
-}, []);
+        fetchProductsFromURL();
+    }, []);
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {
@@ -402,41 +424,41 @@ useEffect(() => {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         }).replace("$", "$ ");
-const handleRemoveFilter = (type, value) => {
-  const params = new URLSearchParams(searchParams);
+    const handleRemoveFilter = (type, value) => {
+        const params = new URLSearchParams(searchParams);
 
-  if (type === "price") {
-    setSelectedPriceRanges([]);
-    setAppliedFilters(prev => ({ ...prev, price: [] }));
-    params.delete("price_min");
-    params.delete("price_max");
-  }
+        if (type === "price") {
+            setSelectedPriceRanges([]);
+            setAppliedFilters(prev => ({ ...prev, price: [] }));
+            params.delete("price_min");
+            params.delete("price_max");
+        }
 
-  if (type === "subcategory") {
-    const current = decodeURIComponent(params.get("subcategory") || "").split(",").filter(Boolean);
-    const updated = current.filter(item => item !== value);
-    setSelectedSubcats(updated);
-    if (updated.length) params.set("subcategory", encodeURIComponent(updated.join(",")));
-    else params.delete("subcategory");
-  }
+        if (type === "subcategory") {
+            const current = decodeURIComponent(params.get("subcategory") || "").split(",").filter(Boolean);
+            const updated = current.filter(item => item !== value);
+            setSelectedSubcats(updated);
+            if (updated.length) params.set("subcategory", encodeURIComponent(updated.join(",")));
+            else params.delete("subcategory");
+        }
 
-  if (type === "option") {
-    const updatedOptions = { ...selectedOptions };
-    Object.keys(updatedOptions).forEach(key => {
-      updatedOptions[key] = updatedOptions[key].filter(opt => opt.name !== value);
-      if (updatedOptions[key].length === 0) delete updatedOptions[key];
-    });
-    setSelectedOptions(updatedOptions);
-    setAppliedFilters(prev => ({ ...prev, options: updatedOptions }));
+        if (type === "option") {
+            const updatedOptions = { ...selectedOptions };
+            Object.keys(updatedOptions).forEach(key => {
+                updatedOptions[key] = updatedOptions[key].filter(opt => opt.name !== value);
+                if (updatedOptions[key].length === 0) delete updatedOptions[key];
+            });
+            setSelectedOptions(updatedOptions);
+            setAppliedFilters(prev => ({ ...prev, options: updatedOptions }));
 
-    if (Object.keys(updatedOptions).length)
-      params.set("options", encodeURIComponent(JSON.stringify(updatedOptions)));
-    else params.delete("options");
-  }
+            if (Object.keys(updatedOptions).length)
+                params.set("options", encodeURIComponent(JSON.stringify(updatedOptions)));
+            else params.delete("options");
+        }
 
-  setSearchParams(params);
-  applyFilters();
-};
+        setSearchParams(params);
+        applyFilters();
+    };
 
 
     return (
@@ -476,31 +498,31 @@ const handleRemoveFilter = (type, value) => {
             </div>
 
             <div className="filter-sections">
-  <div className="applied-filters">
-    <p className="applied-filter">Applied Filters:</p>
+                <div className="applied-filters">
+                    <p className="applied-filter">Applied Filters:</p>
 
-    {selectedSubcats.map((sub) => (
-      <span key={sub} className="filter-tags">
-        {sub}
-        <span className="remove-icon" onClick={() => handleRemoveFilter("subcategory", sub)}>×</span>
-      </span>
-    ))}
+                    {selectedSubcats.map((sub) => (
+                        <span key={sub} className="filter-tags">
+                            {sub}
+                            <span className="remove-icon" onClick={() => handleRemoveFilter("subcategory", sub)}>×</span>
+                        </span>
+                    ))}
 
-    {selectedPriceRanges.map((p) => (
-      <span key={`${p.min}-${p.max}`} className="filter-tags">
-        ₹{p.min} - ₹{p.max}
-        <span className="remove-icon" onClick={() => handleRemoveFilter("price", `${p.min}-${p.max}`)}>×</span>
-      </span>
-    ))}
+                    {selectedPriceRanges.map((p) => (
+                        <span key={`${p.min}-${p.max}`} className="filter-tags">
+                            ₹{p.min} - ₹{p.max}
+                            <span className="remove-icon" onClick={() => handleRemoveFilter("price", `${p.min}-${p.max}`)}>×</span>
+                        </span>
+                    ))}
 
-    {Object.values(selectedOptions).flat().map((opt) => (
-      <span key={opt.name} className="filter-tags">
-        {opt.name}
-        <span className="remove-icon" onClick={() => handleRemoveFilter("option", opt.name)}>×</span>
-      </span>
-    ))}
-  </div>
-</div>
+                    {Object.values(selectedOptions).flat().map((opt) => (
+                        <span key={opt.name} className="filter-tags">
+                            {opt.name}
+                            <span className="remove-icon" onClick={() => handleRemoveFilter("option", opt.name)}>×</span>
+                        </span>
+                    ))}
+                </div>
+            </div>
 
 
             <div className="filter-section">

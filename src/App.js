@@ -12,6 +12,7 @@ import AccountLayout from './components/AccountLayout/AccountLayout';
 import Orders from './components/Pages/Orders';
 import Logout from './utils/Logout';
 import ProtectedRoute from './utils/ProtectedRoutes';
+import AddressesPage from './components/Pages/AddressesPage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path='/payment' element={<Payment />} />
           <Route path='/account' element={<AccountLayout />}>
             <Route path="orders" element={<Orders />} />
+            <Route path="addresses" element={<AddressesPage />} />
           </Route>
         </Route>
         <Route path="/search/results" element={<SearchedData />} />

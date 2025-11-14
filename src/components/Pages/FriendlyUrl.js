@@ -25,7 +25,7 @@ const FriendlyUrlComponent = () => {
     fetchFriendlyData();
   }, [friendlyurl]);
 
-  if (!data) return <p className="d-flex justify-content-center align-items-center" style={{height : "100vh"}}>Loading content...</p>;
+  if (!data) return <p className="d-flex justify-content-center align-items-center" style={{height : "100vh"}}><img src={require("../Assets/spinner.gif")} alt="Loading content" height={150} width={150} /></p>;
 
   return (
     <div className="friendly-page-container">

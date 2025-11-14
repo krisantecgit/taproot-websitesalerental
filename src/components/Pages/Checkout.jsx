@@ -47,7 +47,6 @@ function Checkout() {
         const hasExistingOrder = orderData.length > 0;
         const hasCartItems = buyCart.length > 0 || rentCart.length > 0;
 
-        // Redirect only if there's neither an order nor items
         if (!hasExistingOrder && !hasCartItems) {
             navigate("/cart");
         }
@@ -82,9 +81,6 @@ function Checkout() {
 
         getRentalData();
     }, [rentCart]);
-    // const totalRentPrice = rentalData.reduce((acc, ele) => acc + ele.final_cost, 0);
-    // const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice * ele.qty, 0);
-    // const totalAmount = (buyCart.length ? totalBuyPrice : 0) + (rentCart.length ? totalRentPrice : 0);
     useEffect(() => {
         const id = localStorage.getItem("userid")
         setUserId(id)
@@ -168,7 +164,6 @@ function Checkout() {
                 dispatch(decreaseRentQty(variantId));
             }
 
-            // 4️⃣ Update order details on server right away
             const orderId = localStorage.getItem("orderId");
             if (orderId) {
                 const rentAddress = JSON.parse(localStorage.getItem("rentalAddress"));
@@ -450,8 +445,9 @@ function Checkout() {
                                     orderData.map((item) => (
                                         item.item_type === "sale" && (
                                             <div className="cart-item">
+                                                {console.log(item, "pppppp")}
                                                 <div className="cart-item-image" onClick={() =>
-                                                    navigate(`/${item.item_type}/product/${item.friendlyurl}`, {
+                                                    navigate(`/${item.item_type}/product/${item?.varient?.slug}`, {
                                                         state: { item, listingType: item.item_type }
                                                     })
                                                 }>
@@ -459,7 +455,7 @@ function Checkout() {
                                                 </div>
 
                                                 <div className="cart-item-info" onClick={() =>
-                                                    navigate(`/${item.item_type}/product/${item.friendlyurl}`, {
+                                                    navigate(`/${item.item_type}/product/${item?.varient?.slug}`, {
                                                         state: { item, listingType: item.item_type }
                                                     })
                                                 }>
@@ -539,7 +535,7 @@ function Checkout() {
                                             <div
                                                 className="cart-item-image"
                                                 onClick={() =>
-                                                    navigate(`/${item.item_type}/product/${item.friendlyurl}`, {
+                                                    navigate(`/${item.item_type}/product/${item?.varient?.slug}`, {
                                                         state: { item, listingType: item.item_type }
                                                     })
                                                 }
@@ -549,7 +545,7 @@ function Checkout() {
                                             <div
                                                 className="cart-item-info"
                                                 onClick={() =>
-                                                    navigate(`/${item.item_type}/product/${item.friendlyurl}`, {
+                                                    navigate(`/${item.item_type}/product/${item?.varient?.slug}`, {
                                                         state: { item, listingType: item.item_type }
                                                     })
                                                 }>

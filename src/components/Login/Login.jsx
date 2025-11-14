@@ -166,7 +166,8 @@ const LoginModal = ({ show, onHide, onLoginSuccess  }) => {
 
         {loading && (
           <div className="text-center my-2">
-            <Spinner animation="border" size="xl" />
+            {/* <Spinner animation="border" size="xl" /> */}
+            <img src={require("../Assets/spinner.gif")} height={100} width={100} />
           </div>
         )}
 
