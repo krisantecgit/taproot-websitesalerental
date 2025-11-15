@@ -84,13 +84,16 @@
 }
 
 .tag {
-  background: #d6dcdf;
-  color: black;
+  background: rgb(206, 237, 240);
+  color: rgb(85, 85, 85);
   padding: 2px 8px;
+  font-family: "Work Sans";
   font-size: 12px;
+  font-weight: 500;
+  color: rgb(85, 85, 85);
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
-  width: 60px;
+  width: 70px;
   display: flex;
   justify-content: center;
   margin-left: -20px;
@@ -112,7 +115,7 @@
   background-color: #f7e4ab;
   border-radius: 20px;
   padding: 2px 5px;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 .old-price {
@@ -151,6 +154,6 @@
 }
 
 .arrow-section-icons {
-    font-weight: 300;
-    color: rgb(119, 119, 119);
+  font-weight: 300;
+  color: rgb(119, 119, 119);
 }

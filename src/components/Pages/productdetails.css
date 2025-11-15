@@ -10,34 +10,38 @@
     width: 62%;
 }
 
+/* .image-slider {
+    display: flex;
+    gap: 5px;
+    width: 95%;
+    height: 400px;
+} */
 .image-slider {
     display: flex;
     gap: 5px;
     width: 95%;
     height: 400px;
+    align-items: stretch; /* prevents shaking */
 }
 
 .main-image-wrapper {
     flex: 0 0 80%;
 }
-
 .next-image-wrapper {
     flex: 0 0 25%;
-    /* narrower width for 2nd image */
+    min-width: 25%;
+    max-width: 25%;
     overflow: hidden;
-    /* crop overflow */
+    height: 100%;
     position: relative;
 }
 
 .next-image {
-    width: 200%;
-    /* show from left portion of full image */
+    width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: left;
-    /* start from left side */
-    transform: translateX(-25%);
-    /* adjust visible portion */
+    object-position: left center;
+    flex-shrink: 0; /* stop shaking */
 }
 
 

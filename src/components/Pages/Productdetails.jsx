@@ -19,7 +19,7 @@ function Productdetails() {
     const [product, setProduct] = useState({});
     const [productDetails, setProductDetails] = useState()
     const [isZoomed, setIsZoomed] = useState(false)
-    const [listingType, setListingType] = useState('');
+    const [listingType, setListingType] = useState('buy');
     const [selectedOption, setSelectedOption] = useState('');
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
@@ -33,19 +33,48 @@ function Productdetails() {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
         }).replace("$", "$ ");
-    useEffect(() => {
-        if (state?.listingType) {
-            setListingType(state.listingType);
-            if (state.listingType === 'buy') {
-                setSelectedOption('buy');
-            } else if (state.listingType === 'rent') {
-                setSelectedOption('rent');
-            } else if (state.listingType === 'buy/rent') {
-                setSelectedOption('buy')
-            }
+    // useEffect(() => {
+    //     if (state?.listingType) {
+    //         setListingType(state.listingType);
+    //         if (state.listingType === 'buy') {
+    //             setSelectedOption('buy');
+    //         } else if (state.listingType === 'rent') {
+    //             setSelectedOption('rent');
+    //         } else if (state.listingType === 'buy/rent') {
+    //             setSelectedOption('buy')
+    //         }
 
+    //     }
+    // }, [state]);
+//     useEffect(() => {
+//     if (productDetails?.varient_listing_type) {
+//         const apiListingType = productDetails.varient_listing_type;
+//         setListingType(apiListingType);
+        
+//         // Set default selected option based on API
+//         if (apiListingType === 'buy') {
+//             setSelectedOption('buy');
+//         } else if (apiListingType === 'rent') {
+//             setSelectedOption('rent');
+//         } else if (apiListingType === 'buy/rent') {
+//             setSelectedOption('buy'); // Default to buy for buy/rent
+//         }
+//     }
+// }, [productDetails]);
+useEffect(() => {
+    if (productDetails?.varient_listing_type) {
+        const apiListingType = productDetails.varient_listing_type;
+        setListingType(apiListingType);
+        if (apiListingType === 'buy') {
+            setSelectedOption('buy');
+        } else if (apiListingType === 'rent') {
+            setSelectedOption('rent');
+        } else if (apiListingType === 'buy/rent') {
+            setSelectedOption(state?.listingType === 'rent' ? 'rent' : 'buy');
         }
-    }, [state]);
+    }
+}, [productDetails, state?.listingType]);
+
     useEffect(() => {
         async function fetchFullProduct() {
             const res = await axiosConfig.get(`/catlog/seo-url/${friendlyurl}`);
@@ -86,12 +115,12 @@ function Productdetails() {
         });
     }
     function formatLocalDate(date) {
-  if (!date) return null;
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+        if (!date) return null;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
 
     function handleAddToCart(type, productData) {
         if (type === "rent") {
@@ -103,7 +132,7 @@ function Productdetails() {
                 return;
             }
             dispatch(addToRentCart({
-                ...productData, fromDate : formatLocalDate(fromDate), toDate : formatLocalDate(toDate)
+                ...productData, fromDate: formatLocalDate(fromDate), toDate: formatLocalDate(toDate)
             }))
             toast.success("Product added to cart")
         } else {
@@ -111,6 +140,7 @@ function Productdetails() {
             toast.success("Product added to cart")
         }
     }
+    
     return (
         <div>
             <Header />
@@ -130,17 +160,11 @@ function Productdetails() {
                                             onMouseLeave={() => setIsZoomed(false)}
                                         />
                                         {isZoomed && (
-                                            <div
-                                                className="zoom-preview"
-                                                onMouseEnter={() => setIsZoomed(true)}
-                                                onMouseLeave={() => setIsZoomed(false)}
-                                            >
-                                                <img
-                                                    src={images[currentIndex]?.image}
-                                                    alt="Zoomed Product"
-                                                />
+                                            <div className="zoom-preview">
+                                                <img src={images[currentIndex].image} />
                                             </div>
                                         )}
+
                                     </div>
                                 </div>
                                 <div className="next-image-wrapper">

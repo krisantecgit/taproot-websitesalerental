@@ -340,6 +340,7 @@ export default function AddressPage() {
                                             className="input-box-address"
                                             placeholder="Mobile Number"
                                             value={formData.mobileno}
+                                            maxLength={10}
                                             onChange={(e) =>
                                                 setFormData({ ...formData, mobileno: e.target.value })
                                             }

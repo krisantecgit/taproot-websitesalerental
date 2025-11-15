@@ -118,253 +118,292 @@ function Cartpage() {
     return (
         <>
             <Header />
-            <div className="cart-container">
-                <div className="cart-left">
-                    {
-                        buyCart.length > 0 && (
-                            <>
-                                {
-                                    saleAddress ? (
-                                        <div className='cart-delivery-estimate'>
-                                            <div className='cart-delivery-estimate-left'>
-                                                <div>
-                                                    <p className='deliver-address'>Delivering to : <span>{saleAddress?.name || ""}</span></p>
-                                                    <p className='delivery-full-add'>
-                                                        Floor : {saleAddress.flat_no}, {saleAddress.address_line_1}, {saleAddress.address_line_2}, {saleAddress.landmark}
-                                                    </p>
+            {
+                (buyCart.length + rentCart.length > 0) ?
+                    <div className="cart-container">
+                        <div className="cart-left">
+                            {
+                                buyCart.length > 0 && (
+                                    <>
+                                        {
+                                            saleAddress ? (
+                                                <div className='cart-delivery-estimate'>
+                                                    <div className='cart-delivery-estimate-left'>
+                                                        <div>
+                                                            <p className='deliver-address'>Delivering to : <span>{saleAddress?.name || ""}</span></p>
+                                                            <p className='delivery-full-add'>
+                                                                Floor : {saleAddress.flat_no}, {saleAddress.address_line_1}, {saleAddress.address_line_2}, {saleAddress.landmark}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className='cart-delivery-estimate-right'>
+                                                        <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>change</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className='cart-delivery-estimate-right'>
-                                                <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>change</button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className='cart-delivery-estimate'>
-                                            <div className='cart-delivery-estimate-left'>
-                                                {/* <TbTruckDelivery className='truck-icon' />
+                                            ) : (
+                                                <div className='cart-delivery-estimate'>
+                                                    <div className='cart-delivery-estimate-left'>
+                                                        {/* <TbTruckDelivery className='truck-icon' />
                                                 <div>
                                                     <p className='delivery-title'>Delivery Estimate</p>
                                                     <p className='delivery-detail'>
                                                         Delivery by <strong>31 Oct</strong> to <span>500457</span>
                                                     </p>
                                                 </div> */}
-                                                <p className='delivery-detail'>
-                                                    Select address
-                                                </p>
+                                                        <p className='delivery-detail'>
+                                                            Select address
+                                                        </p>
 
-                                            </div>
-                                            <div className='cart-delivery-estimate-right'>
-                                                {/* <p className='price-cut'><strike>₹499</strike></p>
+                                                    </div>
+                                                    <div className='cart-delivery-estimate-right'>
+                                                        {/* <p className='price-cut'><strike>₹499</strike></p>
                                                 <p className='price-free'>FREE</p> */}
-                                                <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>Choose</button>
-                                            </div>
-                                        </div>
-                                    )
-                                }
-                                <div className="cart-section-box">
-                                    <div className="cart-section-header">
-                                        Buy Cart <span>{buyCart.length} items</span>
-                                    </div>
-
-                                    {buyCart.map(item => (
-                                        <div className="cart-item">
-                                            <div className="cart-item-image" onClick={() =>
-                                                navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                    state: { item, listingType: item.type }
-                                                })
-                                            }>
-                                                <img src={item.image} alt={item.name} />
-                                            </div>
-
-                                            <div className="cart-item-info" onClick={() =>
-                                                navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                    state: { item, listingType: item.type }
-                                                })
-                                            }>
-                                                <p className="cart-item-title">{item.name}</p>
-
-                                                <div className="cart-item-prices mt-2">
-                                                    <span className="old-price">{formatPrice(item.oldPrice)}</span>
-                                                    <span className="discount-badge">
-                                                        -{Math.round(((item.oldPrice - item.offerPrice) / item.oldPrice) * 100)}%
-                                                    </span>
-                                                    <span className="new-price">{formatPrice(item.offerPrice)}</span>
+                                                        {
+                                                            userId ? <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
+                                                        }
+                                                    </div>
                                                 </div>
+                                            )
+                                        }
+                                        <div className="cart-section-box">
+                                            <div className="cart-section-header">
+                                                Buy Cart <span>{buyCart.length} items</span>
                                             </div>
 
-                                            <div className="cart-item-actions">
+                                            {buyCart.map(item => (
+                                                <div className="cart-item">
+                                                    <div className="cart-item-image" onClick={() =>
+                                                        navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                            state: { item, listingType: item.type }
+                                                        })
+                                                    }>
+                                                        <img src={item.image} alt={item.name} />
+                                                    </div>
 
-                                                <div className="qty-wrapper">
-                                                    <button className="qty-minus" onClick={() => dispatch(decreaseBuyQty(item.id))}>−</button>
-                                                    <span className="qty-value">{item.qty}</span>
-                                                    <button className="qty-plus" onClick={() => dispatch(addToBuyCart(item))}>+</button>
+                                                    <div className="cart-item-info" onClick={() =>
+                                                        navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                            state: { item, listingType: item.type }
+                                                        })
+                                                    }>
+                                                        <p className="cart-item-title">{item.name}</p>
+
+                                                        <div className="cart-item-prices mt-2">
+                                                            <span className="old-price">{formatPrice(item.oldPrice)}</span>
+                                                            <span className="discount-badge">
+                                                                -{Math.round(((item.oldPrice - item.offerPrice) / item.oldPrice) * 100)}%
+                                                            </span>
+                                                            <span className="new-price">{formatPrice(item.offerPrice)}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="cart-item-actions">
+
+                                                        <div className="qty-wrapper">
+                                                            <button className="qty-minus" onClick={() => dispatch(decreaseBuyQty(item.id))}>−</button>
+                                                            <span className="qty-value">{item.qty}</span>
+                                                            <button className="qty-plus" onClick={() => dispatch(addToBuyCart(item))}>+</button>
+                                                        </div>
+
+                                                        <div className="delete-icon" ><FiTrash2 onClick={() => dispatch(removeFromBuyCart(item.id))} /></div>
+                                                    </div>
                                                 </div>
 
-                                                <div className="delete-icon" ><FiTrash2 onClick={() => dispatch(removeFromBuyCart(item.id))} /></div>
-                                            </div>
+                                            ))}
                                         </div>
-
-                                    ))}
-                                </div>
-                            </>
-                        )
-                    }
-                    {
-                        rentCart.length > 0 && (
-                            <div className='mt-3'>
-                                {
-                                    rentalAddress ? (
-                                        <div className='cart-delivery-estimate'>
-                                            <div className='cart-delivery-estimate-left'>
-                                                <div>
-                                                    <p className='deliver-address'>Delivering to : <span>{rentalAddress?.name}</span></p>
-                                                    <p className='delivery-full-add'>
-                                                        Floor : {rentalAddress.flat_no}, {rentalAddress.address_line_1}, {rentalAddress.address_line_2}, {rentalAddress.landmark}, {rentalAddress.city}{rentalAddress.state}{rentalAddress.country}
-                                                    </p>
+                                    </>
+                                )
+                            }
+                            {
+                                rentCart.length > 0 && (
+                                    <div className='mt-3'>
+                                        {
+                                            rentalAddress ? (
+                                                <div className='cart-delivery-estimate'>
+                                                    <div className='cart-delivery-estimate-left'>
+                                                        <div>
+                                                            <p className='deliver-address'>Delivering to : <span>{rentalAddress?.name}</span></p>
+                                                            <p className='delivery-full-add'>
+                                                                Floor : {rentalAddress.flat_no}, {rentalAddress.address_line_1}, {rentalAddress.address_line_2}, {rentalAddress.landmark}, {rentalAddress.city}{rentalAddress.state}{rentalAddress.country}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className='cart-delivery-estimate-right'>
+                                                        <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>change</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className='cart-delivery-estimate-right'>
-                                                <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>change</button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className='cart-delivery-estimate'>
-                                            <div className='cart-delivery-estimate-left'>
-                                                {/* <TbTruckDelivery className='truck-icon' /> */}
-                                                <p className='delivery-detail'>
-                                                        Select address
-                                                    </p>
-                                                <div>
-                                                    {/* <p className='delivery-title'>Delivery Estimate</p>
+                                            ) : (
+                                                <div className='cart-delivery-estimate'>
+                                                    <div className='cart-delivery-estimate-left'>
+                                                        {/* <TbTruckDelivery className='truck-icon' /> */}
+                                                        <p className='delivery-detail'>
+                                                            Select address
+                                                        </p>
+                                                        <div>
+                                                            {/* <p className='delivery-title'>Delivery Estimate</p>
                                                     <p className='delivery-detail'>
                                                         Delivery by <strong>31 Oct</strong> to <span>500457</span>
                                                     </p> */}
-                                                    
-                                                    
-                                                </div>
-                                            </div>
-                                            <div className='cart-delivery-estimate-right'>
-                                                {/* <p className='price-cut'><strike>₹499</strike></p>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <div className='cart-delivery-estimate-right'>
+                                                        {/* <p className='price-cut'><strike>₹499</strike></p>
                                                 <p className='price-free'>FREE</p> */}
-                                            <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>change</button>
+                                                        {
+                                                            userId ? <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                        <div className="cart-section-box mb-4">
+                                            <div className="cart-section-header">
+                                                Rent Cart <span>{rentCart.length} items</span>
                                             </div>
-                                        </div>
-                                    )
-                                }
-                                <div className="cart-section-box mb-4">
-                                    <div className="cart-section-header">
-                                        Rent Cart <span>{rentCart.length} items</span>
-                                    </div>
-                                    {rentCart.map(item => (
-                                        <div className="cart-item" key={item.id}>
-                                            <div
-                                                className="cart-item-image"
-                                                onClick={() =>
-                                                    navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                        state: { item, listingType: item.type }
-                                                    })
-                                                }
-                                            >
-                                                <img src={item.image} alt={item.name} />
-                                            </div>
-                                            <div
-                                                className="cart-item-info"
-                                                onClick={() =>
-                                                    navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                        state: { item, listingType: item.type }
-                                                    })
-                                                }>
-                                                <p className="cart-item-title">{item.name}</p>
-                                                {
-                                                    (() => {
-                                                        const matchedRental = rentalData.find(r => r.variant_id === item.id);
-                                                        return matchedRental ? (
-                                                            <div className="cart-item-prices mt-2">
-                                                                <span className="old-price">{formatPrice(matchedRental.base_cost)}</span>
-                                                                <span className="discount-badge">-{matchedRental.discount_percent} %</span>
-                                                                <span className="new-price">{formatPrice(matchedRental.final_cost)}</span>
-                                                            </div>
-                                                        ) : null;
-                                                    })()
-                                                }
-                                            </div>
-                                            <div className="cart-item-actions">
-                                                <div>
-                                                    <div className="month-container" onClick={() => { setShowMonth(true); setSelectedItemId(item.id) }}>
+                                            {rentCart.map(item => (
+                                                <div className="cart-item" key={item.id}>
+                                                    <div
+                                                        className="cart-item-image"
+                                                        onClick={() =>
+                                                            navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                                state: { item, listingType: item.type }
+                                                            })
+                                                        }
+                                                    >
+                                                        <img src={item.image} alt={item.name} />
+                                                    </div>
+                                                    <div
+                                                        className="cart-item-info"
+                                                        onClick={() =>
+                                                            navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                                state: { item, listingType: item.type }
+                                                            })
+                                                        }>
+                                                        <p className="cart-item-title">{item.name}</p>
                                                         {
                                                             (() => {
                                                                 const matchedRental = rentalData.find(r => r.variant_id === item.id);
                                                                 return matchedRental ? (
-                                                                    <>
-                                                                        <div>{matchedRental.duration_days}/Days</div> <BiChevronDown className='month-icon' />
-                                                                    </>
-                                                                ) : null
+                                                                    <div className="cart-item-prices mt-2">
+                                                                        <span className="old-price">{formatPrice(matchedRental.base_cost)}</span>
+                                                                        <span className="discount-badge">-{matchedRental.discount_percent} %</span>
+                                                                        <span className="new-price">{formatPrice(matchedRental.final_cost)}</span>
+                                                                    </div>
+                                                                ) : null;
                                                             })()
                                                         }
                                                     </div>
-                                                    <div className="qty-wrapper mt-2">
-                                                        <button
-                                                            className="qty-minus"
-                                                            onClick={() => dispatch(decreaseRentQty(item.id))}
-                                                        >
-                                                            −
-                                                        </button>
+                                                    <div className="cart-item-actions">
+                                                        <div>
+                                                            <div className="month-container" onClick={() => { setShowMonth(true); setSelectedItemId(item.id) }}>
+                                                                {
+                                                                    (() => {
+                                                                        const matchedRental = rentalData.find(r => r.variant_id === item.id);
+                                                                        return matchedRental ? (
+                                                                            <>
+                                                                                <div>{matchedRental.duration_days}/Days</div> <BiChevronDown className='month-icon' />
+                                                                            </>
+                                                                        ) : null
+                                                                    })()
+                                                                }
+                                                            </div>
+                                                            <div className="qty-wrapper mt-2">
+                                                                <button
+                                                                    className="qty-minus"
+                                                                    onClick={() => dispatch(decreaseRentQty(item.id))}
+                                                                >
+                                                                    −
+                                                                </button>
 
-                                                        <span className="qty-value">{item.qty}</span>
+                                                                <span className="qty-value">{item.qty}</span>
 
-                                                        <button
-                                                            className="qty-plus"
-                                                            onClick={() => dispatch(addToRentCart(item))}
-                                                        >
-                                                            +
-                                                        </button>
+                                                                <button
+                                                                    className="qty-plus"
+                                                                    onClick={() => dispatch(addToRentCart(item))}
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="delete-icon">
+                                                            <FiTrash2 onClick={() => dispatch(removeFromRentCart(item.id))} />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="delete-icon">
-                                                    <FiTrash2 onClick={() => dispatch(removeFromRentCart(item.id))} />
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )
-                    }
-                </div>
-                <div className="cart-right">
-                    <div className='cart-right-fix-box'>
-                        {
-                            buyCart.length > 0 && (
-                                <div className='buy-rent-price-container'>
-                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><BiCheckCircle className="styled-clock" /></div><span>Buy</span></div>
-                                    <div className='total-price'>{formatPrice(totalBuyPrice)}</div>
-                                </div>
-                            )
-                        }
-                        {
-                            rentCart.length > 0 && (
-                                <div className='buy-rent-price-container mt-2'>
-                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><FaRegClock className="styled-clock" /></div><span>Rent</span></div>
-                                    <div className='total-price'>{formatPrice(totalRentPrice)}</div>
-                                </div>
-                            )
-                        }
-                        <div className='cart-btn mt-3' onClick={proceedToCheckout}>
-                            <div>{formatPrice(totalAmount)}</div>
-                            <div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <div className="cart-right">
+                            <div className='cart-right-fix-box'>
                                 {
-                                    userId ?
-                                        <div>
-                                            CHECK OUT <IoArrowForward size={17} />
+                                    buyCart.length > 0 && (
+                                        <div className='buy-rent-price-container'>
+                                            <div className='left-buy-rent-price'><div className="clock-wrapper"><BiCheckCircle className="styled-clock" /></div><span>Buy</span></div>
+                                            <div className='total-price'>{formatPrice(totalBuyPrice)}</div>
                                         </div>
-                                        :
-                                        <div onClick={() => setLoginModal(true)}>Login To Proceed</div>
+                                    )
                                 }
+                                {
+                                    rentCart.length > 0 && (
+                                        <div className='buy-rent-price-container mt-2'>
+                                            <div className='left-buy-rent-price'><div className="clock-wrapper"><FaRegClock className="styled-clock" /></div><span>Rent</span></div>
+                                            <div className='total-price'>{formatPrice(totalRentPrice)}</div>
+                                        </div>
+                                    )
+                                }
+                                <div className='cart-btn mt-3' onClick={proceedToCheckout}>
+                                    <div>{formatPrice(totalAmount)}</div>
+                                    <div>
+                                        {
+                                            userId ?
+                                                <div>
+                                                    CHECK OUT <IoArrowForward size={17} />
+                                                </div>
+                                                :
+                                                <div onClick={() => setLoginModal(true)}>Login To Proceed</div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div> :
+                    <div className="empty-cart-container">
+
+                        <h2>Your Cart Looks A little Empty!</h2>
+                        <p>Start Buying or Renting with us</p>
+
+                        <div className="empty-cart-image-box">
+                            {/* replace this with your image */}
+                            <img src={require("../Assets/cart-bg.png")} alt="empty cart" />
+                        </div>
+
+                        <div className="empty-cart-options">
+                            <div className="option-left">
+                                <p>Looking to<br />BUY furniture?</p>
+                            </div>
+
+                            <div className="option-right">
+                                <p>Looking to<br />RENT furniture?</p>
+                            </div>
+                        </div>
+
+                        <div className="empty-cart-buttons">
+                            <button className="buy-btn" onClick={() => {navigate("/buy"); window.scrollTo({top : 0, behavior:"smooth"})} }>
+                                <span className="arrow-left">←</span><span className='btn-text'>EXPLORE BUYING</span>
+                            </button>
+
+                            <button className="rent-btn" onClick={() => {navigate("/rent"); window.scrollTo({top : 0, behavior:"smooth"})} }>
+                                <span className='btn-text'>EXPLORE RENTING</span><span className="arrow-right">→</span>
+                            </button>
+                        </div>
+
                     </div>
-                </div>
-            </div>
+
+            }
             <MonthOffcanvas showMonth={showMonth} handleClose={() => setShowMonth(false)} selectedItemId={selectedItemId} />
             {!userId && <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
         </>

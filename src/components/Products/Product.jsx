@@ -10,17 +10,32 @@ function Product({ friendlyData, products }) {
   const [productData, setProductData] = useState(products || []);
   const location = useLocation()
   const [loading, setLoading] = useState(false);
+  const isSearchPage = location.pathname.includes("/search");
+  
   function getCategoryFromUrl() {
     if(location.pathname.startsWith("/rent")) return "rent";
     return "buy";
   }
   const [categoryURL, setCategoryURL] = useState(getCategoryFromUrl())
+  
   useEffect(() => {
     if (products) {
       setProductData(products);
     }
     setCategoryURL(getCategoryFromUrl())
   }, [products]);
+
+  // NEW: This function prevents filters from changing search results
+  const handleProductsChange = (filteredProducts) => {
+    if (isSearchPage) {
+      // On search pages, keep original products (ignore filters)
+      setProductData(products || []);
+    } else {
+      // On normal pages, apply filters
+      setProductData(filteredProducts);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -28,15 +43,14 @@ function Product({ friendlyData, products }) {
         {(friendlyData || products) && (
           <FilterSection
             friendlyData={friendlyData}
-            onProductsChange={setProductData}
+            onProductsChange={handleProductsChange} // Use the new function
             onLoading={setLoading}
             categoryurl={categoryURL}
             products={products}
           />
         )}
 
-
-        <Suspense fallback={<img src={loader} />}>
+        <Suspense fallback={<img src={loader} className="text-align-center" alt="Loading..." />}>
           <ProductSection products={productData} loading={loading} />
         </Suspense>
       </div>

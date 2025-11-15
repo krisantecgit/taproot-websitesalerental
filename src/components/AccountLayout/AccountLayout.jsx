@@ -10,7 +10,7 @@ function AccountLayout() {
                 <div className="sidebar">
                     <div className='account-title'>
                         <p>Account</p>
-                        <p>Sairam</p>
+                        <p>{localStorage.getItem("name")}</p>
                     </div>
                     <div><Link to="/account/orders">Orders</Link></div>
                     <div><Link to="/account/addresses">Address</Link></div>

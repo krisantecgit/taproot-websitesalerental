@@ -95,14 +95,13 @@ function SearchedData() {
 
       // Only send the search query, remove the collection parameter
       const res = await axiosConfig.get(
-        `/catlog/category-variants/?listing_type=&search=${encodeURIComponent(decodedQuery)}&category_id=&price_min=&price_max=&options=`
+        `/catlog/category-variants/?listing_type=rent&search=${encodeURIComponent(decodedQuery)}&category=&price_min=&price_max=&options=`
       );
 
       setProducts(res?.data?.results || []);
     }
     fetchSearch();
   }, [query, decodedQuery]);
-
   return (
     <div className="search-product-container">
       <h2>Showing results for: {decodedQuery || query}</h2>

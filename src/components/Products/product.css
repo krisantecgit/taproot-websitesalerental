@@ -398,10 +398,11 @@
 }
 
 .product-tag {
-  background: #6BAFC8;
-  color: black;
-  padding: 2px 8px;
+  background: rgb(206, 237, 240);
+  color: rgb(85, 85, 85);
   font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   width: 60px;

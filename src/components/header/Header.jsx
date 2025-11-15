@@ -16,6 +16,7 @@ function Header() {
   const [loginModal, setLoginModal] = useState(false)
   const [userId, setUserId] = useState(localStorage.getItem("userid"))
   const [searchParams, setSearchParams] = useSearchParams();
+  const [user, setUser] = useState(localStorage.getItem("name"))
   const search = searchParams.get("query");
   const [query, setQuery] = useState(search);
   const [products, setProducts] = useState([]);
@@ -23,11 +24,13 @@ function Header() {
   const debouncedSearchTerm = useDebouncedValue(query, 500)
   const location = useLocation()
   const [path, setPath] = useState("")
-     function getUrl() {
-      if(location.pathname.startsWith("/buy")) return "buy"
-      if(location.pathname.startsWith("/rent")) return "rent"
-    }
-    const {buyCart, rentCart} = useSelector(state => state.cart)
+  function getUrl() {
+    if (location.pathname.includes("/buy/product/")) return "";
+    if (location.pathname.includes("/rent/product/")) return "";
+    if (location.pathname.startsWith("/buy")) return "buy"
+    if (location.pathname.startsWith("/rent")) return "rent"
+  }
+  const { buyCart, rentCart } = useSelector(state => state.cart)
   useEffect(() => {
     // if (!query) setShowSuggestions(false);
     if (!debouncedSearchTerm) return;
@@ -44,8 +47,8 @@ function Header() {
     setPath(getUrl())
   }, [debouncedSearchTerm, query])
   useEffect(() => {
-  setPath(getUrl());
-}, [location]);
+    setPath(getUrl());
+  }, [location]);
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -63,19 +66,19 @@ function Header() {
     setShowSuggestions(true)
   }
 
-
   const handleSearchSubmit = (searchValue = query) => {
-  const valueToSearch = searchValue || query;
-  if (valueToSearch) {
-    navigate(`/search/results?q=${encodeURIComponent(valueToSearch)}`);
-    setShowSuggestions(false);
-    setQuery(valueToSearch)
-  }
-};
- const handleLoginSuccess = (userId) => {
-        setUserId(userId);
-        setLoginModal(false);
+    const valueToSearch = searchValue || query;
+    if (valueToSearch) {
+      navigate(`/search/results?q=${encodeURIComponent(valueToSearch)}`);
+      setShowSuggestions(false);
+      setQuery(valueToSearch)
     }
+  };
+  const handleLoginSuccess = (userId) => {
+    setUserId(userId);
+    setUser(localStorage.getItem("name"));
+    setLoginModal(false);
+  }
 
   return (
     <div className="header">
@@ -140,10 +143,18 @@ function Header() {
         <div className="user-box">
           <FiUser className="icon" />
           <div className="user-modal">
-            <div>Hello! User</div>
-            <div>My Orders</div>
-            <div><Link to="/account/addresses">Address</Link></div>
-            <div>Wishlist</div>
+            {
+              !userId ? <div>Hello! User</div> : <div>Hello! {user}</div>
+            }
+            {
+              !userId ? "" : (
+                <>
+                  <div><Link to="/account/orders">Orders</Link></div>
+                  <div><Link to="/account/addresses">Address</Link></div>
+                  <div>Wishlist</div>
+                </>
+              )
+            }
             <div>
               {
                 !userId ? <Link onClick={() => setLoginModal(true)}>Login</Link> : <Link to="/logout">Logout</Link>
@@ -155,7 +166,7 @@ function Header() {
         <div className="cart" onClick={() => navigate("/cart")}>
           <FiShoppingCart className="icon" />
           {(buyCart.length) + (rentCart.length) > 0 && <span className="cart-count">{(buyCart.length) + (rentCart.length)}</span>}
-          
+
         </div>
       </div>
       <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />

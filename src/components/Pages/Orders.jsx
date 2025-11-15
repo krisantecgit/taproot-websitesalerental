@@ -71,7 +71,7 @@ function Orders() {
                               </div>
                               {(
                                 <NavLink to={`${order.id}/${order?.addresses?.id}`}>
-                                  <button type="button" className="order-view-button">view details</button>
+                                  <button type="button" disabled={true} className="order-view-button">view details</button>
                                 </NavLink>
                               )}
                             </div>
