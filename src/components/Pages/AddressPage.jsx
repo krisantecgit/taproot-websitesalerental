@@ -309,7 +309,7 @@ export default function AddressPage() {
                             </div>
                             <div className="address-form-box">
                                 <div className="input-field">
-                                    <label htmlFor="locality">Country</label>
+                                    <label htmlFor="locality">Country  <span className="sup-color">*</span></label>
                                     <input
                                         type="text"
                                         className="input-box-address"
@@ -322,7 +322,7 @@ export default function AddressPage() {
                                 </div>
                                 <div className="input-double">
                                     <div className="input-field">
-                                        <label htmlFor="floor">Full Name</label>
+                                        <label htmlFor="floor">Full Name  <span className="sup-color">*</span></label>
                                         <input
                                             type="text"
                                             className="input-box-address"
@@ -334,7 +334,7 @@ export default function AddressPage() {
                                         />
                                     </div>
                                     <div className="input-field">
-                                        <label htmlFor="houseNo">Mobile Number</label>
+                                        <label htmlFor="houseNo">Mobile Number <span className="sup-color">*</span></label>
                                         <input
                                             type="text"
                                             className="input-box-address"
@@ -351,7 +351,7 @@ export default function AddressPage() {
                                     <div className="input-double">
 
                                         <div className="input-field">
-                                            <label htmlFor="houseNo">Flat no</label>
+                                            <label htmlFor="houseNo">Flat no  <span className="sup-color">*</span></label>
                                             <input
                                                 type="text"
                                                 className="input-box-address"
@@ -365,7 +365,7 @@ export default function AddressPage() {
                                     </div>
                                 </div>
                                 <div className="input-field">
-                                    <label htmlFor="houseName">Address line 1</label>
+                                    <label htmlFor="houseName">Address line 1  <span className="sup-color">*</span></label>
                                     <input
                                         type="text"
                                         className="input-box-address"
@@ -378,7 +378,7 @@ export default function AddressPage() {
                                 </div>
 
                                 <div className="input-field">
-                                    <label htmlFor="locality">Address line 2</label>
+                                    <label htmlFor="locality">Address line 2  <span className="sup-color">*</span></label>
                                     <input
                                         type="text"
                                         className="input-box-address"
@@ -393,7 +393,7 @@ export default function AddressPage() {
 
                                     <div className="input-double">
                                         <div className="input-field">
-                                            <label htmlFor="floor">Zipcode</label>
+                                            <label htmlFor="floor">Zipcode  <span className="sup-color">*</span></label>
                                             <input
                                                 type="text"
                                                 className="input-box-address"
@@ -405,7 +405,7 @@ export default function AddressPage() {
                                             />
                                         </div>
                                         <div className="input-field">
-                                            <label htmlFor="floor">City</label>
+                                            <label htmlFor="floor">City  <span className="sup-color">*</span></label>
                                             <input
                                                 type="text"
                                                 className="input-box-address"
@@ -417,7 +417,7 @@ export default function AddressPage() {
                                             />
                                         </div>
                                         <div className="input-field">
-                                            <label htmlFor="houseNo">State</label>
+                                            <label htmlFor="houseNo">State  <span className="sup-color">*</span></label>
                                             <input
                                                 type="text"
                                                 className="input-box-address"

@@ -1,10 +1,13 @@
 
 import React from "react";
 import loader from "../Assets/spinner.gif";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./product.css";
-
-function ProductSection({ products = [], loading = false }) {
+import { FaArrowRight, FaTrash } from "react-icons/fa";
+import axiosConfig from "../../Services/axiosConfig"
+function ProductSection({ products = [], loading = false, searchListingType, onRefresh }) {
+  const location = useLocation();
+   
   const navigate = useNavigate();
   const { categoryurl } = useParams();
 
@@ -17,6 +20,12 @@ function ProductSection({ products = [], loading = false }) {
     }).replace("$", "$ ");
 
   function getListingType(product) {
+    if (location.pathname.includes("/search/results")) {
+      return searchListingType === "buy" ? "sale" : "rental";
+    }
+    if (product.wishlistType) {
+      return product.wishlistType === "sale" ? "sale" : "rental";
+    }
     if (categoryurl === "buy") {
       return "sale";
     }
@@ -28,7 +37,7 @@ function ProductSection({ products = [], loading = false }) {
   }
 
   function handleNavigate(product) {
-    const listingType = getListingType(product);
+    const listingType = getListingType(searchListingType || product);
 
     const urlType = listingType === "sale" ? "buy" : "rent";
 
@@ -36,7 +45,14 @@ function ProductSection({ products = [], loading = false }) {
       state: { item: product, listingType: urlType }
     });
   }
-
+async function removeProduct(id) {
+  try {
+    await axiosConfig.delete(`/catlog/wishlists/${id}/`)
+    if(onRefresh) onRefresh()
+  } catch (error) {
+    console.log(error)
+  }
+}
   if (loading) return <img src={loader} alt="loading" />;
 
   if (!loading && products.length === 0) return <p className="d-flex justify-content-center align-items-center">No products found.</p>;
@@ -119,7 +135,12 @@ function ProductSection({ products = [], loading = false }) {
                       </div>
                     )}
                   </div>
-
+                  {console.log(product,"poiuytrew")}
+                    <div className="hover-icon">
+                      {
+                        location.pathname === "/my/wishlist" ?  <FaTrash onClick={(e)=>{e.stopPropagation();removeProduct(product.wishlistId);}} className="delete-icon" /> : <FaArrowRight className="forward-icon" />
+                      }
+                    </div>
                 </div>
               </div>
             </div>

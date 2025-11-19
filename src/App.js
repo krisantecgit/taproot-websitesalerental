@@ -13,6 +13,7 @@ import Orders from './components/Pages/Orders';
 import Logout from './utils/Logout';
 import ProtectedRoute from './utils/ProtectedRoutes';
 import AddressesPage from './components/Pages/AddressesPage';
+import WishListPage from './components/WishList/WishListPage';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path='/cart' element={<Cartpage />} />
         <Route path='' element={<ProtectedRoute />}>
           <Route path='/address' element={<AddressPage />} />
+          <Route path='/my/wishlist' element={<WishListPage />} />
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/payment' element={<Payment />} />
           <Route path='/account' element={<AccountLayout />}>

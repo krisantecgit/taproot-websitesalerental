@@ -8,22 +8,19 @@ import { sort_map } from "../../utils/sort_map";
 import "../Products/product.css"
 
 
-function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl, products }) {
-    console.log(categoryurl, "catcategoryurl")
+function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl, products, searchListingType, onListingTypeChange }) {
     const { friendlyurl } = useParams();
     const [params] = useSearchParams()
     const query = params.get("q");
-    console.log(friendlyurl, "frrrrrs")
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation()
     const carouselRef = useRef(null);
-
     const [category, setCategory] = useState([]);
     const [subcategoryProducts, setSubCategoryProducts] = useState([]);
     const [selectedSubcats, setSelectedSubcats] = useState([]);
     const [activeSort, setActiveSort] = useState("Featured");
-
+    const [activeListingType, setActiveListingType] = useState(searchListingType || categoryurl)
     const [filterData, setFilterData] = useState([]);
     const [nextUrl, setNextUrl] = useState(null);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -42,7 +39,29 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         { id: 2, label: "₹5000 - ₹10,000", min: 5000, max: 10000 },
         { id: 3, label: "₹10,000 - ₹20,000", min: 10000, max: 20000 },
     ];
+    useEffect(() => {
+        setActiveListingType(searchListingType || categoryurl)
+    }, [searchListingType, categoryurl])
+    // async function handleActiveListingType(type) {
+    //     setActiveListingType(type);
+    //     if (isSearchPage && onListingTypeChange) {
+    //         onListingTypeChange(type);
+    //     } else {
+    //         setActiveListingType(type);
+    //     }
+    // }
+    
+    function handleActiveListingType(type) {
+        setActiveListingType(type);
 
+        if (isSearchPage && onListingTypeChange) {
+            onListingTypeChange(type);
+        }
+    }
+    useEffect(() => {
+        if (!activeListingType) return;
+        fetchProductsFromURL();   // re-fetch API with new listing type
+    }, [activeListingType]);
 
     async function fetchCategories() {
         try {
@@ -53,26 +72,26 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         }
     }
 
-    async function fetchInitialProducts() {
-        try {
-            onLoading(true);
-            const selectedCategory = friendlyData?.product_data?.name || "";
-            const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${categoryurl}&category=${selectedCategory}`
-            );
-            onProductsChange(res.data.results || []);
-            setNextUrl(res.data.next || null);
-            setSearchParams((prev) => {
-                const p = Object.fromEntries([...prev]);
-                // p.collection = selectedCategory.toUpperCase() || "";
-                return p;
-            });
-        } catch (err) {
-            console.error("fetchInitialProducts", err);
-        } finally {
-            onLoading(false);
-        }
-    }
+    // async function fetchInitialProducts() {
+    //     try {
+    //         onLoading(true);
+    //         const selectedCategory = friendlyData?.product_data?.name || "";
+    //         const res = await axiosConfig.get(
+    //             `/catlog/category-variants/?listing_type=${activeListingType}&category=${selectedCategory}`
+    //         );
+    //         onProductsChange(res.data.results || []);
+    //         setNextUrl(res.data.next || null);
+    //         setSearchParams((prev) => {
+    //             const p = Object.fromEntries([...prev]);
+    //             // p.collection = selectedCategory.toUpperCase() || "";
+    //             return p;
+    //         });
+    //     } catch (err) {
+    //         console.error("fetchInitialProducts", err);
+    //     } finally {
+    //         onLoading(false);
+    //     }
+    // }
     const loadMoreProducts = async () => {
         if (!nextUrl || loadingMore) return;
         setLoadingMore(true);
@@ -86,26 +105,9 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             setLoadingMore(false);
         }
     };
-    // useEffect(() => {
-    //     const handleScroll = () => {
-    //         if (
-    //             window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
-    //             !loadingMore &&
-    //             nextUrl
-    //         ) {
-    //             loadMoreProducts();
-    //         }
-    //     };
-    //     window.addEventListener("scroll", handleScroll);
-    //     return () => window.removeEventListener("scroll", handleScroll);
-    // }, [nextUrl, loadingMore]);
     useEffect(() => {
         const handleScroll = () => {
-
-            // STOP load-more on search page completely
             if (location.pathname.includes("/search/results")) return;
-
-            // Normal infinite scroll
             if (
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 300 &&
                 !loadingMore &&
@@ -123,13 +125,20 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     async function fetchSubcategories(categoryId) {
         if (!categoryId) return;
         try {
-            const res = await axiosConfig.get(`/catlog/sub-categories/?category=${categoryId}`);
+            const res = await axiosConfig.get(`/catlog/sub-categories/?category=${categoryId}&is_suspended=false`);
             setSubCategoryProducts(res.data.results || []);
         } catch (err) {
             console.error("fetchSubcategories", err);
         }
     }
-
+    async function searchSubcategory() {
+        try {
+            const res = await axiosConfig.get(`/catlog/sub-categories/?is_suspended=false`);
+            setSubCategoryProducts(res.data.results || []);
+        } catch (err) {
+            console.error("fetchSubcategories", err);
+        }
+    }
     async function fetchFilterData() {
         try {
             const res = await axiosConfig.get(`/catlog/variants/?page=1&page_size=30`);
@@ -178,8 +187,11 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                 price_max: priceMax || "",
             });
 
+            // const res = await axiosConfig.get(
+            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+            // );
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
@@ -215,8 +227,11 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                 price_max: priceMax || "",
             });
 
+            // const res = await axiosConfig.get(
+            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+            // );
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
@@ -235,12 +250,16 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             setSearchParams((p) => {
                 const next = Object.fromEntries([...p]);
                 next.collection = selectedCategory || "";
+
                 next.sortBy = label;
                 return next;
             });
-
+            const subcategory = params.get("subcategory") || "";
+            const price_min = params.get("price_min") || "";
+            const price_max = params.get("price_max") || "";
+            const options = params.get("options") || "";
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&sortBy=${encodeURIComponent(label)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&sortBy=${encodeURIComponent(label)}&&price_min=${price_min}&price_max=${price_max}&options=${encodeURIComponent(options)}`
             );
 
             onProductsChange(res.data.results || []);
@@ -267,18 +286,48 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     const handlePriceRangeSelect = (rangeId, min, max, isChecked) => {
         setSelectedPriceRanges(prev => {
             if (isChecked) {
-                return [...prev, { id: rangeId, min, max }];
+                // return [...prev, { id: rangeId, min, max }];
+                return [{ id: rangeId, min, max }];
             } else {
-                return prev.filter(range => range.id !== rangeId);
+                // return prev.filter(range => range.id !== rangeId);
+                return [];
             }
         });
     };
-    function handleCategoryClick(slug, id) {
-        if (slug !== friendlyurl) {
-            navigate(`/${categoryurl}/${slug}`);
-        }
-        fetchSubcategories(id);
+    // async function handleCategoryClick(slug, id) {
+    //     if (slug !== friendlyurl) {
+    //         navigate(`/${categoryurl}/${slug}`);
+    //     }
+    //     let newSlug = slug.replace(/-/g, "%")
+    //     fetchSubcategories(id);
+    //     try {
+    //         onLoading(true)
+    //         const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${newSlug}`)
+    //         onProductsChange(res?.data?.results)
+    //     } catch (error) {
+    //         console.log(error)
+    //     } finally {
+    //         onLoading(false)
+    //     }
+    // }
+    async function handleCategoryClick(slug, id, name) {
+    if (slug !== friendlyurl) {
+        navigate(`/${categoryurl}/${slug}`);
     }
+    
+    fetchSubcategories(id);
+    try {
+        onLoading(true)
+        // Use name instead of slug for API call
+        const encodedName = encodeURIComponent(name);
+        const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
+        onProductsChange(res?.data?.results)
+    } catch (error) {
+        console.log(error)
+    } finally {
+        onLoading(false)
+    }
+}
     async function fetchProductsFromURL() {
         try {
             onLoading(true);
@@ -291,10 +340,12 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             const options = params.get("options") || "";
             const subcategory = params.get("subcategory") || "";
 
+            // const res = await axiosConfig.get(
+            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+            // );
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             );
-
             onProductsChange(res.data.results || []);
         } catch (err) {
             console.error("fetchProductsFromURL", err);
@@ -333,22 +384,17 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     useEffect(() => {
         fetchCategories();
         fetchFilterData();
-
-        // ✅ Read filters from URL
         const price_min = params.get("price_min");
         const price_max = params.get("price_max");
         const optionsParam = params.get("options");
         const subcategoryParam = params.get("subcategory");
 
         const filtersFromURL = {};
-
-        // ✅ Handle price range
         if (price_min && price_max) {
             filtersFromURL.price = [{ min: Number(price_min), max: Number(price_max) }];
             setSelectedPriceRanges([{ id: 1, min: Number(price_min), max: Number(price_max) }]);
         }
 
-        // ✅ Handle options (comma separated list like "Red,Large")
         if (optionsParam) {
             const optionNames = decodeURIComponent(optionsParam).split(",").filter(Boolean);
             // Convert to state format: { randomId: [{ name: "Red" }, { name: "Large" }] }
@@ -359,16 +405,14 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             filtersFromURL.options = optionsObj;
             setSelectedOptions(optionsObj);
         }
-
         // ✅ Save to state
         setAppliedFilters(filtersFromURL);
-
         // ✅ Load filtered products if any URL filters exist
         const hasFilters = price_min || price_max || optionsParam || subcategoryParam;
         if (hasFilters) {
             fetchProductsFromURL();
         } else {
-            fetchInitialProducts();
+            // fetchInitialProducts();
         }
 
         // ✅ Fetch subcategories for active category
@@ -382,7 +426,15 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                 fetchSubcategories(activeCategory.id);
             }
         }
+
     }, [friendlyData, categoryurl]);
+    useEffect(() => {
+        if (isSearchPage && category.length > 0) {
+            searchSubcategory()
+        }
+    }, [isSearchPage, category]);
+
+
 
     useEffect(() => {
         const price_min = searchParams.get("price_min");
@@ -478,14 +530,22 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
                                 <div
                                     key={cat.id}
                                     className={`category-item ${friendlyurl === cat.slug ? "active" : ""}`}
-                                    onClick={() => handleCategoryClick(cat.slug, cat.id)}
+                                    onClick={() => handleCategoryClick(cat.slug, cat.id, cat.name)}
                                 >
                                     {cat.name}
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="searched-data"><span className="search-query">{query}</span> <span className="ms-2 search-count">{products.length} Items</span></div>
+                        <div className="searched-data">
+                            <div>
+                                <span className="search-query">{query}</span> <span className="ms-2 search-count">{products.length} Items</span>
+                            </div>
+                            <div className="listing-type-container">
+                                <div className={`listing-type ${activeListingType === "buy" ? "active" : ""}`} onClick={() => handleActiveListingType("buy")}>BUY</div>
+                                <div className={`listing-type ${activeListingType === "rent" ? "active" : ""}`} onClick={() => handleActiveListingType("rent")}>RENT</div>
+                            </div>
+                        </div>
                     )
                 }
 
@@ -499,7 +559,11 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
 
             <div className="filter-sections">
                 <div className="applied-filters">
-                    <p className="applied-filter">Applied Filters:</p>
+                    {
+                        (selectedOptions.length > 0 || selectedPriceRanges.length > 0 || selectedSubcats.length > 0) && (
+                            <p className="applied-filter">Applied Filters:</p>
+                        )
+                    }
 
                     {selectedSubcats.map((sub) => (
                         <span key={sub} className="filter-tags">

@@ -149,9 +149,9 @@ function Header() {
             {
               !userId ? "" : (
                 <>
-                  <div><Link to="/account/orders">Orders</Link></div>
-                  <div><Link to="/account/addresses">Address</Link></div>
-                  <div>Wishlist</div>
+                  <div><Link to="/account/orders">My Orders</Link></div>
+                  <div><Link to="/account/addresses">My Address</Link></div>
+                  <div><Link to="/my/wishlist">Wishlist</Link></div>
                 </>
               )
             }
@@ -162,7 +162,7 @@ function Header() {
             </div>
           </div>
         </div>
-        <FiHeart className="icon" />
+        <FiHeart className="icon" onClick={()=>navigate("/my/wishlist")} />
         <div className="cart" onClick={() => navigate("/cart")}>
           <FiShoppingCart className="icon" />
           {(buyCart.length) + (rentCart.length) > 0 && <span className="cart-count">{(buyCart.length) + (rentCart.length)}</span>}

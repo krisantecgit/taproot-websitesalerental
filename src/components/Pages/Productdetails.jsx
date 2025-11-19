@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import "./productdetails.css";
 import Header from '../header/Header';
@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch } from 'react-redux';
 import { addToBuyCart, addToRentCart, } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
+import Wishlist from '../WishList/Wishlist';
 function Productdetails() {
     const { state } = useLocation();
     const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function Productdetails() {
     const [selectedOption, setSelectedOption] = useState('');
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(null);
+    const [wishListed, setWishListed] = useState(false)
     const [error, setError] = useState("")
 
     let navigate = useNavigate()
@@ -46,35 +48,49 @@ function Productdetails() {
 
     //     }
     // }, [state]);
-//     useEffect(() => {
-//     if (productDetails?.varient_listing_type) {
-//         const apiListingType = productDetails.varient_listing_type;
-//         setListingType(apiListingType);
-        
-//         // Set default selected option based on API
-//         if (apiListingType === 'buy') {
-//             setSelectedOption('buy');
-//         } else if (apiListingType === 'rent') {
-//             setSelectedOption('rent');
-//         } else if (apiListingType === 'buy/rent') {
-//             setSelectedOption('buy'); // Default to buy for buy/rent
-//         }
-//     }
-// }, [productDetails]);
-useEffect(() => {
-    if (productDetails?.varient_listing_type) {
-        const apiListingType = productDetails.varient_listing_type;
-        setListingType(apiListingType);
-        if (apiListingType === 'buy') {
-            setSelectedOption('buy');
-        } else if (apiListingType === 'rent') {
-            setSelectedOption('rent');
-        } else if (apiListingType === 'buy/rent') {
-            setSelectedOption(state?.listingType === 'rent' ? 'rent' : 'buy');
-        }
-    }
-}, [productDetails, state?.listingType]);
+    //     useEffect(() => {
+    //     if (productDetails?.varient_listing_type) {
+    //         const apiListingType = productDetails.varient_listing_type;
+    //         setListingType(apiListingType);
 
+    //         // Set default selected option based on API
+    //         if (apiListingType === 'buy') {
+    //             setSelectedOption('buy');
+    //         } else if (apiListingType === 'rent') {
+    //             setSelectedOption('rent');
+    //         } else if (apiListingType === 'buy/rent') {
+    //             setSelectedOption('buy'); // Default to buy for buy/rent
+    //         }
+    //     }
+    // }, [productDetails]);
+    useEffect(() => {
+        if (productDetails?.varient_listing_type) {
+            const apiListingType = productDetails.varient_listing_type;
+            setListingType(apiListingType);
+            if (apiListingType === 'buy') {
+                setSelectedOption('buy');
+            } else if (apiListingType === 'rent') {
+                setSelectedOption('rent');
+            } else if (apiListingType === 'buy/rent') {
+                setSelectedOption(state?.listingType === 'rent' ? 'rent' : 'buy');
+            }
+        }
+    }, [productDetails, state?.listingType]);
+    const userId = localStorage.getItem("userid");
+    const fetchIsWishlist = useCallback(async () => {
+        try {
+            const res = await axiosConfig.get(`/catlog/wishlist-check/?variant_id=${productDetails.id}&type=${selectedOption}`)
+            setWishListed(res?.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }, [productDetails?.id, selectedOption])
+    useEffect(() => {
+        if (!userId) return;
+        if (!productDetails?.id) return;
+        if (!selectedOption) return;
+        fetchIsWishlist()
+    }, [productDetails?.id, selectedOption])
     useEffect(() => {
         async function fetchFullProduct() {
             const res = await axiosConfig.get(`/catlog/seo-url/${friendlyurl}`);
@@ -92,11 +108,11 @@ useEffect(() => {
         fetchProductDetails()
     }, [friendlyurl, state?.item?.id]);
     const images = productDetails?.images.map((img) => img.image) || [];
-    useEffect(() => {
-        if (state?.item?.name) {
-            document.title = product.name;
-        }
-    }, [state?.item?.name]);
+    // useEffect(() => {
+    //     if (state?.item?.name) {
+    //         document.title = product.name;
+    //     }
+    // }, [state?.item?.name]);
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -140,7 +156,7 @@ useEffect(() => {
             toast.success("Product added to cart")
         }
     }
-    
+
     return (
         <div>
             <Header />
@@ -199,9 +215,13 @@ useEffect(() => {
                     <div className="product-name">{productDetails?.name}</div>
                     <div dangerouslySetInnerHTML={{ __html: product.description }}></div>
                 </div>
-
-                <div className="product-right">
-                    <div className='product-right-listingtype'>{productDetails?.varient_listing_type}</div>
+                <div className={`product-right ${selectedOption === "buy" ? "buy-bg" : "rent-bg"}`}>
+                    <div className='product-right-listingtype'>
+                        <div>{productDetails?.varient_listing_type}</div>
+                        <div>
+                            <Wishlist productData={productDetails} selectedOption={selectedOption} wishListed={wishListed} onLoad={fetchIsWishlist} />
+                        </div>
+                    </div>
                     <div className='product-right-title'>{productDetails?.name}</div>
                     <div className="radio-group">
                         {productDetails?.varient_listing_type && (

@@ -24,7 +24,6 @@ function Section({ listingType }) {
   useEffect(() => {
     fetchProducts()
   }, [])
-  console.log(products, "poiuyf")
   const scroll = (dir) => {
     const { current } = scrollRef;
     if (current) {

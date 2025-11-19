@@ -16,7 +16,14 @@
   border-radius: 30px;
   margin-bottom: 20px;
 }
-
+.selected-addresses-box {
+    padding: 24px;
+    background: linear-gradient(0deg, #fff 0%, #f3f3f3 100%);
+    border-radius: 16px;
+    border: 1px solid #e8e8e8;
+    margin-top: 12px;
+    width: 850px;
+}
 .add-container {
   display: flex;
 }
@@ -72,4 +79,7 @@
 .add-phone {
   font-size: 12px;
   font-weight: 500;
+}
+.sup-color {
+    color: red;
 }

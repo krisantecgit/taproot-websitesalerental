@@ -21,12 +21,14 @@
     gap: 5px;
     width: 95%;
     height: 400px;
-    align-items: stretch; /* prevents shaking */
+    align-items: stretch;
+    /* prevents shaking */
 }
 
 .main-image-wrapper {
     flex: 0 0 80%;
 }
+
 .next-image-wrapper {
     flex: 0 0 25%;
     min-width: 25%;
@@ -41,7 +43,8 @@
     height: 100%;
     object-fit: cover;
     object-position: left center;
-    flex-shrink: 0; /* stop shaking */
+    flex-shrink: 0;
+    /* stop shaking */
 }
 
 
@@ -160,8 +163,15 @@
 
 .product-right {
     width: 38%;
-    background-color: rgb(238, 241, 250);
     padding: 32px;
+}
+
+.product-right.buy-bg {
+    background-color: rgb(238, 241, 250);
+}
+
+.product-right.rent-bg {
+    background-color: rgb(254, 244, 232);
 }
 
 .single-option {
@@ -176,6 +186,15 @@
     font-family: "Work Sans", sans-serif;
     color: #999999;
     font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.heart-icon {
+    color: #bfbfbf;              /* grey outline */
+    background: #fff;            /* white inside */
+    border: 2px solid #dcdcdc;   /* light grey border */        /* make icon area circle */
+    font-size: 16px;             /* adjust icon size */
 }
 
 .product-right-title {
@@ -191,6 +210,7 @@
     text-decoration: line-through;
     margin-right: 10px;
 }
+
 /* input[type="radio"] {
   accent-color: #069baa;
 } */
@@ -201,19 +221,22 @@
     color: rgb(34, 34, 34);
     font-weight: 600;
 }
-.radio-group > div + div {
-  margin-top: 20px;
-  border-top: 1px solid #909090;
-  border-bottom: 1px solid #909090;
-  padding-bottom: 15px;
-  padding-left: 15px;
-  padding-right: 15px;
-  cursor: pointer;
+
+.radio-group>div+div {
+    margin-top: 20px;
+    border-top: 1px solid #909090;
+    border-bottom: 1px solid #909090;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    cursor: pointer;
 }
-.radio-group > div + div:hover {
+
+.radio-group>div+div:hover {
     background-color: white;
     box-shadow: 0 2px 6px rgba(114, 113, 113, 0.1);
 }
+
 .cart-btn {
     display: flex;
     justify-content: space-between;
@@ -228,7 +251,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     border: 1px solid rgb(6, 155, 170);
-     background: rgb(6, 155, 170);
+    background: rgb(6, 155, 170);
 }
 
 .cart-btn:hover {
@@ -236,42 +259,43 @@
     border: 1px solid rgb(6, 155, 170);
     color: black;
 }
+
 .rent-date-section {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .date-picker-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .date-field {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .date-field label {
-  font-size: 13px;
-  color: #444;
-  margin-bottom: 4px;
-  font-weight: 500;
+    font-size: 13px;
+    color: #444;
+    margin-bottom: 4px;
+    font-weight: 500;
 }
 
 .custom-date-input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #deecf1;
-  outline: none;
-  cursor: pointer;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #deecf1;
+    outline: none;
+    cursor: pointer;
 }
 
 /* make calendar popup stay above other elements */
 .react-datepicker-popper {
-  z-index: 1000 !important;
+    z-index: 1000 !important;
 }

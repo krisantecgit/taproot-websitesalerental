@@ -88,26 +88,34 @@ function SearchedData() {
   const query = params.get("q");
   const decodedQuery = query?.replace(/-/g, " ");
   const [products, setProducts] = useState([]);
+  const [listingType, setListingType] = useState("rent")
 
   useEffect(() => {
     async function fetchSearch() {
       if (!decodedQuery) return;
-
-      // Only send the search query, remove the collection parameter
+const category = params.get("category") || "";
+    const subcategory = params.get("subcategory") || "";
+    const price_min = params.get("price_min") || "";
+    const price_max = params.get("price_max") || "";
+    const options = params.get("options") || "";
       const res = await axiosConfig.get(
-        `/catlog/category-variants/?listing_type=rent&search=${encodeURIComponent(decodedQuery)}&category=&price_min=&price_max=&options=`
+        `/catlog/category-variants/?listing_type=${listingType}&search=${encodeURIComponent(decodedQuery)}&category=${category}&subcategory=${subcategory}&price_min=${price_min}&price_max=${price_max}&options=${options}`
       );
-
       setProducts(res?.data?.results || []);
     }
     fetchSearch();
-  }, [query, decodedQuery]);
+  }, [query, decodedQuery, listingType]);
+  function handleListingTypeChange(type) {
+    setListingType(type)
+  }
   return (
     <div className="search-product-container">
-      <h2>Showing results for: {decodedQuery || query}</h2>
+      {/* <h2>Showing results for: {decodedQuery || query}</h2> */}
 
       <Suspense fallback={<img src={loader} alt="Loading products..." />}>
-        <Product products={products} />
+        <Product products={products}
+          searchListingType={listingType}
+          onListingTypeChange={handleListingTypeChange} />
       </Suspense>
     </div>
   );

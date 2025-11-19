@@ -15,14 +15,19 @@ const toastStyle = {
   borderRadius: "6px",
   padding: "0px 14px",
   fontWeight: 400,
-  marginTop : "80px"
+  marginTop: "80px",
+  minHeight: '40px',
+  fontSize: '12px',
+  padding: '8px 12px',
+  minWidth: '180px',
+  maxWidth: '250px',
 };
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <>
-   <Provider store={store}>
-     <App />
-      <ToastContainer
+    <Provider store={store}>
+      <App />
+      {/* <ToastContainer
       position="top-right"
       autoClose={3000}
       hideProgressBar={false}
@@ -32,8 +37,19 @@ root.render(
       draggable
       theme="colored"
       toastStyle={toastStyle}
-    />
-   </Provider>
+    /> */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+        toastStyle={toastStyle}
+      />
+    </Provider>
   </>
 );
 

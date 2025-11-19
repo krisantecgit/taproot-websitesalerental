@@ -48,13 +48,13 @@ function Payment() {
       console.log(error)
     }
   }
-  const formatPrice = (price) =>
-        price?.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).replace("$", "$ ");
+   const formatPrice = (price) => {
+        if (!price && price !== 0) return "$ 0";
+
+        const formatted = new Intl.NumberFormat('en-US').format(price);
+        return `$ ${formatted}`;
+    };
+        
   return (
     <div>
       <CheckoutNavbar />
