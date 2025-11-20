@@ -162,8 +162,6 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
       if (data.new_user === false) {
         setStep("userdata");
       } else {
-        // if (onLoginSuccess) onLoginSuccess(data.user_id);
-        // close()
         if (onLoginSuccess) onLoginSuccess(data.user_id);
         close();
       }

@@ -286,6 +286,7 @@ function AddressesPage() {
                       className="input-box-address"
                       placeholder="Country"
                       value={formData.country}
+                      required
                       onChange={(e) =>
                         setFormData({ ...formData, country: e.target.value })
                       }
@@ -298,6 +299,7 @@ function AddressesPage() {
                         type="text"
                         className="input-box-address"
                         placeholder="Full Name"
+                        required
                         value={formData.name}
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
@@ -310,6 +312,8 @@ function AddressesPage() {
                         type="text"
                         className="input-box-address"
                         placeholder="Mobile Number"
+                        required
+                        maxLength={10}
                         value={formData.mobileno}
                         onChange={(e) =>
                           setFormData({ ...formData, mobileno: e.target.value })
@@ -326,6 +330,7 @@ function AddressesPage() {
                           type="text"
                           className="input-box-address"
                           placeholder="House/Apartment no"
+                          required
                           value={formData.flat_no}
                           onChange={(e) =>
                             setFormData({ ...formData, flat_no: e.target.value })
@@ -340,6 +345,7 @@ function AddressesPage() {
                       type="text"
                       className="input-box-address"
                       placeholder="Address line 1"
+                      required
                       value={formData.address_line_1}
                       onChange={(e) =>
                         setFormData({ ...formData, address_line_1: e.target.value })
@@ -353,6 +359,7 @@ function AddressesPage() {
                       type="text"
                       className="input-box-address"
                       placeholder="Address line 2"
+                      required
                       value={formData.address_line_2}
                       onChange={(e) =>
                         setFormData({ ...formData, address_line_2: e.target.value })
@@ -368,6 +375,8 @@ function AddressesPage() {
                           type="text"
                           className="input-box-address"
                           placeholder="Zipcode"
+                          required
+                          maxLength={6}
                           value={formData.zipcode}
                           onChange={(e) =>
                             setFormData({ ...formData, zipcode: e.target.value })
@@ -380,6 +389,7 @@ function AddressesPage() {
                           type="text"
                           className="input-box-address"
                           placeholder="City"
+                          required
                           value={formData.city}
                           onChange={(e) =>
                             setFormData({ ...formData, city: e.target.value })
@@ -392,6 +402,7 @@ function AddressesPage() {
                           type="text"
                           className="input-box-address"
                           placeholder="State"
+                          required
                           value={formData.state}
                           onChange={(e) =>
                             setFormData({ ...formData, state: e.target.value })

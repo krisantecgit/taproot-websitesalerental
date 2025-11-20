@@ -28,6 +28,7 @@ function Wishlist({ productData, selectedOption, wishListed, onLoad }) {
   async function removeFromWishList() {
     try {
       await axiosConfig.delete(`/catlog/wishlists/${wishListed?.id}/`)
+      toast.success("product removed from wishlist")
       onLoad && onLoad();
     } catch (error) {
       console.log(error)
@@ -36,11 +37,9 @@ function Wishlist({ productData, selectedOption, wishListed, onLoad }) {
   return (
     <div>
       {
-        wishListed?.in_wishlist ? <AiFillHeart size={18} onClick={removeFromWishList} /> :
+        wishListed?.in_wishlist ? <AiFillHeart className='wishlisted-icon' size={18} onClick={removeFromWishList} /> :
           <AiOutlineHeart size={18} onClick={addToWishlist} />
       }
-
-
       <LoginModal show={loginShow} onHide={() => setLoginShow(false)} />
     </div>
   )

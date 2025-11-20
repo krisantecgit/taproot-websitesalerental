@@ -17,7 +17,7 @@ function Payment() {
   const dispatch = useDispatch()
   const orderId = localStorage.getItem("orderId")
   let navigate = useNavigate();
-  useEffect(()=>{
+  useEffect(() => {
     async function fetchOrderDetails() {
       try {
         const res = await axiosConfig.get(`/accounts/orders/${orderId}/`)
@@ -30,63 +30,66 @@ function Payment() {
   }, [])
   async function PlaceOrderByCOD() {
     const payload = {
-      orderstatus : "Placed",
-      payment_mode:"cash"
+      orderstatus: "Placed",
+      payment_mode: "cash"
     }
     try {
       const res = await axiosConfig.post(`/accounts/orders/${orderId}/order_status_update/`, payload)
-        toast.success(res.data.message)
-        localStorage.removeItem("orderId")
-        localStorage.removeItem("buyCart")
-        localStorage.removeItem("rentCart")
-        localStorage.removeItem("saleAddress")
-        localStorage.removeItem("rentalAddress")
-        dispatch(clearBuyCart())
-        dispatch(clearRentCart())
-        navigate("/account/orders")
+      toast.success(res.data.message)
+      localStorage.removeItem("orderId")
+      localStorage.removeItem("buyCart")
+      localStorage.removeItem("rentCart")
+      localStorage.removeItem("saleAddress")
+      localStorage.removeItem("rentalAddress")
+      dispatch(clearBuyCart())
+      dispatch(clearRentCart())
+      navigate("/account/orders")
     } catch (error) {
       console.log(error)
     }
   }
-   const formatPrice = (price) => {
-        if (!price && price !== 0) return "$ 0";
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return "$ 0";
 
-        const formatted = new Intl.NumberFormat('en-US').format(price);
-        return `$ ${formatted}`;
-    };
-        
+    const formatted = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(price);
+    return `$ ${formatted}`;
+  };
+
   return (
     <div>
       <CheckoutNavbar />
       <div className="payment-container">
-      <div className="amount-header">
-        <div className="amout-total-h">
-          <p><HiOutlineCurrencyDollar /></p>
-          <p className="amount-title">Total amount payable now</p>
-          <p className="amount-saved">You have saved ₹36,267.00 on this order</p>
+        <div className="amount-header">
+          <div className="amout-total-h">
+            <p><HiOutlineCurrencyDollar /></p>
+            <p className="amount-title">Total amount payable now</p>
+            <p className="amount-saved">You have saved ₹36,267.00 on this order</p>
+          </div>
+          <div className="total-payment">{formatPrice(orderDetails?.total_amount)}</div>
         </div>
-        <div className="total-payment">{formatPrice(orderDetails?.total_amount)}</div>
-      </div>
 
-      <div className="payment-section">
-        <h3>Payment Options</h3>
+        <div className="payment-section">
+          <h3>Payment Options</h3>
 
-        <div className="payment-box">
-          {/* Left Menu */}
-          <div className="payment-left">
-            <div
-              className={`pay-option ${active === "cash" ? "active" : ""}`}
-              onClick={() => setActive("cash")}
-            >
-              <i>💸</i> Cash
-            </div>
-            <div
-              className={`disabled pay-option ${active === "online" ? "active" : ""}`}
-              onClick={() => setActive("online")}
-            >
-              <FaRegCreditCard /> Online Payment
-            </div>
-            {/* <div
+          <div className="payment-box">
+            {/* Left Menu */}
+            <div className="payment-left">
+              <div
+                className={`pay-option ${active === "cash" ? "active" : ""}`}
+                onClick={() => setActive("cash")}
+              >
+                <i>💸</i> Cash
+              </div>
+              <div
+                className={`disabled pay-option ${active === "online" ? "active" : ""}`}
+                onClick={() => setActive("online")}
+              >
+                <FaRegCreditCard /> Online Payment
+              </div>
+              {/* <div
               className={`pay-option ${active === "bank" ? "active" : ""}`}
               onClick={() => setActive("bank")}
             >
@@ -98,22 +101,22 @@ function Payment() {
             >
               <PiMoneyLight /> No Cost EMI
             </div> */}
-          </div>
+            </div>
 
-          {/* Right Panel */}
-          <div className="payment-right">
-            {active === "cash" && (
-              <div className="upi-box">
-                <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails?.total_amount)}</span></button>
-              </div>
-            )}
-            {active === "online" && (
-              <div className="upi-box">
-                <input type="text" placeholder="Enter Card Number" />
-                <button>PAY NOW <span>{formatPrice(orderDetails?.total_amount)}</span></button>
-              </div>
-            )}
-            {/* {active === "bank" && (
+            {/* Right Panel */}
+            <div className="payment-right">
+              {active === "cash" && (
+                <div className="upi-box">
+                  <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails?.total_amount)}</span></button>
+                </div>
+              )}
+              {active === "online" && (
+                <div className="upi-box">
+                  <input type="text" placeholder="Enter Card Number" />
+                  <button>PAY NOW <span>{formatPrice(orderDetails?.total_amount)}</span></button>
+                </div>
+              )}
+              {/* {active === "bank" && (
               <div className="upi-box">
                 <input type="text" placeholder="Enter Bank Account or User ID" />
                 <button>PAY NOW ₹17,724.71</button>
@@ -125,10 +128,10 @@ function Payment() {
                 <button>PAY NOW ₹17,724.71</button>
               </div>
             )} */}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

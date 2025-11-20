@@ -40,7 +40,7 @@ function MonthOffcanvas({ showMonth, handleClose, selectedItemId,onConfirmDates 
         <div className="month-wrapper">
             <Offcanvas show={showMonth} onHide={handleClose} placement="end">
                 <Offcanvas.Header closeButton>
-                    <Offcanvas.Title>Select Start Date</Offcanvas.Title>
+                    <Offcanvas.Title>Select Date</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                     <div className="rent-date-section mt-2">

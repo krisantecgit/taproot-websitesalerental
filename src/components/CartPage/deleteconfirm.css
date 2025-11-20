@@ -1,0 +1,85 @@
+.deletecart-wrapper {
+  padding: 0;
+  /* Offcanvas already has padding */
+}
+.offcanvas.del-body.offcanvas-end {
+  width: 420px !important;
+  max-width: 420px !important;
+}
+/* HEADER */
+.offcanvas-header {
+  padding: 50px 25px 20px 25px !important;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.canva-title {
+  font-family: "Work Sans";
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* SUB HEADING */
+.deletecart-title {
+  font-family: "Work Sans";
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(119, 119, 119);
+  padding: 20px 25px 10px 25px;
+}
+
+/* PRODUCT BLOCK */
+.deletecart-item-container {
+  display: flex;
+  gap: 18px;
+  padding: 0 25px 20px 25px;
+  align-items: flex-start;
+}
+
+/* IMAGE */
+.deletecart-image img {
+  height: 90px;
+  width: 90px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.deletecart-detail {
+  display: flex;
+  flex-direction: column;
+  /* IMPORTANT */
+  gap: 20px;
+  /* small spacing like screenshot */
+}
+
+.deletecart-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(34, 34, 34);
+}
+
+/* BUTTONS SECTION */
+.deletecart-button-container {
+  display: flex;
+  gap: 15px;
+  padding: 25px 25px 30px 25px;
+  /* EXACT screenshot spacing */
+}
+
+/* BUTTONS */
+.deletecart-button {
+  flex: 1;
+  background-color: rgb(6, 155, 170);
+  color: #fff;
+  font-family: "Work Sans";
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 0;
+  border-radius: 30px;
+  border: 1px solid rgb(6, 155, 170);
+  transition: 0.2s ease;
+}
+
+.deletecart-button:hover {
+  background-color: #fff;
+  color: rgb(6, 155, 170);
+}

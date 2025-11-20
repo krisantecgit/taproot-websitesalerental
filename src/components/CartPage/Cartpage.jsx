@@ -13,10 +13,13 @@ import axiosConfig from "../../Services/axiosConfig"
 import { IoArrowForward, IoTime } from 'react-icons/io5'
 import LoginModal from '../Login/Login'
 import { toast } from 'react-toastify'
+import DeleteCartItemModal from './DeleteCartItemModal'
 
 function Cartpage() {
     const { buyCart, rentCart } = useSelector(store => store.cart)
     const [showMonth, setShowMonth] = useState(false);
+    const [showCartDelete, setShowCartDelete] = useState(false)
+    const [selectedItem, setSelectedItem] = useState(null)
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [rentalData, setRentalData] = useState([])
     const [loginModal, setLoginModal] = useState(false)
@@ -27,8 +30,8 @@ function Cartpage() {
         price?.toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
+            // minimumFractionDigits: 0,
+            // maximumFractionDigits: 0,
         }).replace("$", "$ ");
     useEffect(() => {
         if (rentCart.length === 0) return;
@@ -115,6 +118,40 @@ function Cartpage() {
             console.log(error)
         }
     }
+    const addToWishList = async (item) => {
+        const payload = {
+            user: userId,
+            varient: item?.id,
+            type: item?.type === "buy" ? "sale" : "rental"
+        }
+        try {
+            await axiosConfig.post(`/catlog/wishlists/`, payload)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+   const handleMoveToWishlist = async (selectedItem) => {
+    await addToWishList(selectedItem)
+    
+    // Remove from the correct cart based on item type
+    if (selectedItem.type === "buy") {
+        dispatch(removeFromBuyCart(selectedItem.id))
+    } else {
+        dispatch(removeFromRentCart(selectedItem.id))
+    }
+    setShowCartDelete(false)
+}
+
+const handleRemoveCart = async (selectedItem) => {
+    // Remove from the correct cart based on item type
+    if (selectedItem.type === "buy") {
+        dispatch(removeFromBuyCart(selectedItem.id))
+    } else {
+        dispatch(removeFromRentCart(selectedItem.id))
+    }
+    setShowCartDelete(false)
+}
+    
     return (
         <>
             <Header />
@@ -132,7 +169,7 @@ function Cartpage() {
                                                         <div>
                                                             <p className='deliver-address'>Delivering to : <span>{saleAddress?.name || ""}</span></p>
                                                             <p className='delivery-full-add'>
-                                                                Floor : {saleAddress.flat_no}, {saleAddress.address_line_1}, {saleAddress.address_line_2}, {saleAddress.landmark}
+                                                                Floor : {saleAddress.flat_no}, {saleAddress.address_line_1}, {saleAddress.address_line_2}, {saleAddress.landmark}, {saleAddress.city}{saleAddress.state}{saleAddress.country}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -142,22 +179,13 @@ function Cartpage() {
                                                 </div>
                                             ) : (
                                                 <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>
-                                                        {/* <TbTruckDelivery className='truck-icon' />
-                                                <div>
-                                                    <p className='delivery-title'>Delivery Estimate</p>
-                                                    <p className='delivery-detail'>
-                                                        Delivery by <strong>31 Oct</strong> to <span>500457</span>
-                                                    </p>
-                                                </div> */}
+                                                    <div className='cart-delivery-estimate-left'>                
                                                         <p className='delivery-detail'>
                                                             Select address
                                                         </p>
 
                                                     </div>
                                                     <div className='cart-delivery-estimate-right'>
-                                                        {/* <p className='price-cut'><strike>₹499</strike></p>
-                                                <p className='price-free'>FREE</p> */}
                                                         {
                                                             userId ? <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
                                                         }
@@ -204,7 +232,7 @@ function Cartpage() {
                                                             <button className="qty-plus" onClick={() => dispatch(addToBuyCart(item))}>+</button>
                                                         </div>
 
-                                                        <div className="delete-icon" ><FiTrash2 onClick={() => dispatch(removeFromBuyCart(item.id))} /></div>
+                                                        <div className="delete-icon" ><FiTrash2 onClick={() => { setShowCartDelete(true); setSelectedItem(item) }} /></div>
                                                     </div>
                                                 </div>
 
@@ -327,7 +355,7 @@ function Cartpage() {
                                                             </div>
                                                         </div>
                                                         <div className="delete-icon">
-                                                            <FiTrash2 onClick={() => dispatch(removeFromRentCart(item.id))} />
+                                                            <FiTrash2 onClick={() => { setShowCartDelete(true); setSelectedItem(item) }} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -392,11 +420,11 @@ function Cartpage() {
                         </div>
 
                         <div className="empty-cart-buttons">
-                            <button className="buy-btn" onClick={() => {navigate("/buy"); window.scrollTo({top : 0, behavior:"smooth"})} }>
+                            <button className="buy-btn" onClick={() => { navigate("/buy"); window.scrollTo({ top: 0, behavior: "smooth" }) }}>
                                 <span className="arrow-left">←</span><span className='btn-text'>EXPLORE BUYING</span>
                             </button>
 
-                            <button className="rent-btn" onClick={() => {navigate("/rent"); window.scrollTo({top : 0, behavior:"smooth"})} }>
+                            <button className="rent-btn" onClick={() => { navigate("/rent"); window.scrollTo({ top: 0, behavior: "smooth" }) }}>
                                 <span className='btn-text'>EXPLORE RENTING</span><span className="arrow-right">→</span>
                             </button>
                         </div>
@@ -405,6 +433,7 @@ function Cartpage() {
 
             }
             <MonthOffcanvas showMonth={showMonth} handleClose={() => setShowMonth(false)} selectedItemId={selectedItemId} />
+            <DeleteCartItemModal showCartDelete={showCartDelete} handleClose={() => setShowCartDelete(false)} handleMoveToWishlist={handleMoveToWishlist} handleRemoveCart={handleRemoveCart} selectedItem={selectedItem} />
             {!userId && <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
         </>
     )

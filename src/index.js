@@ -16,7 +16,7 @@ const toastStyle = {
   padding: "0px 14px",
   fontWeight: 400,
   marginTop: "80px",
-  minHeight: '40px',
+  minHeight: '60px',
   fontSize: '12px',
   padding: '8px 12px',
   minWidth: '180px',

@@ -15,8 +15,6 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
     price?.toLocaleString("en-US", {
       style: "currency",
       currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
     }).replace("$", "$ ");
 
   function getListingType(product) {

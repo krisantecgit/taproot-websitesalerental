@@ -315,6 +315,7 @@ export default function AddressPage() {
                                         className="input-box-address"
                                         placeholder="Country"
                                         value={formData.country}
+                                        required
                                         onChange={(e) =>
                                             setFormData({ ...formData, country: e.target.value })
                                         }
@@ -328,6 +329,7 @@ export default function AddressPage() {
                                             className="input-box-address"
                                             placeholder="Full Name"
                                             value={formData.name}
+                                            required
                                             onChange={(e) =>
                                                 setFormData({ ...formData, name: e.target.value })
                                             }
@@ -340,6 +342,7 @@ export default function AddressPage() {
                                             className="input-box-address"
                                             placeholder="Mobile Number"
                                             value={formData.mobileno}
+                                            required
                                             maxLength={10}
                                             onChange={(e) =>
                                                 setFormData({ ...formData, mobileno: e.target.value })
@@ -384,6 +387,7 @@ export default function AddressPage() {
                                         className="input-box-address"
                                         placeholder="Address line 2"
                                         value={formData.address_line_2}
+                                        required
                                         onChange={(e) =>
                                             setFormData({ ...formData, address_line_2: e.target.value })
                                         }

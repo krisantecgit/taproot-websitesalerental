@@ -28,18 +28,7 @@
     font-size: 22px;
 }
 
-.delivery-title {
-    margin: 0;
-    font-size: 13px;
-    color: black;
-}
 
-.delivery-detail {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 500;
-    color: black;
-}
 
 .delivery-detail span {
     color: #00a2c7;
@@ -61,12 +50,6 @@
     border-width: 1px;
     border-color: rgba(6, 155, 170, 0.5);
     border-radius: 30px;
-}
-
-.price-cut {
-    margin: 0;
-    font-size: 12px;
-    color: #777;
 }
 
 .price-free {
@@ -543,4 +526,18 @@
     font-size: 10px;
     font-weight: 400;
     color : rgb(29, 148, 40);
+}
+.reantal-toggle {
+    display: none;
+    transition: 0.3s ease-in;
+}
+.reantal-toggle.active {
+    display: block;
+}
+.sale-toggle {
+    display: none;
+    transition: 0.3s ease-in;
+}
+.sale-toggle.active {
+    display: block;
 }
