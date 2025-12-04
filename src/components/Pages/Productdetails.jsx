@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { addToBuyCart, addToRentCart, } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
 import Wishlist from '../WishList/Wishlist';
+
 function Productdetails() {
     const { state } = useLocation();
     const dispatch = useDispatch();
@@ -374,12 +375,9 @@ function Productdetails() {
                             </>
                         )}
                     </div>
-
-
-
                 </div>
             </div>
-            <RelatedProducts productId={product?.id} />
+            <RelatedProducts productId={product?.id} varientId={productDetails?.id} />
         </div>
     );
 }

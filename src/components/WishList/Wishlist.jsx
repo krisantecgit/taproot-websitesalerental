@@ -38,7 +38,7 @@ function Wishlist({ productData, selectedOption, wishListed, onLoad }) {
     <div>
       {
         wishListed?.in_wishlist ? <AiFillHeart className='wishlisted-icon' size={18} onClick={removeFromWishList} /> :
-          <AiOutlineHeart size={18} onClick={addToWishlist} />
+          <AiOutlineHeart className='wishlisted-icon' size={18} onClick={addToWishlist} />
       }
       <LoginModal show={loginShow} onHide={() => setLoginShow(false)} />
     </div>

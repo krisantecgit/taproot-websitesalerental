@@ -1,17 +1,12 @@
-/* ===== Feedback Carousel Styles ===== */
-
 .fb-container {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
   background-color: #fff;
-  padding: 40px 20px;
   box-sizing: border-box;
+  position: relative;
 }
 
-/* Header Section */
 .fb-header {
   display: flex;
   align-items: center;
@@ -22,40 +17,36 @@
 .fb-header-img {
   width: 50px;
   height: 50px;
+  margin-bottom: 20px;
 }
 
 .fb-header h3 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: rgba(91, 91, 91, 0.467)7d;
-  margin: 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .fb-header p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #7d7d7d;
-  letter-spacing: 0.5px;
+  font-family: "Work Sans";
+  font-size: 11px;
+  font-weight: 500;
+  color: rgb(119, 119, 119);
 }
 
-/* Carousel Wrapper */
 .fb-carousel-wrapper {
-  position: relative;
+  /* position: relative; */
   overflow: hidden;
   width: 100%;
+  align-items: center;
 }
 
-/* Arrow Buttons */
 .fb-arrow {
   position: absolute;
-  top: 50%;
+  top: 70%;
   transform: translateY(-50%);
-  /* background-color: #fff; */
   border: 2px solid #7777;
-  /* border: none; */
   cursor: pointer;
   z-index: 2;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); */
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -66,16 +57,14 @@
   color: #7777;
 }
 
-/* .fb-arrow:hover {
-  background-color: #f8f8f8;
-} */
+
 
 .fb-arrow.fb-left {
-  left: 15px;
+  left: -15px;
 }
 
 .fb-arrow.fb-right {
-  right: 15px;
+  right: -15px;
 }
 
 .fb-arrow-icon {
@@ -83,33 +72,23 @@
   color: #444;
 }
 
-/* Slider Track */
 .fb-slider {
   display: flex;
+  gap: 30px;
   transition: transform 0.6s ease-in-out;
 }
 
-/* Individual Slide */
 .fb-slide {
-  /* padding: 10px; */
   display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
+
 }
 
 .fb-image {
-  width: 500px;
-  height: 200px; 
-  object-fit: cover;
+  width: 340px;
+  height: 140px;
   border-radius: 12px;
-  /* flex-shrink: 0;  */
 }
 
-/* .fb-image:hover {
-  transform: scale(1.02);
-} */
-
-/* ===== Responsive Layouts ===== */
 @media (max-width: 1024px) {
   .fb-header h3 {
     font-size: 1.6rem;
@@ -133,7 +112,10 @@
   }
 
   .fb-header h3 {
-    font-size: 1.4rem;
+    font-family: Recline;
+    font-size: 24px;
+    font-weight: 500;
+    color: rgb(85, 85, 85);
   }
 
   .fb-arrow {

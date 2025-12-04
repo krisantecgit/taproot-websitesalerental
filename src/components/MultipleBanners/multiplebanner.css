@@ -1,26 +1,25 @@
-.banner-section {
+.mul-banner-section {
   width: 100%;
-  padding: 24px 0;
+  padding: 30px 0;
   position: relative;
   background: #fff;
-  /* margin: 24px ; */
 }
 
-.banner-header h2 {
+.mul-banner-header h2 {
   font-size: 24px;
   font-weight: 600;
 }
 
-.banner-header p {
+.mul-banner-header p {
   font-size: 14px;
   color: gray;
 }
 
-.banner-carousel-wrapper {
+.mul-banner-carousel-wrapper {
   position: relative;
 }
 
-.banner-carousel {
+.mul-banner-carousel {
   display: flex;
   overflow-x: scroll;
   gap: 20px;
@@ -28,11 +27,11 @@
   scrollbar-width: none;
 }
 
-.banner-carousel::-webkit-scrollbar {
+.mul-banner-carousel::-webkit-scrollbar {
   display: none;
 }
 
-/* .banner-card {
+.mul-banner-card {
   flex: 0 0 450px;
   border-radius: 14px;
   overflow: hidden;
@@ -40,34 +39,15 @@
 }
 
 
-.banner-card img {
+.mul-banner-card img {
   width: 100%;
   height: auto;
   object-fit: contain;
   border-radius: 14px;
   cursor: pointer;
-} */
-.banner-card {
-  flex: 0 0 573.55px;
-  /* FIXED WIDTH */
-  width: 573.55px;
-  height: 273.55px;
-  /* FIXED HEIGHT */
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
 }
 
-.banner-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Full image fit inside fixed height */
-  border-radius: 14px;
-  cursor: pointer;
-}
-
-.banner-btn {
+.mul-banner-btn {
   position: absolute;
   bottom: -30px;
   left: 50%;
@@ -83,33 +63,28 @@
   color: #FFFF;
   cursor: pointer;
 }
-
-.banner-btn-icon {
+.mul-banner-btn-icon {
   font-size: 30px;
 }
-
-.banner-btn .buy {
+.mul-banner-btn .buy{
   background-color: #424E99;
   border-bottom-left-radius: 10px;
   border-top-left-radius: 10px;
   padding: 16px 32px 16px 40px;
 }
-
-.banner-btn .rent {
+.mul-banner-btn .rent{
   background-color: #EE5921;
   padding: 16px 32px 16px 40px;
   border-bottom-right-radius: 10px;
   border-top-right-radius: 10px;
 }
-
-.banner-btn .unlmtd {
+.mul-banner-btn .unlmtd{
   background-color: #57275B;
   border-bottom-right-radius: 10px;
   border-top-right-radius: 10px;
   padding: 16px 32px 16px 40px;
 }
-
-.banner-arrow {
+.mul-banner-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -127,10 +102,10 @@
   justify-content: center;
 }
 
-.banner-arrow.left {
+.mul-banner-arrow.left {
   left: -15px;
 }
 
-.banner-arrow.right {
+.mul-banner-arrow.right {
   right: -15px;
 }

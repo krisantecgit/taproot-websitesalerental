@@ -1,5 +1,5 @@
 .offers-container {
-  padding: 20px 60px;
+  padding: 20px 0;
   font-family: "Poppins", sans-serif;
 }
 
@@ -10,15 +10,16 @@
 }
 
 .offers-header h2 {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: #333;
 }
 
 .see-all {
-  color: #888;
+  color: #666;
   text-decoration: none;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
 .offers-list {
@@ -28,53 +29,55 @@
   overflow-x: auto;
   padding-bottom: 10px;
 }
+/* HIDE SCROLLBAR Chrome, Safari */
+.offers-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* HIDE SCROLLBAR Firefox */
+.offers-list {
+  scrollbar-width: none;
+}
+
+/* HIDE SCROLLBAR Edge, IE */
+.offers-list {
+  -ms-overflow-style: none;
+}
 
 .offer-card {
   flex: 0 0 300px;
-  background: linear-gradient(270deg, rgb(255, 251, 219) 0%, rgb(255, 245, 183) 100%);
-  border-radius: 10px;
-  padding: 10px 20px;
+  background-image: url("../Assets/coupon.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 12px;
+  padding:20px;
   position: relative;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.1); */
 }
 
-.offer-icon {
-  color: #f7c948;
-  font-size: 18px;
-  margin-bottom: 10px;
+.offer-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .offer-card h3 {
-  font-size: 0.8rem;
-  color: #222;
-  margin-bottom: 8px;
+  color: rgb(34, 34, 34);
+  font-family: "Work Sans";
+  font-size: 21px;
+  font-weight: 600;
 }
 
 .offer-card p {
-  color: #555;
-  font-size: 0.8rem;
-  line-height: 1.4;
-}
-
-.coupon {
-  margin-top: 10px;
+  color: rgb(119, 119, 119);
+  font-family: "Work Sans";
+  font-size: 12px;
   font-weight: 500;
 }
 
-.timer {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ffccd5;
-  color: #8b0000;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.timer-icon {
-  font-size: 11px;
+.coupon {
+  color: rgb(119, 119, 119);
+  font-family: "Work Sans";
+  font-size: 12px;
+  font-weight: 500;
 }

@@ -3,11 +3,15 @@
   display: flex;
   justify-content: center;
   margin: 50px 60px;
+  max-width: calc(100% - 220px);
+  /* 60px margin on both sides */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .rel-section {
   width: 100%;
-  padding: 30px 60px;
+  padding: 30px 10px;
   position: relative;
   /* margin-top: 10px; */
 }
@@ -55,18 +59,21 @@
 }
 
 .rel-card {
-  flex: 0 0 230px;
+  flex: 0 0 270px;
   background: #fff;
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
-  border: 1.5px solid transparent; /* keeps size stable */
+  border: 1.5px solid transparent;
+  /* keeps size stable */
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .rel-card:hover {
-  border-color: rgb(73, 117, 145); /* visible border on hover */
-  box-shadow: 0 3px 12px rgba(73, 117, 145, 0.15); /* optional soft highlight */
+  border-color: rgb(73, 117, 145);
+  /* visible border on hover */
+  box-shadow: 0 3px 12px rgba(73, 117, 145, 0.15);
+  /* optional soft highlight */
 }
 
 .rel-card img {
@@ -78,10 +85,12 @@
 .rel-card-body {
   padding: 12px;
 }
+
 .rel-image-slide {
   display: flex;
   justify-content: center;
 }
+
 .rel-card-body h4 {
   font-size: 15px;
   font-weight: 500;
@@ -106,15 +115,15 @@
   justify-content: center;
   margin-left: -20px; */
   margin: 0px;
-    font-family: "Work Sans";
-    font-size: 12px;
-    font-weight: 500;
-    color: rgb(254, 123, 121);
-    display: inline-block;
-    left: 0px;
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
-    line-height: 1.3;
+  font-family: "Work Sans";
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(254, 123, 121);
+  display: inline-block;
+  left: 0px;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  line-height: 1.3;
 }
 
 .rel-price-row {

@@ -653,7 +653,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
 
                 <div className="sort-right">
                     <div className="sortby">SORT BY</div>
-                    <div className="filter-box sort-box">
+                    <div className="sort-box">
                         {activeSort}
                         <div className="dropdown">
                             {Object.keys(sort_map).map((label) => (

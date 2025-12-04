@@ -1,9 +1,26 @@
-.product-details {
+*{
+    font-family: "Work Sans";
+}
+
+/* .product-details {
     display: flex;
     gap: 10px;
     padding: 10px 60px;
     margin-top: 100px;
+} */
+ .product-details {
+    display: flex;
+    gap: 10px;
+    padding: 10px 60px;
+    margin-top: 100px;
+
+    /* New changes */
+    /* width: 1108px; */
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 
 .product-left {
     position: relative;
@@ -71,6 +88,7 @@
     color: rgb(34, 34, 34);
     font-size: 18px;
     font-weight: 500;
+    width: 95%;
     margin: 40px 0 16px;
 }
 
@@ -162,7 +180,7 @@
 }
 
 .product-right {
-    width: 38%;
+    width: 40%;
     padding: 32px;
 }
 
@@ -200,11 +218,11 @@
 .product-right-title {
     font-size: 24px;
     font-family: 'Recline', sans-serif;
+    width: 90%;
 }
 
 .product-old-price-right {
     color: rgb(119, 119, 119);
-    font-family: "Work Sans";
     font-size: 12px;
     font-weight: 400;
     text-decoration: line-through;

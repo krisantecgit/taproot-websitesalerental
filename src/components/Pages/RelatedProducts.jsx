@@ -4,7 +4,7 @@ import "./relatedproduct.css";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function RelatedProducts({ productId }) {
+function RelatedProducts({ productId, varientId }) {
   const scrollRef = useRef(null);
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function RelatedProducts({ productId }) {
       });
     }
   };
-
+console.log(varientId,"ooooooooooo")
   const formatPrice = (price) =>
     price?.toLocaleString("en-US", {
       style: "currency",
@@ -37,11 +37,11 @@ function RelatedProducts({ productId }) {
 
   useEffect(() => {
     async function fetchRelated() {
-      if (!productId) return;
+      if (!productId || !varientId) return;
 
       try {
         const res = await axiosConfig.get(
-          `/catlog/related-products/?listing_type=${listingType}&product=${productId}`
+          `/catlog/related-products/?listing_type=${listingType}&product=${productId}&varient=${varientId}`
         );
         setProducts(res?.data?.results || []);
       } catch (error) {
@@ -50,7 +50,7 @@ function RelatedProducts({ productId }) {
     }
 
     fetchRelated();
-  }, [productId, listingType]);
+  }, [productId, listingType, varientId]);
 
   if (!products.length) return null;
 
@@ -72,14 +72,14 @@ function RelatedProducts({ productId }) {
             {products.map((item) => {
               const offer = item.prices?.sale_offer_price;
               const price = item.prices?.sale_price;
-              const discount = offer && price ? Math.round(((offer - price) / offer) * 100) : null;
+              const discount = offer && price ? Math.round(((price-offer) / price) * 100) : null;
               const rentalprice = item.prices?.rental_price;
 
               return (
                 <div
                   className="rel-card"
                   key={item.id}
-                  onClick={() => handleNavigate(item)}
+                  onClick={() => {handleNavigate(item); window.scrollTo({top : 0, behavior:"smooth"})}}
                 >
                   {/* Image Slider */}
                   <div

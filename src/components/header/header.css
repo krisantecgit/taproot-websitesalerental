@@ -4,15 +4,15 @@
     align-items: center;
     /* padding: 8px 30px; */
     background: linear-gradient(180deg, #F3F3F3 0%, #FFFFFF 99.38%);
-    font-family: Arial, sans-serif;
+    font-family: "Work Sans", sans-serif;
     z-index: 1000;
     position: fixed;
     left: 0px;
     top: 0px;
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .05);
-    padding: 18px 60px;
+    padding: 18px 40px;
     width: 100%;
-    height: auto;
+    height: 86px;
 }
 
 /* Left Content */
@@ -51,7 +51,7 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
     color: rgb(119, 119, 119);
 }
@@ -95,7 +95,8 @@
     align-items: center;
     border: 1px solid #6BAFC8;
     border-radius: 25px;
-    padding: 5px 15px;
+    padding: 4px 12px;
+    height: 52px;
     background: #FFFFFF;
     width: 400px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.05);
@@ -185,6 +186,12 @@
 /* User Box */
 .user-box {
     position: relative;
+}
+.right-content .icon,
+.user-box .icon {
+  width: 24px;
+  height: 25px;
+  font-size: 24px;
 }
 
 
