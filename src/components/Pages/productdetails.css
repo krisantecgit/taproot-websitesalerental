@@ -2,44 +2,27 @@
     font-family: "Work Sans";
 }
 
-/* .product-details {
+.product-details {
     display: flex;
     gap: 10px;
     padding: 10px 60px;
     margin-top: 100px;
-} */
- .product-details {
-    display: flex;
-    gap: 10px;
-    padding: 10px 60px;
-    margin-top: 100px;
-
-    /* New changes */
-    /* width: 1108px; */
     max-width: 1250px;
     margin-left: auto;
     margin-right: auto;
 }
-
 
 .product-left {
     position: relative;
     width: 62%;
 }
 
-/* .image-slider {
-    display: flex;
-    gap: 5px;
-    width: 95%;
-    height: 400px;
-} */
 .image-slider {
     display: flex;
     gap: 5px;
     width: 95%;
     height: 400px;
     align-items: stretch;
-    /* prevents shaking */
 }
 
 .main-image-wrapper {
@@ -60,10 +43,7 @@
     height: 100%;
     object-fit: cover;
     object-position: left center;
-    flex-shrink: 0;
-    /* stop shaking */
 }
-
 
 .main-image {
     width: 100%;
@@ -96,24 +76,31 @@
     position: relative;
 }
 
+/* ------------------------------------------------------ */
+/* 🔥 FIXED ZOOM PREVIEW — NO BLINK, NO DISPLAY NONE/BLOCK */
+/* ------------------------------------------------------ */
+
 .zoom-preview {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100vw;
-    height: 800px;
     height: auto;
-    display: none;
     padding: 20px;
     text-align: center;
     z-index: 9999;
+
+    /* FIX BLINK */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease-in-out;
+    pointer-events: none; 
 }
 
 .zoom-container:hover .zoom-preview {
-    display: block;
-    cursor: pointer;
+    opacity: 1;
+    visibility: visible;
 }
-
 
 .zoom-preview img {
     max-width: 80%;
@@ -121,24 +108,16 @@
     height: 480px;
 }
 
+/* ------------------------------------------------------ */
+
 .arrow {
-    /* position: absolute;
-    top: 40%;
-    transform: translateY(-50%);
-    border: none;
-    border-radius: 50%;
-    padding: 8px;
-    cursor: pointer;
-    z-index: 5; */
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     top: 30%;
-    background: rgb(255, 255, 255);
-    /* background: rgba(255, 255, 255, 0.8); */
+    background: white;
     transform: translateY(-50%);
-    /* border: 2px solid rgb(119, 119, 119); */
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -148,16 +127,8 @@
     border: none;
 }
 
-
-.arrow.left {
-    left: 10px;
-    color: #6BAFC8;
-}
-
-.arrow.right {
-    right: 10px;
-    color: #6BAFC8;
-}
+.arrow.left { left: 10px; color: #6BAFC8; }
+.arrow.right { right: 10px; color: #6BAFC8; }
 
 .thumbnail-section {
     display: flex;
@@ -171,7 +142,6 @@
     height: 50px;
     cursor: pointer;
     object-fit: cover;
-    /* border: 2px solid; */
     transition: border 0.2s ease;
 }
 
@@ -208,12 +178,6 @@
     justify-content: space-between;
     align-items: center;
 }
-.heart-icon {
-    color: #bfbfbf;              /* grey outline */
-    background: #fff;            /* white inside */
-    border: 2px solid #dcdcdc;   /* light grey border */        /* make icon area circle */
-    font-size: 16px;             /* adjust icon size */
-}
 
 .product-right-title {
     font-size: 24px;
@@ -229,18 +193,13 @@
     margin-right: 10px;
 }
 
-/* input[type="radio"] {
-  accent-color: #069baa;
-} */
-
 .product-discount-right {
-    color: #777777;
-    font-size: 14px;
     color: rgb(34, 34, 34);
+    font-size: 14px;
     font-weight: 600;
 }
 
-.radio-group>div+div {
+.radio-group > div + div {
     margin-top: 20px;
     border-top: 1px solid #909090;
     border-bottom: 1px solid #909090;
@@ -250,7 +209,7 @@
     cursor: pointer;
 }
 
-.radio-group>div+div:hover {
+.radio-group > div + div:hover {
     background-color: white;
     box-shadow: 0 2px 6px rgba(114, 113, 113, 0.1);
 }
@@ -261,19 +220,16 @@
     background: rgb(6, 155, 170);
     font-size: 14px;
     font-weight: 600;
-    color: rgb(255, 255, 255);
-    font-family: "Work Sans", sans-serif;
+    color: white;
     border-radius: 25px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
     padding: 12px 24px;
     cursor: pointer;
-    transition: all 0.3s ease;
     border: 1px solid rgb(6, 155, 170);
-    background: rgb(6, 155, 170);
+    transition: all 0.3s ease;
 }
 
 .cart-btn:hover {
-    background-color: rgb(255, 255, 255);
+    background-color: white;
     border: 1px solid rgb(6, 155, 170);
     color: black;
 }
@@ -313,7 +269,6 @@
     cursor: pointer;
 }
 
-/* make calendar popup stay above other elements */
 .react-datepicker-popper {
     z-index: 1000 !important;
 }

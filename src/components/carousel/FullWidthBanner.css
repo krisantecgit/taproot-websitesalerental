@@ -30,15 +30,12 @@
   display: block;
   border-radius: 12px;
 }
-
-/* --- Navigation Arrows --- */
+/* 
 .hc-arrow {
   position: absolute;
   top: 40%;
   transform: translateY(-100%);
-  /* background-color: rgba(255, 255, 255, 0.85); */
   border: 2px solid #7777;
-  /* border: none; */
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -48,7 +45,7 @@
   justify-content: center;
   transition: all 0.3s ease;
   z-index: 10;
-}
+} */
 
 /* Keep arrows inside the visible area */
 .hc-left {

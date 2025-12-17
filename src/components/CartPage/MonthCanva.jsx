@@ -57,7 +57,7 @@ function MonthOffcanvas({ showMonth, handleClose, selectedItemId,onConfirmDates 
                                     popperPlacement="bottom-start"
                                 />
                             </div>
-                            <div className="date-field">
+                            {/* <div className="date-field">
                                 <label>To:</label>
                                 <DatePicker
                                     selected={toDate}
@@ -68,7 +68,7 @@ function MonthOffcanvas({ showMonth, handleClose, selectedItemId,onConfirmDates 
                                     className="custom-date-input"
                                     popperPlacement="bottom-start"
                                 />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <button className="confirm-btn-month" onClick={handleConfirm}>

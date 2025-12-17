@@ -1,0 +1,88 @@
+
+
+.pkg-card {
+    /* width: 100%; */
+    width: 510px;
+    border-radius: 14px;
+    border: 1px solid #dce7ee;
+    background: #ffffff;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* SELECTED CARD */
+.pkg-card.pkg-active {
+    background: linear-gradient(90deg, rgb(118, 205, 214) 0%, rgb(255, 255, 255) 100%);
+    border: none;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- DISCOUNT BADGE ---------- */
+.pkg-discount {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    padding: 4px 8px;
+    background-color: rgb(255, 221, 75);
+    border-radius: 0px 0px 8px 8px;;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ---------- TEXT STYLING ---------- */
+
+/* Months */
+.pkg-duration {
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 10px;
+    color: #002a3a;
+}
+
+/* Price (₹548/mo) */
+.pkg-price {
+    font-size: 21px;
+    font-weight: 600;
+    margin: 2px 0;
+    color: #002a3a;
+}
+
+/* Old price (₹830/mo) */
+.pkg-old-price {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(34, 34, 34);
+    text-decoration: line-through;
+}
+
+/* ---------- BUTTON STYLING ---------- */
+.pkg-btn {
+    border: 1.8px solid #008c9a;
+    padding: 6px 20px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    background: transparent;
+    color: #008c9a;
+    float: right;
+    transition: all 0.2s ease;
+}
+
+/* SELECTED BUTTON */
+.pkg-btn.selected {
+    background: #008c9a;
+    color: #ffffff;
+    border-color: #008c9a;
+}
+
+/* Hover effect (light – same as image) */
+.pkg-card:hover {
+    border-color: #b9e6ec;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}

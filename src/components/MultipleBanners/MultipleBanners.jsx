@@ -5,13 +5,27 @@ import "./multiplebanner.css";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-function MultipleBannerSection({data}) {
+function MultipleBannerSection({ data }) {
   const scrollRef = useRef(null);
   let navigate = useNavigate()
+  // const scroll = (dir) => {
+  //   const { current } = scrollRef;
+  //   if (current) {
+  //     const cardWidth = current.querySelector(".banner-card").offsetWidth + 20; // 20 for gap
+  //     current.scrollBy({
+  //       left: dir === "left" ? -cardWidth : cardWidth,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // };
   const scroll = (dir) => {
     const { current } = scrollRef;
     if (current) {
-      const cardWidth = current.querySelector(".banner-card").offsetWidth + 20; // 20 for gap
+      const firstCard = current.querySelector(".mul-banner-card");
+      if (!firstCard) return; // safeguard
+
+      const cardWidth = firstCard.offsetWidth + 20; // width + gap
+
       current.scrollBy({
         left: dir === "left" ? -cardWidth : cardWidth,
         behavior: "smooth",
@@ -28,7 +42,7 @@ function MultipleBannerSection({data}) {
 
         <div className="mul-banner-carousel" ref={scrollRef}>
           {data?.map((item) => (
-            <div className="mul-banner-card" key={item.id} onClick={()=> navigate(`${item.mapped_type}/${item.cat_slug}`)}>
+            <div className="mul-banner-card" key={item.id} onClick={() => navigate(`${item.mapped_type}/${item.cat_slug}`)}>
               <img src={item.image__image} alt={item.name} />
 
             </div>

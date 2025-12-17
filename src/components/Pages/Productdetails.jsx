@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { addToBuyCart, addToRentCart, } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
 import Wishlist from '../WishList/Wishlist';
+import { generateUUID } from '../../utils/RandomId';
 
 function Productdetails() {
     const { state } = useLocation();
@@ -138,20 +139,21 @@ function Productdetails() {
     }
 
     function handleAddToCart(type, productData) {
+        const cartItemId = generateUUID();
         if (type === "rent") {
-            if (!fromDate || !toDate) {
-                setError("Please choose start and end dates before adding to cart.")
+            if (!fromDate) {
+                setError("Please choose start date before adding to cart.")
                 setTimeout(() => {
                     setError("")
                 }, 3000)
                 return;
             }
             dispatch(addToRentCart({
-                ...productData, fromDate: formatLocalDate(fromDate), toDate: formatLocalDate(toDate)
+                ...productData, cartItemId, fromDate: formatLocalDate(fromDate), toDate: formatLocalDate(toDate)
             }))
             toast.success("Product added to cart")
         } else {
-            dispatch(addToBuyCart(productData))
+            dispatch(addToBuyCart({ ...productData, cartItemId }))
             toast.success("Product added to cart")
         }
     }
@@ -313,7 +315,7 @@ function Productdetails() {
                                                                                 popperPlacement="bottom-start"
                                                                             />
                                                                         </div>
-                                                                        <div className="date-field">
+                                                                        {/* <div className="date-field">
                                                                             <label>To:</label>
                                                                             <DatePicker
                                                                                 selected={toDate}
@@ -324,7 +326,7 @@ function Productdetails() {
                                                                                 className="custom-date-input"
                                                                                 popperPlacement="bottom-start"
                                                                             />
-                                                                        </div>
+                                                                        </div> */}
                                                                     </div>
                                                                 </div>
                                                             )}

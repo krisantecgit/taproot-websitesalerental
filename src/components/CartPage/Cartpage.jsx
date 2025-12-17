@@ -5,27 +5,28 @@ import Header from '../header/Header'
 import "./cartpage.css"
 import { useDispatch, useSelector } from 'react-redux'
 import { FiTrash2 } from 'react-icons/fi'
-import { addToBuyCart, addToRentCart, decreaseBuyQty, decreaseRentQty, removeFromBuyCart, removeFromRentCart } from '../../redux/cartSlice'
+import { addToBuyCart, addToRentCart, decreaseBuyQty, decreaseRentQty, removeFromBuyCart, removeFromRentCart, setRentalPackage } from '../../redux/cartSlice'
 import { useNavigate } from 'react-router-dom'
 import { BiCheckCircle, BiChevronDown } from 'react-icons/bi'
-import MonthOffcanvas from './MonthCanva'
 import axiosConfig from "../../Services/axiosConfig"
-import { IoArrowForward, IoTime } from 'react-icons/io5'
+import { IoArrowForward } from 'react-icons/io5'
 import LoginModal from '../Login/Login'
 import { toast } from 'react-toastify'
 import DeleteCartItemModal from './DeleteCartItemModal'
+import PackagesPlan from './Packages'
 
 function Cartpage() {
     const { buyCart, rentCart } = useSelector(store => store.cart)
     const [showMonth, setShowMonth] = useState(false);
     const [showCartDelete, setShowCartDelete] = useState(false)
+    const [packagesByVariant, setPackagesByVariant] = useState({});
     const [selectedItem, setSelectedItem] = useState(null)
     const [selectedItemId, setSelectedItemId] = useState(null);
-    const [rentalData, setRentalData] = useState([])
     const [loginModal, setLoginModal] = useState(false)
     const [userId, setUserId] = useState(localStorage.getItem("userid"))
     const dispatch = useDispatch();
     let navigate = useNavigate()
+
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {
             style: "currency",
@@ -33,46 +34,94 @@ function Cartpage() {
             // minimumFractionDigits: 0,
             // maximumFractionDigits: 0,
         }).replace("$", "$ ");
+
     useEffect(() => {
-        if (rentCart.length === 0) return;
-        const data = rentCart.map((ele) => ({
-            variant_id: ele.id,
-            quantity: ele.qty,
-            from_date: ele.fromDate,
-            to_date: ele.toDate
-        }));
-        const payload = { variants: data };
+        if (rentCart.length === 0) {
+            setPackagesByVariant({});
+            return;
+        }
 
         async function getRentalData() {
             try {
-                const res = await axiosConfig.post("/accounts/rental_charges/", payload);
-                setRentalData(res?.data?.results || []);
+                const responses = await Promise.all(
+                    rentCart.map(item =>
+                        axiosConfig(
+                            `/catlog/variant-price-packages/?product_variant=${item.id}&active=true`
+                        )
+                    )
+                );
+
+                // Process each response
+                responses.forEach((res, index) => {
+                    const item = rentCart[index];
+                    const packages = res?.data?.results || [];
+
+                    if (packages.length > 0) {
+                        // Store packages by variant ID
+                        setPackagesByVariant(prev => ({
+                            ...prev,
+                            [item.cartItemId]: packages
+                        }));
+
+                        // Auto-select first package if none selected
+                        if (!item.selectedPackage && packages[0]) {
+                            dispatch(setRentalPackage({
+                                cartItemId: item.cartItemId,
+                                packageData: packages[0]
+                            }));
+                        }
+                    }
+                });
             } catch (error) {
-                console.log(error);
+                console.log("Error fetching rental packages:", error);
             }
         }
 
         getRentalData();
-    }, [rentCart]);
-    const totalRentPrice = rentalData.reduce((acc, ele) => acc + ele.final_cost, 0);
+    }, [rentCart, dispatch]);
+
+    const handlePackageSelect = (cartItemId, packageData) => {
+        dispatch(setRentalPackage({ cartItemId, packageData }));
+    };
+
+    // Calculate total rent price based on selected packages
+    const totalRentPrice = rentCart.reduce((acc, item) => {
+        if (item.selectedPackage) {
+            return acc + (parseFloat(item.selectedPackage.offer_price) * item.qty);
+        }
+        return acc;
+    }, 0);
+
     const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice * ele.qty, 0);
     const totalAmount = (buyCart.length ? totalBuyPrice : 0) + (rentCart.length ? totalRentPrice : 0);
+
     useEffect(() => {
         const id = localStorage.getItem("userid")
         setUserId(id)
     }, [])
+
     const handleLoginSuccess = (userId) => {
         setUserId(userId);
         setLoginModal(false);
     }
+
     const saleAddress = localStorage.getItem("saleAddress") ? JSON.parse(localStorage.getItem("saleAddress")) : null
     const rentalAddress = localStorage.getItem("rentalAddress") ? JSON.parse(localStorage.getItem("rentalAddress")) : null
+
     async function proceedToCheckout() {
         if (!userId) {
             toast.error("Please log in to proceed");
             setLoginModal(true);
             return;
         }
+
+        // Check if all rental items have selected packages
+        const missingPackages = rentCart.filter(item => !item.selectedPackage);
+        if (missingPackages.length > 0) {
+            toast.error("Please select packages for all rental items");
+            return;
+        }
+
         if (userId && !saleAddress && buyCart.length > 0) {
             toast.error("Please select sale delivery address");
             navigate('/address', { state: { addressType: 'sale' } });
@@ -84,8 +133,10 @@ function Cartpage() {
             navigate('/address', { state: { addressType: 'rental' } });
             return;
         }
+
         const buyAddressId = buyCart.length > 0 ? saleAddress?.id : ""
         const rentAddressId = rentCart.length > 0 ? rentalAddress?.id : ""
+
         const payload = {
             sale_addresses: buyAddressId,
             rental_addresses: rentAddressId,
@@ -100,10 +151,13 @@ function Cartpage() {
                     quantity: ele.qty,
                     item_type: ele.type,
                     rental_start_date: ele.fromDate,
-                    rental_end_date: ele.toDate,
+                    package_name: ele.selectedPackage.package_name,
+                    duration_value: ele.selectedPackage.duration_value,
+                    unique_id: ele.cartItemId
                 }))
             ]
         }
+
         try {
             const oredrId = localStorage.getItem("orderId");
             if (oredrId) {
@@ -118,6 +172,7 @@ function Cartpage() {
             console.log(error)
         }
     }
+
     const addToWishList = async (item) => {
         const payload = {
             user: userId,
@@ -130,28 +185,57 @@ function Cartpage() {
             console.log(error)
         }
     }
-   const handleMoveToWishlist = async (selectedItem) => {
-    await addToWishList(selectedItem)
-    
-    // Remove from the correct cart based on item type
-    if (selectedItem.type === "buy") {
-        dispatch(removeFromBuyCart(selectedItem.id))
-    } else {
-        dispatch(removeFromRentCart(selectedItem.id))
-    }
-    setShowCartDelete(false)
-}
 
-const handleRemoveCart = async (selectedItem) => {
-    // Remove from the correct cart based on item type
-    if (selectedItem.type === "buy") {
-        dispatch(removeFromBuyCart(selectedItem.id))
-    } else {
-        dispatch(removeFromRentCart(selectedItem.id))
+    const handleMoveToWishlist = async (selectedItem) => {
+        if (!userId) {
+            toast.error("Please log in to move to wishlist");
+            setLoginModal(true);
+            return;
+        }
+
+        try {
+            const payload = {
+                user: userId,
+                varient: selectedItem?.id, // Use product variant ID for wishlist
+                type: selectedItem?.type === "buy" ? "sale" : "rental"
+            };
+
+            await axiosConfig.post(`/catlog/wishlists/`, payload);
+            toast.success("Item moved to wishlist successfully");
+
+            // Remove from cart - use correct identifier
+            if (selectedItem.type === "buy") {
+                // For buy items, use id
+                dispatch(removeFromBuyCart(selectedItem.id));
+            } else {
+                // For rent items, use cartItemId
+                dispatch(removeFromRentCart(selectedItem.cartItemId));
+            }
+
+            setShowCartDelete(false);
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to move item to wishlist");
+        }
     }
-    setShowCartDelete(false)
-}
-    
+
+    const handleRemoveCart = async (selectedItem) => {
+        // Remove from cart - use correct identifier
+        if (selectedItem.type === "buy") {
+            // For buy items, use id
+            dispatch(removeFromBuyCart(selectedItem.id));
+            toast.success("Item removed from cart");
+        } else {
+            // For rent items, use cartItemId
+            dispatch(removeFromRentCart(selectedItem.cartItemId));
+            toast.success("Item removed from cart");
+        }
+
+        setShowCartDelete(false);
+    }
+
+
+
     return (
         <>
             <Header />
@@ -179,7 +263,7 @@ const handleRemoveCart = async (selectedItem) => {
                                                 </div>
                                             ) : (
                                                 <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>                
+                                                    <div className='cart-delivery-estimate-left'>
                                                         <p className='delivery-detail'>
                                                             Select address
                                                         </p>
@@ -267,17 +351,9 @@ const handleRemoveCart = async (selectedItem) => {
                                                             Select address
                                                         </p>
                                                         <div>
-                                                            {/* <p className='delivery-title'>Delivery Estimate</p>
-                                                    <p className='delivery-detail'>
-                                                        Delivery by <strong>31 Oct</strong> to <span>500457</span>
-                                                    </p> */}
-
-
                                                         </div>
                                                     </div>
                                                     <div className='cart-delivery-estimate-right'>
-                                                        {/* <p className='price-cut'><strike>₹499</strike></p>
-                                                <p className='price-free'>FREE</p> */}
                                                         {
                                                             userId ? <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
                                                         }
@@ -289,77 +365,96 @@ const handleRemoveCart = async (selectedItem) => {
                                             <div className="cart-section-header">
                                                 Rent Cart <span>{rentCart.length} items</span>
                                             </div>
-                                            {rentCart.map(item => (
-                                                <div className="cart-item" key={item.id}>
-                                                    <div
-                                                        className="cart-item-image"
-                                                        onClick={() =>
-                                                            navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                                state: { item, listingType: item.type }
-                                                            })
-                                                        }
-                                                    >
-                                                        <img src={item.image} alt={item.name} />
-                                                    </div>
-                                                    <div
-                                                        className="cart-item-info"
-                                                        onClick={() =>
-                                                            navigate(`/${item.type}/product/${item.friendlyurl}`, {
-                                                                state: { item, listingType: item.type }
-                                                            })
-                                                        }>
-                                                        <p className="cart-item-title">{item.name}</p>
-                                                        {
-                                                            (() => {
-                                                                const matchedRental = rentalData.find(r => r.variant_id === item.id);
-                                                                return matchedRental ? (
-                                                                    <div className="cart-item-prices mt-2">
-                                                                        <span className="old-price">{formatPrice(matchedRental.base_cost)}</span>
-                                                                        <span className="discount-badge">-{matchedRental.discount_percent} %</span>
-                                                                        <span className="new-price">{formatPrice(matchedRental.final_cost)}</span>
+                                            {rentCart.map(item => {
+                                                return (
+                                                    <div className="cart-item" key={item.id}>
+                                                        <div
+                                                            className="cart-item-image"
+                                                            onClick={() =>
+                                                                navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                                    state: { item, listingType: item.type }
+                                                                })
+                                                            }
+                                                        >
+                                                            <img src={item.image} alt={item.name} />
+                                                        </div>
+                                                        <div
+                                                            className="cart-item-info"
+                                                            onClick={() =>
+                                                                navigate(`/${item.type}/product/${item.friendlyurl}`, {
+                                                                    state: { item, listingType: item.type }
+                                                                })
+                                                            }>
+                                                            <p className="cart-item-title">{item.name}</p>
+                                                            {/* <div className="cart-item-prices mt-2">
+                                                                <span className="old-price">${item?.selectedPackage?.price}</span>
+                                                                <span className="discount-badge">
+                                                                    -{item.selectedPackage.discount_percent}%
+                                                                </span>
+                                                                <span className="new-price">${item.selectedPackage.offer_price}</span>
+                                                            </div> */}
+                                                            <div className="cart-item-prices mt-2">
+                                                                <span className="old-price">
+                                                                    {item.selectedPackage ? `$${item.selectedPackage.price}` : "Select Package"}
+                                                                </span>
+                                                                {item.selectedPackage && (
+                                                                    <>
+                                                                        <span className="discount-badge">
+                                                                            -{item.selectedPackage.discount_percent || 0}%
+                                                                        </span>
+                                                                        <span className="new-price">
+                                                                            ${item.selectedPackage.offer_price}
+                                                                        </span>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="cart-item-actions">
+                                                            <div>
+                                                                <div
+                                                                    className="month-container"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setShowMonth(true);
+                                                                        setSelectedItemId(item.cartItemId);
+                                                                    }}
+                                                                >
+                                                                    <div>
+                                                                        {item.selectedPackage ? `${item.selectedPackage.duration_value} ${item.selectedPackage.package_name}` : "Select Package"}
                                                                     </div>
-                                                                ) : null;
-                                                            })()
-                                                        }
-                                                    </div>
-                                                    <div className="cart-item-actions">
-                                                        <div>
-                                                            <div className="month-container" onClick={() => { setShowMonth(true); setSelectedItemId(item.id) }}>
-                                                                {
-                                                                    (() => {
-                                                                        const matchedRental = rentalData.find(r => r.variant_id === item.id);
-                                                                        return matchedRental ? (
-                                                                            <>
-                                                                                <div>{matchedRental.duration_days}/Days</div> <BiChevronDown className='month-icon' />
-                                                                            </>
-                                                                        ) : null
-                                                                    })()
-                                                                }
-                                                            </div>
-                                                            <div className="qty-wrapper mt-2">
-                                                                <button
-                                                                    className="qty-minus"
-                                                                    onClick={() => dispatch(decreaseRentQty(item.id))}
-                                                                >
-                                                                    −
-                                                                </button>
+                                                                    <BiChevronDown className="month-icon" />
+                                                                </div>
 
-                                                                <span className="qty-value">{item.qty}</span>
+                                                                <div className="qty-wrapper mt-2">
+                                                                    <button
+                                                                        className="qty-minus"
+                                                                        onClick={() => dispatch(decreaseRentQty(item.cartItemId))}
+                                                                    >
+                                                                        −
+                                                                    </button>
 
-                                                                <button
-                                                                    className="qty-plus"
-                                                                    onClick={() => dispatch(addToRentCart(item))}
-                                                                >
-                                                                    +
-                                                                </button>
+                                                                    <span className="qty-value">{item.qty}</span>
+
+                                                                    <button
+                                                                        className="qty-plus"
+                                                                        onClick={() => dispatch(addToRentCart(item))}
+                                                                    >
+                                                                        +
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div className="delete-icon">
-                                                            <FiTrash2 onClick={() => { setShowCartDelete(true); setSelectedItem(item) }} />
+                                                            <div className="delete-icon">
+                                                                <FiTrash2 onClick={() => {
+                                                                    setShowCartDelete(true);
+                                                                    setSelectedItem({
+                                                                        ...item,
+                                                                        type: "rent"
+                                                                    });
+                                                                }} />                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )
@@ -428,11 +523,20 @@ const handleRemoveCart = async (selectedItem) => {
                                 <span className='btn-text'>EXPLORE RENTING</span><span className="arrow-right">→</span>
                             </button>
                         </div>
-
                     </div>
-
             }
-            <MonthOffcanvas showMonth={showMonth} handleClose={() => setShowMonth(false)} selectedItemId={selectedItemId} />
+            <PackagesPlan
+                showPackages={showMonth}
+                handleClose={() => setShowMonth(false)}
+                packages={selectedItemId ? packagesByVariant[selectedItemId] || [] : []}
+                selectedPkg={selectedItemId ? rentCart.find(item => item.cartItemId === selectedItemId)?.selectedPackage : null}
+                onSelectPackage={(packageData) => {
+                    if (selectedItemId) {
+                        handlePackageSelect(selectedItemId, packageData);
+                        setShowMonth(false);
+                    }
+                }}
+            />
             <DeleteCartItemModal showCartDelete={showCartDelete} handleClose={() => setShowCartDelete(false)} handleMoveToWishlist={handleMoveToWishlist} handleRemoveCart={handleRemoveCart} selectedItem={selectedItem} />
             {!userId && <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
         </>
