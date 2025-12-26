@@ -19,9 +19,9 @@ function PackagesPlans({ showPackages, handleClose, packages = [], selectedPkg, 
                             >
                                 <div>
                                     <div className="pkg-discount">-{pkg.discount_percent}%</div>
-                                    <p className="pkg-duration">{pkg.duration_value} Months</p>
-                                    <p className="pkg-price">₹{pkg.offer_price}/mo</p>
-                                    <p className="pkg-old-price">₹{pkg.price}/mo</p>
+                                    <p className="pkg-duration">{pkg.duration_value} {pkg.package_name}</p>
+                                    <p className="pkg-price">${pkg.offer_price}/mo</p>
+                                    <p className="pkg-old-price">${pkg.price}/mo</p>
                                 </div>
                                 <div>
                                     <button className={`pkg-btn ${isSelected ? "selected" : ""}`}>

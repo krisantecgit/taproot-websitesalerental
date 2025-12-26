@@ -193,14 +193,15 @@ function Productdetails() {
                                 </div>
                             </>
                         )}
-                    </div>
-
-                    <button className="arrow left" onClick={handlePrev}>
+                         <button className="arrow left" onClick={handlePrev}>
                         <IoArrowBack />
                     </button>
                     <button className="arrow right" onClick={handleNext}>
                         <IoArrowForward />
                     </button>
+                    </div>
+
+                   
 
                     <div className="thumbnail-section">
                         {images.map((img, index) => (
@@ -290,7 +291,7 @@ function Productdetails() {
 
                                                                 {key === "buy" && oldPrice && (
                                                                     <div className="product-details-offer-price">
-                                                                        <span className="product-old-price-right">{formatPrice(oldPrice)}</span>
+                                                                        {oldPrice && price ? <span className="product-old-price-right">{formatPrice(oldPrice)}</span> : <span className='product-discount-right'>{formatPrice(oldPrice)}</span>}
                                                                         <span className="product-discount-right">
                                                                             {oldPrice && price
                                                                                 ? `${Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF`
@@ -350,7 +351,7 @@ function Productdetails() {
                                                                     }
                                                                     >
                                                                         <div>
-                                                                            {formatPrice(price)}
+                                                                            {formatPrice(price || oldPrice)}
                                                                             {key === "rent" && <span style={{ fontSize: "14px", marginLeft: "4px" }}>/Day</span>}
                                                                         </div>
                                                                         <div>

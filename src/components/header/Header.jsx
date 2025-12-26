@@ -21,7 +21,7 @@ function Header() {
   const [query, setQuery] = useState(search);
   const [products, setProducts] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const debouncedSearchTerm = useDebouncedValue(query, 500)
+  const debouncedSearchTerm = useDebouncedValue(query, 1000)
   const location = useLocation()
   const [path, setPath] = useState("")
   function getUrl() {

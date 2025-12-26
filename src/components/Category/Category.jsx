@@ -10,7 +10,7 @@ const Category = ({ listingType }) => {
   let navigate = useNavigate()
   async function fetchCategories() {
     try {
-      const res = await axiosConfig.get(`/catlog/with-${listingType}-or-both/`);
+      const res = await axiosConfig.get(`/catlog/with-${listingType}-or-both/?is_suspended=false`);
       setCategories(res.data);
     } catch (error) {
       console.error(error);

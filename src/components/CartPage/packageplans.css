@@ -45,7 +45,6 @@
     color: #002a3a;
 }
 
-/* Price (₹548/mo) */
 .pkg-price {
     font-size: 21px;
     font-weight: 600;
@@ -53,7 +52,6 @@
     color: #002a3a;
 }
 
-/* Old price (₹830/mo) */
 .pkg-old-price {
     font-size: 14px;
     font-weight: 400;

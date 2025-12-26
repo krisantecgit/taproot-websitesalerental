@@ -35,9 +35,9 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     const [appliedFilters, setAppliedFilters] = useState({});
 
     const priceRanges = [
-        { id: 1, label: "₹0 - ₹5000", min: 0, max: 5000 },
-        { id: 2, label: "₹5000 - ₹10,000", min: 5000, max: 10000 },
-        { id: 3, label: "₹10,000 - ₹20,000", min: 10000, max: 20000 },
+        { id: 1, label: "$0 - $5000", min: 0, max: 5000 },
+        { id: 2, label: "$5000 - $10,000", min: 5000, max: 10000 },
+        { id: 3, label: "$10,000 - $20,000", min: 10000, max: 20000 },
     ];
     useEffect(() => {
         setActiveListingType(searchListingType || categoryurl)
@@ -447,7 +447,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             const min = Number(price_min);
             const max = Number(price_max);
             const matched = priceRanges.find(r => r.min === min && r.max === max);
-            setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `₹${min} - ₹${max}` }]);
+            setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `$${min} - $${max}` }]);
         }
 
         // Subcategories from URL
@@ -572,7 +572,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
 
                     {selectedPriceRanges.map((p) => (
                         <span key={`${p.min}-${p.max}`} className="filter-tags">
-                            ₹{p.min} - ₹{p.max}
+                            ${p.min} - ${p.max}
                             <span className="remove-icon" onClick={() => handleRemoveFilter("price", `${p.min}-${p.max}`)}>×</span>
                         </span>
                     ))}

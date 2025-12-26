@@ -14,6 +14,8 @@ import Logout from './utils/Logout';
 import ProtectedRoute from './utils/ProtectedRoutes';
 import AddressesPage from './components/Pages/AddressesPage';
 import WishListPage from './components/WishList/WishListPage';
+import AccountMenu from './components/AccountLayout/AccountMenu';
+import OrderDetails from './components/Pages/OrderDetails';
 
 function App() {
   return (
@@ -31,7 +33,9 @@ function App() {
           <Route path='/payment' element={<Payment />} />
           <Route path='/account' element={<AccountLayout />}>
             <Route path="orders" element={<Orders />} />
+            <Route path="orders/order-details" element={<OrderDetails />} />
             <Route path="addresses" element={<AddressesPage />} />
+            <Route path="menu" element={<AccountMenu />} />
           </Route>
         </Route>
         <Route path="/search/results" element={<SearchedData />} />

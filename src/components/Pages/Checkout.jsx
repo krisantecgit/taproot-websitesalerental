@@ -835,7 +835,7 @@ function Checkout() {
                                                 </div>
                                             </div>
                                             <div className='cart-delivery-estimate-right'>
-                                                <p className='price-cut'><strike>₹499</strike></p>
+                                                <p className='price-cut'><strike>$499</strike></p>
                                                 <p className='price-free'>FREE</p>
                                             </div>
                                         </div>

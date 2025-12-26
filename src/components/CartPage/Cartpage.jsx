@@ -92,7 +92,7 @@ function Cartpage() {
         return acc;
     }, 0);
 
-    const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice * ele.qty, 0);
+    const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice || ele.oldPrice * ele.qty, 0);
     const totalAmount = (buyCart.length ? totalBuyPrice : 0) + (rentCart.length ? totalRentPrice : 0);
 
     useEffect(() => {
@@ -300,11 +300,13 @@ function Cartpage() {
                                                         <p className="cart-item-title">{item.name}</p>
 
                                                         <div className="cart-item-prices mt-2">
-                                                            <span className="old-price">{formatPrice(item.oldPrice)}</span>
-                                                            <span className="discount-badge">
-                                                                -{Math.round(((item.oldPrice - item.offerPrice) / item.oldPrice) * 100)}%
-                                                            </span>
-                                                            <span className="new-price">{formatPrice(item.offerPrice)}</span>
+                                                            {item.offerPrice ? <span className="old-price">{formatPrice(item.oldPrice)}</span> : ""}
+                                                            {item.offerPrice ? (
+                                                                <span className="discount-badge">
+                                                                    -{Math.round(((item.oldPrice - item.offerPrice) / item.oldPrice) * 100)}%
+                                                                </span>
+                                                            ) : ""}
+                                                            <span className="new-price">{formatPrice(item.offerPrice || item.oldPrice)}</span>
                                                         </div>
                                                     </div>
 

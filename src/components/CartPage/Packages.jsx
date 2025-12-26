@@ -19,9 +19,9 @@ function PackagesPlan({ showPackages, handleClose, packages, selectedPkg, onSele
               >
                 <div className="pkg-discount">-{pkg.discount_percent}%</div>
                 <div className="pkg-left-content">
-                  <p className="pkg-duration">{pkg.duration_value} Months</p>
-                  <p className="pkg-price">₹{Math.round(pkg.offer_price / pkg.duration_value)}/month</p>
-                  <p className="pkg-old-price">₹{Math.round(pkg.price)}/month</p>
+                  <p className="pkg-duration">{pkg.duration_value} {pkg.package_name}</p>
+                  <p className="pkg-price">${Math.round(pkg.offer_price / pkg.duration_value)}/{pkg.package_name}</p>
+                  <p className="pkg-old-price">${Math.round(pkg.price)}/month</p>
                 </div>
                 <button className={`pkg-btn ${isSelected ? "selected" : ""}`}>
                   {isSelected ? "Selected" : "Select"}

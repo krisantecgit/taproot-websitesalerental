@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearBuyCart, clearRentCart } from "../../redux/cartSlice";
 function Payment() {
   const [active, setActive] = useState("cash");
-  const [orderDetails, setOrderDetails] = useState();
+  const [orderDetails, setOrderDetails] = useState([]);
   // const {clearRentCart, clearBuyCart} = useSelector((store)=> store.cart)
   const dispatch = useDispatch()
   const orderId = localStorage.getItem("orderId")
@@ -30,7 +30,7 @@ function Payment() {
   }, [])
   async function PlaceOrderByCOD() {
     const payload = {
-      orderstatus: "Placed",
+      status: "Placed",
       payment_mode: "cash"
     }
     try {
@@ -66,9 +66,9 @@ function Payment() {
           <div className="amout-total-h">
             <p><HiOutlineCurrencyDollar /></p>
             <p className="amount-title">Total amount payable now</p>
-            <p className="amount-saved">You have saved ₹36,267.00 on this order</p>
+            <p className="amount-saved">You have saved $36,267.00 on this order</p>
           </div>
-          <div className="total-payment">{formatPrice(orderDetails?.total_amount)}</div>
+          <div className="total-payment">{formatPrice(orderDetails[0]?.total_amount)}</div>
         </div>
 
         <div className="payment-section">
@@ -107,7 +107,7 @@ function Payment() {
             <div className="payment-right">
               {active === "cash" && (
                 <div className="upi-box">
-                  <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails?.total_amount)}</span></button>
+                  <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails[0]?.total_amount)}</span></button>
                 </div>
               )}
               {active === "online" && (
