@@ -92,7 +92,12 @@ function Cartpage() {
         return acc;
     }, 0);
 
-    const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice || ele.oldPrice * ele.qty, 0);
+    // const totalBuyPrice = buyCart.reduce((acc, ele) => acc + ele.offerPrice || ele.oldPrice * ele.qty, 0);
+    const totalBuyPrice = buyCart.reduce((acc, ele) => {
+        const price = ele.offerPrice ?? ele.oldPrice;
+        return acc + price * ele.qty;
+    }, 0);
+
     const totalAmount = (buyCart.length ? totalBuyPrice : 0) + (rentCart.length ? totalRentPrice : 0);
 
     useEffect(() => {

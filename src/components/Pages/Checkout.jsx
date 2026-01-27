@@ -116,6 +116,23 @@ function Checkout() {
     //         console.log(error)
     //     }
     // }
+    const rentalDeliveryCharge = priceBreakup?.find(
+        item => item.cart_type === "rent"
+    )?.delivery_charges || 0;
+    const buyDeliveryCharge = priceBreakup?.find(
+        item => item.cart_type === "buy"
+    )?.delivery_charges || 0;
+    const rentalBaseTotal = Number(orderData[0]?.order?.rental_total_amount || 0);
+    const buyBaseTotal = Number(orderData[0]?.order?.sale_total_amount || 0);
+
+    const rentalTotal =
+        rentalBaseTotal +
+        (deliveryType === "company-transport" ? rentalDeliveryCharge : 0);
+
+    const buyTotal =
+        buyBaseTotal +
+        (deliveryType === "company-transport" ? buyDeliveryCharge : 0);
+
     async function postPpriceBreakup() {
         // Use localStorage to get the most current cart data
         const latestBuyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
@@ -523,32 +540,32 @@ function Checkout() {
         }
     }
     const handleMoveToWishlist = async (selectedItem) => {
-    if (!selectedItem) return;
+        if (!selectedItem) return;
 
-    await addToWishList(selectedItem);
+        await addToWishList(selectedItem);
 
-    // Remove from correct cart based on type
-    if (selectedItem.type === "sale") {
-        dispatch(removeFromBuyCart(selectedItem.id));
-        const buyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
-        const updatedBuyCart = buyCart.filter(e => e.id !== selectedItem.id);
-        localStorage.setItem("buyCart", JSON.stringify(updatedBuyCart));
-    } else if (selectedItem.type === "rental" || selectedItem.type === "rent") {
-        // For rent items, use uniqueId if available, otherwise use id
-        const identifier = selectedItem.uniqueId || selectedItem.id;
-        dispatch(removeFromRentCart(identifier));
-        const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-        const updatedRentCart = rentCart.filter(e => 
-            selectedItem.uniqueId ? e.cartItemId !== selectedItem.uniqueId : e.id !== selectedItem.id
-        );
-        localStorage.setItem("rentCart", JSON.stringify(updatedRentCart));
+        // Remove from correct cart based on type
+        if (selectedItem.type === "sale") {
+            dispatch(removeFromBuyCart(selectedItem.id));
+            const buyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
+            const updatedBuyCart = buyCart.filter(e => e.id !== selectedItem.id);
+            localStorage.setItem("buyCart", JSON.stringify(updatedBuyCart));
+        } else if (selectedItem.type === "rental" || selectedItem.type === "rent") {
+            // For rent items, use uniqueId if available, otherwise use id
+            const identifier = selectedItem.uniqueId || selectedItem.id;
+            dispatch(removeFromRentCart(identifier));
+            const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
+            const updatedRentCart = rentCart.filter(e =>
+                selectedItem.uniqueId ? e.cartItemId !== selectedItem.uniqueId : e.id !== selectedItem.id
+            );
+            localStorage.setItem("rentCart", JSON.stringify(updatedRentCart));
+        }
+
+        setShowDeleteModal(false);
+
+        // Update backend and refresh data
+        await handleDeleteItem(selectedItem.id, selectedItem.type, selectedItem.uniqueId);
     }
-
-    setShowDeleteModal(false);
-
-    // Update backend and refresh data
-    await handleDeleteItem(selectedItem.id, selectedItem.type, selectedItem.uniqueId);
-}
     const createOrderPayload = () => {
         const buyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
         const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
@@ -1026,15 +1043,16 @@ function Checkout() {
                                                                 deliveryType === "company-transport" && <div className="breakup-item">
                                                                     <div>Delivery Charges</div>
                                                                     <div>
-                                                                        {priceBreakup?.map((rb, index) => (
+                                                                        {/* {priceBreakup?.map((rb, index) => (
                                                                             rb.cart_type === "rent" && <div key={index}>{formatPrice(rb.delivery_charges)}</div>
-                                                                        ))}
+                                                                        ))} */}
+                                                                        ${rentalDeliveryCharge}
                                                                     </div>
                                                                 </div>
                                                             }
                                                             <div className="breakup-item">
                                                                 <div>Rental Total</div>
-                                                                <div>{formatPrice(orderData[0]?.order?.rental_total_amount)}</div>
+                                                                <div>{formatPrice(rentalTotal)}</div>
                                                             </div>
                                                         </div>
 
@@ -1068,9 +1086,9 @@ function Checkout() {
                                                                             <div className="breakup-item"><div>(A) Base Sale Cost</div><div>{formatPrice(item.price)}</div></div>
                                                                             <div className="breakup-item"><div>(B) Quantity</div><div>{item.quantity} Qty</div></div>
                                                                             <div className="breakup-item"><div>(C) Total Price (A X B)</div><div>${item.price * item.quantity}</div></div>
-                                                                            <div className="breakup-item text-success"><div>(D) Sale Discount</div><div>-{Math.round(Number(((item.price - item.offer_price) / item.price)) * 100)}%  -{formatPrice((item.price * item.quantity)-((item.offer_price * item.quantity)))}</div></div>
+                                                                            <div className="breakup-item text-success"><div>(D) Sale Discount</div><div>-{Math.round(Number(((item.price - item.offer_price) / item.price)) * 100)}%  -{formatPrice((item.price * item.quantity) - ((item.offer_price * item.quantity)))}</div></div>
                                                                             <div className="breakup-item"><div>(E) Net Price {"   "} (A X B − D)</div><div>{formatPrice(item.offer_price * item.quantity)}</div></div>
-                                                                            <div className='discount-green'>You Will Save {formatPrice((item.price * item.quantity)-((item.offer_price * item.quantity)))}</div>
+                                                                            <div className='discount-green'>You Will Save {formatPrice((item.price * item.quantity) - ((item.offer_price * item.quantity)))}</div>
                                                                         </div>
                                                                     )
                                                                 ))
@@ -1079,15 +1097,16 @@ function Checkout() {
                                                                 deliveryType === "company-transport" && <div className="breakup-item">
                                                                     <div>Delivery Charges</div>
                                                                     <div>
-                                                                        {priceBreakup?.map((rb, index) => (
+                                                                        {/* {priceBreakup?.map((rb, index) => (
                                                                             rb.cart_type === "buy" && <div key={index}>{formatPrice(rb.delivery_charges)}</div>
-                                                                        ))}
+                                                                        ))} */}
+                                                                        ${buyDeliveryCharge}
                                                                     </div>
                                                                 </div>
                                                             }
                                                             <div className="breakup-item">
                                                                 <div>Sale Total</div>
-                                                                <div>{formatPrice(orderData[0]?.order?.sale_total_amount)}</div>
+                                                                <div>{formatPrice(buyTotal)}</div>
                                                             </div>
                                                         </div>
 

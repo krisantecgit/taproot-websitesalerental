@@ -9,7 +9,7 @@ import useHomepageData from '../../Hook/useHomepageData'
 function RentPage() {
   const cms = useHomepageData()
   return (
-    <div>
+    <div className='buy-page-container'>
         <Header />
         <Category listingType="rent" />
         <BuyPageBanner />

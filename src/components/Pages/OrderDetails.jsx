@@ -63,7 +63,7 @@ function OrderDetails() {
                             <div className="order-details-wrapper">
                                 <div className='d-flex justify-content-between'>
                                     <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
-                                    <h4>Order Id: {orderData[0]?.id}</h4>
+                                    <h4>Order Id: {orderId}</h4>
                                 </div>
                                 {orderData.map((item) => (
                                     <div className="order-item" key={item.id}>

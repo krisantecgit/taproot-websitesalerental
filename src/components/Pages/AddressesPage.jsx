@@ -49,7 +49,7 @@ function AddressesPage() {
   }, [userId])
   async function deleteAddress(id) {
     try {
-      const res = await axiosConfig.delete(`/accounts/address/${id}`)
+      const res = await axiosConfig.delete(`/accounts/address/${id}/`)
       toast.success(res.data.message)
       await fetchAddress()
     } catch (error) {
@@ -60,7 +60,7 @@ function AddressesPage() {
     setStep("address")
     setEditId(id)
     try {
-      const res = await axiosConfig(`/accounts/address/${id}`,)
+      const res = await axiosConfig(`/accounts/address/${id}/`,)
       console.log(res)
       const Data = res?.data;
       setFormData({

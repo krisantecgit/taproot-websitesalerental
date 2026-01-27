@@ -71,7 +71,7 @@ function Orders() {
                           <img src={orderImg} alt="" className="image" />
                         }
                         <div>
-                          <h5 className="order_id">Order Id:{order?.id}&nbsp;-&nbsp;${order.net_amount}</h5>
+                          <h5 className="order_id">Order Id:{order?.id}&nbsp;-&nbsp;${order.order_type === "rental" ? order.rental_total_amount : order.sale_total_amount}</h5>
                           <p className="">Placed on {timeString(order.order_date)}</p>
                         </div>
                         <div className={`status_badge ${order.orderstatus === "Cart" || order.orderstatus === "Placed" ? "green" : "grey"}`}>
