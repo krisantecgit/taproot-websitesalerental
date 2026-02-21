@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import axiosConfig from "../../Services/axiosConfig";
 import "./orderdetails.css"
 import { TbTruckDelivery } from 'react-icons/tb';
+import { FaEye } from 'react-icons/fa';
 
 function OrderDetails() {
     let [searchParams] = useSearchParams();
@@ -53,7 +54,29 @@ function OrderDetails() {
     }, [rentalId, type, orderId, navigate])
     const rentalItems = orderData.filter(item => item.item_type === "rental");
     const saleItems = orderData.filter(item => item.item_type === "sale");
-
+    const saleDeliveryCharge =
+        orderData.length > 0
+            ? Number(orderData[0]?.order?.sale_delivery_charges || 0)
+            : 0;
+    const saleTotalWithDelivery =
+        Number(orderData[0]?.order?.sale_total_amount || 0) + saleDeliveryCharge;
+    const rentDeliveryCharge =
+        orderData.length > 0
+            ? Number(orderData[0]?.order?.rental_delivery_charges || 0)
+            : 0;
+    const rentTotalWithDelivery =
+        Number(orderData[0]?.order?.rental_total_amount || 0) + rentDeliveryCharge;
+    async function handlePrint(id) {
+        try {
+            const res = await axiosConfig(`/accounts/pdf/${id}/`, {responseType : "blob"})
+            const file = new Blob([res.data], {type : "application/pdf"})
+            const fileUrl = URL.createObjectURL(file)
+            window.open(fileUrl, "_blank", "noopener, noreferrer")
+        } catch(error) {
+            console.log(error)
+            alert("pdf not available")
+        }
+    }
     return (
         <>
             {
@@ -63,7 +86,10 @@ function OrderDetails() {
                             <div className="order-details-wrapper">
                                 <div className='d-flex justify-content-between'>
                                     <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
-                                    <h4>Order Id: {orderId}</h4>
+                                    <div className='d-flex gap-2 align-items-center'>
+                                        <h4 className='mb-0'>Order Id: {orderId}</h4>
+                                        <FaEye style={{cursor : "pointer"}} onClick={()=> handlePrint(orderId)} />
+                                    </div>
                                 </div>
                                 {orderData.map((item) => (
                                     <div className="order-item" key={item.id}>
@@ -101,7 +127,6 @@ function OrderDetails() {
                                                 const duration = Number(item.rental_duration);
                                                 const price = Number(item.price);
                                                 const offer = Number(item.offer_price);
-
                                                 return (
                                                     <div className="data-container" key={item.id}>
                                                         <div className="break-item-title">
@@ -149,7 +174,10 @@ function OrderDetails() {
                                                                 -{formatPrice(price * qty - offer * qty)}
                                                             </div>
                                                         </div>
-
+                                                        <div className="breakup-item">
+                                                            <div>(F) Delivery Charges</div>
+                                                            <div>{formatPrice(rentDeliveryCharge)}</div>
+                                                        </div>
                                                         <div className="breakup-item">
                                                             <div>Net Amount</div>
                                                             <div>{formatPrice(offer * qty)}</div>
@@ -164,7 +192,7 @@ function OrderDetails() {
 
                                             <div className="breakup-item">
                                                 <div>Rental Total</div>
-                                                <div>${formatPrice(orderData[0]?.total_price)}</div>
+                                                <div>{formatPrice(rentTotalWithDelivery)}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -181,7 +209,6 @@ function OrderDetails() {
                                                 const price = Number(item.price);
                                                 const offer = Number(item.offer_price);
                                                 const qty = Number(item.quantity);
-
                                                 return (
                                                     <div className="data-container" key={item.id}>
                                                         <div className="break-item-title">
@@ -215,6 +242,10 @@ function OrderDetails() {
                                                             <div>(E) Net Price</div>
                                                             <div>{formatPrice(offer * qty)}</div>
                                                         </div>
+                                                        <div className="breakup-item">
+                                                            <div>(F) Delivery Charges</div>
+                                                            <div>{formatPrice(saleDeliveryCharge)}</div>
+                                                        </div>
 
                                                         <div className="discount-green">
                                                             You Will Save {formatPrice(price * qty - offer * qty)}
@@ -225,7 +256,8 @@ function OrderDetails() {
 
                                             <div className="breakup-item">
                                                 <div>Sale Total</div>
-                                                <div>{formatPrice(Number(orderData[0]?.order?.sale_total_amount))}</div>
+                                                {/* <div>{formatPrice(Number(orderData[0]?.order?.sale_total_amount))}</div> */}
+                                                <div>{formatPrice(saleTotalWithDelivery)}</div>
                                             </div>
                                         </div>
                                     </div>

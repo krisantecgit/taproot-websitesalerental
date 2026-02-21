@@ -195,7 +195,7 @@ function Checkout() {
 
         // Use createOrderPayload() helper you already created
         const payload = createOrderPayload();
-
+        payload.delivery_mode = deliveryType;
         try {
             const oredrId = localStorage.getItem("orderId");
             if (oredrId) {
@@ -728,6 +728,34 @@ function Checkout() {
             toast.error("Failed to update quantity");
         }
     }
+    const handleDeliveryTypeChange = async (type) => {
+        try {
+            setDeliveryType(type);
+
+            const orderId = localStorage.getItem("orderId");
+            if (!orderId) return;
+
+            // Call ORDER API immediately
+            const payload = createOrderPayload();
+            payload.delivery_mode = type;
+            await axiosConfig.patch(
+                `/accounts/orders/${orderId}/`,
+                payload
+            );
+
+            // OPTIONAL: if delivery charges depend on deliveryType
+            await postPpriceBreakup();
+
+            // Refresh order details
+            const orderRes = await axiosConfig(
+                `/accounts/orderdetails/?order=${orderId}`
+            );
+            setOrderData(orderRes?.data?.results || []);
+
+        } catch (err) {
+            console.error("Delivery type update failed", err);
+        }
+    };
 
     return (
         <>
@@ -976,8 +1004,8 @@ function Checkout() {
                             )
                         }
                         <div className='choose-transport'>
-                            <div><button className={`transpport-btn ${deliveryType === "company-transport" ? "active" : ""}`} onClick={() => setDeliveryType("company-transport")}>Company Transport</button></div>
-                            <div><button className={`transpport-btn ${deliveryType === "self-transport" ? "active" : ""}`} onClick={() => setDeliveryType("self-transport")}>Self Transport</button></div>
+                            <div><button className={`transpport-btn ${deliveryType === "company-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("company-transport")}>Company Transport</button></div>
+                            <div><button className={`transpport-btn ${deliveryType === "self-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("self-transport")}>Self Transport</button></div>
                         </div>
                         <div className='cart-btn mt-3' onClick={proceedToCheckout}>
                             <div>{formatPrice(orderData[0]?.order?.total_amount)}</div>

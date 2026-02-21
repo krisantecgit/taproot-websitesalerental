@@ -343,7 +343,7 @@ function Productdetails() {
                                                                             oldPrice: key === "buy" ? productDetails?.prices?.sale_price : null,
                                                                             offerPrice:
                                                                                 key === "buy"
-                                                                                    ? productDetails?.prices?.sale_offer_price
+                                                                                    ? productDetails?.prices?.sale_offer_price || productDetails?.prices?.sale_price
                                                                                     : productDetails?.prices?.rental_price,
 
                                                                             rentPerDay: key === "rent" ? productDetails?.prices?.rental_price : null,

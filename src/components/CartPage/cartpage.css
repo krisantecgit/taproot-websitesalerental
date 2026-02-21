@@ -472,7 +472,7 @@
 .breakup-background h4 {
     font-family: "Work Sans", Recline;
     font-weight: 400;
-    font-size: .8rem;
+    font-size: .9rem;
     color: rgb(34, 34, 34);
     margin-bottom: 8px;
 }
@@ -508,7 +508,7 @@
     color: rgb(85, 85, 85);
     line-height: 1;
     font-family: "Work Sans";
-    font-size: 10px;
+    font-size: .8rem;
     font-weight: 700;
 }
 .breakup-item {
@@ -516,7 +516,7 @@
     justify-content: space-between;
     /* left and right alignment */
     padding: 2px 0;
-    font-size: .7rem;
+    font-size: .9rem;
     color: rgb(34, 34, 34);
 }
 .discount-green {

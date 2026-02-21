@@ -79,7 +79,13 @@ function Header() {
     setUser(localStorage.getItem("name"));
     setLoginModal(false);
   }
-
+  function HandleWishlist() {
+    if(userId) {
+      navigate("/my/wishlist")
+    } else {
+      setLoginModal(true)
+    }
+  }
   return (
     <div className="header">
       {/* Left Content */}
@@ -162,7 +168,7 @@ function Header() {
             </div>
           </div>
         </div>
-        <FiHeart className="icon" onClick={()=>navigate("/my/wishlist")} />
+        <FiHeart className="icon" onClick={HandleWishlist} />
         <div className="cart" onClick={() => navigate("/cart")}>
           <FiShoppingCart className="icon" />
           {(buyCart.length) + (rentCart.length) > 0 && <span className="cart-count">{(buyCart.length) + (rentCart.length)}</span>}

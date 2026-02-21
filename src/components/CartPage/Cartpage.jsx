@@ -145,6 +145,7 @@ function Cartpage() {
         const payload = {
             sale_addresses: buyAddressId,
             rental_addresses: rentAddressId,
+            delivery_mode : "company-transport",
             order_details: [
                 ...buyCart.map((ele) => ({
                     variant: ele.id,

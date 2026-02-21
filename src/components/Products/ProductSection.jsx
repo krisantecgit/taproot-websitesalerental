@@ -62,7 +62,7 @@ async function removeProduct(id) {
       ) : (
         products.map((product) => {
           const listingType = getListingType(product);
-
+console.log(product,"Prrrrrrrrrrrrrrr")
           return (
             <div
               className="product-card"
