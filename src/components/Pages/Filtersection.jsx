@@ -8,7 +8,7 @@ import { sort_map } from "../../utils/sort_map";
 import "../Products/product.css"
 
 
-function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl, products, searchListingType, onListingTypeChange }) {
+function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoading, categoryurl, products, searchListingType, onListingTypeChange }) {
     const { friendlyurl } = useParams();
     const [params] = useSearchParams()
     const query = params.get("q");
@@ -50,7 +50,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     //         setActiveListingType(type);
     //     }
     // }
-    
+
     function handleActiveListingType(type) {
         setActiveListingType(type);
 
@@ -58,11 +58,14 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             onListingTypeChange(type);
         }
     }
+    // useEffect(() => {
+    //     if (!activeListingType) return;
+    //     fetchProductsFromURL();   // re-fetch API with new listing type
+    // }, [activeListingType]);
     useEffect(() => {
-        if (!activeListingType) return;
-        fetchProductsFromURL();   // re-fetch API with new listing type
+        if (!activeListingType || isPromotional) return;
+        fetchProductsFromURL();
     }, [activeListingType]);
-
     async function fetchCategories() {
         try {
             const res = await axiosConfig.get(`/catlog/with-${categoryurl}-or-both/`);
@@ -311,23 +314,23 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
     //     }
     // }
     async function handleCategoryClick(slug, id, name) {
-    if (slug !== friendlyurl) {
-        navigate(`/${categoryurl}/${slug}`);
+        if (slug !== friendlyurl) {
+            navigate(`/${categoryurl}/${slug}`);
+        }
+
+        fetchSubcategories(id);
+        try {
+            onLoading(true)
+            // Use name instead of slug for API call
+            const encodedName = encodeURIComponent(name);
+            const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
+            onProductsChange(res?.data?.results)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            onLoading(false)
+        }
     }
-    
-    fetchSubcategories(id);
-    try {
-        onLoading(true)
-        // Use name instead of slug for API call
-        const encodedName = encodeURIComponent(name);
-        const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
-        onProductsChange(res?.data?.results)
-    } catch (error) {
-        console.log(error)
-    } finally {
-        onLoading(false)
-    }
-}
     async function fetchProductsFromURL() {
         try {
             onLoading(true);
@@ -409,10 +412,8 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
         setAppliedFilters(filtersFromURL);
         // ✅ Load filtered products if any URL filters exist
         const hasFilters = price_min || price_max || optionsParam || subcategoryParam;
-        if (hasFilters) {
+        if (!isPromotional && hasFilters) {
             fetchProductsFromURL();
-        } else {
-            // fetchInitialProducts();
         }
 
         // ✅ Fetch subcategories for active category
@@ -427,7 +428,7 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             }
         }
 
-    }, [friendlyData, categoryurl]);
+    }, [friendlyData, categoryurl, activeListingType]);
     useEffect(() => {
         if (isSearchPage && category.length > 0) {
             searchSubcategory()
@@ -466,7 +467,10 @@ function FilterSection({ friendlyData, onProductsChange, onLoading, categoryurl,
             }
         }
 
-        fetchProductsFromURL();
+
+        if (!isPromotional) {
+            fetchProductsFromURL();
+        }
     }, []);
 
     const formatPrice = (price) =>

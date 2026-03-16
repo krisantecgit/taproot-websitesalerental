@@ -6,7 +6,7 @@ import loader from "../Assets/spinner.gif"
 import { useLocation } from "react-router-dom";
 const ProductSection = React.lazy(() => import("./ProductSection"))
 
-function Product({ friendlyData, products, searchListingType, onListingTypeChange }) {
+function Product({ friendlyData, products, isPromotional, searchListingType, onListingTypeChange }) {
   const [productData, setProductData] = useState(products || []);
   const location = useLocation()
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ function Product({ friendlyData, products, searchListingType, onListingTypeChang
       setProductData(products);
     }
     setCategoryURL(getCategoryFromUrl())
-  }, [products]);
+  }, [products, friendlyData]);
 
   // NEW: This function prevents filters from changing search results
   // const handleProductsChange = (filteredProducts) => {
@@ -49,6 +49,7 @@ function Product({ friendlyData, products, searchListingType, onListingTypeChang
             onProductsChange={handleProductsChange} // Use the new function
             onLoading={setLoading}
             categoryurl={categoryURL}
+            isPromotional={isPromotional}
             products={products}
             searchListingType={searchListingType} // Pass current type
             onListingTypeChange={onListingTypeChange} // Pass callback to FilterSection

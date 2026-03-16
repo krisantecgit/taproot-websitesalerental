@@ -1,0 +1,144 @@
+.coupon-section {
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 50px;
+}
+
+/* HEADER */
+.coupon-head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.coupon-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.coupon-percent {
+    width: 30px;
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.coupon-title {
+    margin: 0;
+    font-weight: 600;
+    white-space: nowrap; /* Keep text on one line */
+}
+
+.coupon-view {
+    margin: 0;
+    font-size: 12px;
+    color: #555;
+    white-space: nowrap; /* Keep text on one line */
+}
+
+.coupon-right {
+    color: #008c8c;
+    cursor: pointer;
+    font-weight: 400;
+    white-space: nowrap; /* Keep text on one line */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* SLIDER */
+.coupon-slider {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    align-items: flex-start;
+    padding-bottom: 5px; /* Add some padding for scrollbar */
+}
+
+/* CARD - Fixed width */
+.coupon-card {
+    background: rgb(255, 245, 183);
+    width: 180px;
+    min-width: 180px;  /* Fixed width - won't expand */
+    max-width: 180px;  /* Prevent expanding beyond this */
+    padding: 7px 10px;
+    border-radius: 12px;
+    flex: 0 0 auto;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.coupon-offer {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Keep offer text on one line */
+}
+
+/* TICKET STYLE */
+.coupon-ticket {
+    background: white;
+    border: 1px dashed #aaa;
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    gap: 5px; /* Add gap between code and button */
+    width: 100%; /* Take full width of parent */
+    box-sizing: border-box;
+}
+
+.coupon-code {
+    font-weight: 600;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1; /* Take available space */
+    min-width: 0; /* Allow shrinking */
+}
+
+.coupon-apply {
+    background: none;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    color: #008c8c;
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0; /* Don't shrink */
+    padding: 0 4px;
+}
+.coupon-ticket.applied {
+    color: #1D9428 !important;
+}
+.coupon-ticket.applied .coupon-apply{
+    color: #1D9428 !important;
+}
+/* TERMS */
+.coupon-terms {
+    text-align: center;
+    font-size: 10px;
+    margin-top: 8px;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* SCROLLBAR */
+.coupon-slider::-webkit-scrollbar {
+    height: 6px;
+}
+
+.coupon-slider::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 10px;
+}
+
+.coupon-slider::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}

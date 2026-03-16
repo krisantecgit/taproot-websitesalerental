@@ -4,6 +4,7 @@ import axiosConfig from "../../Services/axiosConfig";
 import "./login.css"
 
 const LoginModal = ({ show, onHide, onLoginSuccess }) => {
+  let inpRef = useRef(null);
   const [step, setStep] = useState("input");
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -27,7 +28,11 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
     setLoading(false);
     setSecondsLeft(0);
   };
-
+  useEffect(() => {
+    if (inpRef.current) {
+      inpRef.current.focus()
+    }
+  }, [])
   const close = () => {
     reset();
     onHide();
@@ -188,7 +193,7 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
   };
 
   return (
-    <Modal show={show} onHide={close} centered>
+    <Modal show={show} onHide={close} centered onEntered={() => inpRef.current?.focus()}>
       <Modal.Header closeButton>
         <Modal.Title>
           {step === "input"}
@@ -239,6 +244,7 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
                 style={{ maxWidth: "290px", border: "1px solid " }}
                 placeholder="Mobile Number"
                 value={contact}
+                ref={inpRef}
                 maxLength={10}
                 onChange={(e) => {
                   setContact(e.target.value);

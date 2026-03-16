@@ -65,7 +65,7 @@ function OrderDetails() {
             ? Number(orderData[0]?.order?.rental_delivery_charges || 0)
             : 0;
     const rentTotalWithDelivery =
-        Number(orderData[0]?.order?.rental_total_amount || 0) + rentDeliveryCharge;
+        Number(orderData[0]?.net_amount || 0) + Number(orderData[0]?.delivery_charges);
     async function handlePrint(id) {
         try {
             const res = await axiosConfig(`/accounts/pdf/${id}/`, {responseType : "blob"})
@@ -176,11 +176,11 @@ function OrderDetails() {
                                                         </div>
                                                         <div className="breakup-item">
                                                             <div>(F) Delivery Charges</div>
-                                                            <div>{formatPrice(rentDeliveryCharge)}</div>
+                                                            <div>{formatPrice(item.delivery_charges)}</div>
                                                         </div>
                                                         <div className="breakup-item">
                                                             <div>Net Amount</div>
-                                                            <div>{formatPrice(offer * qty)}</div>
+                                                            <div>{formatPrice(orderData[0]?.offer_price)}</div>
                                                         </div>
 
                                                         <div className="discount-green">
@@ -192,7 +192,7 @@ function OrderDetails() {
 
                                             <div className="breakup-item">
                                                 <div>Rental Total</div>
-                                                <div>{formatPrice(rentTotalWithDelivery)}</div>
+                                                <div>{formatPrice(orderData[0]?.net_amount)}</div>
                                             </div>
                                         </div>
                                     </div>

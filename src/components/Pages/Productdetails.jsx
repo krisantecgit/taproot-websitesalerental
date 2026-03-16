@@ -16,6 +16,7 @@ import { generateUUID } from '../../utils/RandomId';
 
 function Productdetails() {
     const { state } = useLocation();
+    console.log(state, "fahhhhhhh")
     const dispatch = useDispatch();
     const { friendlyurl } = useParams();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,34 +36,7 @@ function Productdetails() {
             style: "currency",
             currency: "USD",
         }).replace("$", "$ ");
-    // useEffect(() => {
-    //     if (state?.listingType) {
-    //         setListingType(state.listingType);
-    //         if (state.listingType === 'buy') {
-    //             setSelectedOption('buy');
-    //         } else if (state.listingType === 'rent') {
-    //             setSelectedOption('rent');
-    //         } else if (state.listingType === 'buy/rent') {
-    //             setSelectedOption('buy')
-    //         }
 
-    //     }
-    // }, [state]);
-    //     useEffect(() => {
-    //     if (productDetails?.varient_listing_type) {
-    //         const apiListingType = productDetails.varient_listing_type;
-    //         setListingType(apiListingType);
-
-    //         // Set default selected option based on API
-    //         if (apiListingType === 'buy') {
-    //             setSelectedOption('buy');
-    //         } else if (apiListingType === 'rent') {
-    //             setSelectedOption('rent');
-    //         } else if (apiListingType === 'buy/rent') {
-    //             setSelectedOption('buy'); // Default to buy for buy/rent
-    //         }
-    //     }
-    // }, [productDetails]);
     useEffect(() => {
         if (productDetails?.varient_listing_type) {
             const apiListingType = productDetails.varient_listing_type;
@@ -97,8 +71,11 @@ function Productdetails() {
             setProduct(res.data.product_data);
         }
         async function fetchProductDetails() {
+            const variantId =
+                state?.item?.varient?.id ||
+                state?.item?.id;
             try {
-                const res = await axiosConfig.get(`/catlog/product-variant-detail/${state?.item?.id}`);
+                const res = await axiosConfig.get(`/catlog/product-variant-detail/${variantId}`);
                 setProductDetails(res.data)
             } catch (error) {
                 console.log(error)
@@ -193,15 +170,15 @@ function Productdetails() {
                                 </div>
                             </>
                         )}
-                         <button className="arrow left" onClick={handlePrev}>
-                        <IoArrowBack />
-                    </button>
-                    <button className="arrow right" onClick={handleNext}>
-                        <IoArrowForward />
-                    </button>
+                        <button className="arrow left" onClick={handlePrev}>
+                            <IoArrowBack />
+                        </button>
+                        <button className="arrow right" onClick={handleNext}>
+                            <IoArrowForward />
+                        </button>
                     </div>
 
-                   
+
 
                     <div className="thumbnail-section">
                         {images.map((img, index) => (

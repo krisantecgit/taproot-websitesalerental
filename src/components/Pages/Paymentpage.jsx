@@ -66,9 +66,9 @@ function Payment() {
           <div className="amout-total-h">
             <p><HiOutlineCurrencyDollar /></p>
             <p className="amount-title">Total amount payable now</p>
-            <p className="amount-saved">You have saved $36,267.00 on this order</p>
+            <p className="amount-saved">You have saved {formatPrice(orderDetails[0]?.total_amount-orderDetails[0]?.net_amount)} on this order</p>
           </div>
-          <div className="total-payment">{formatPrice(orderDetails[0]?.total_amount)}</div>
+          <div className="total-payment">{formatPrice(orderDetails[0]?.net_amount)}</div>
         </div>
 
         <div className="payment-section">
@@ -107,7 +107,7 @@ function Payment() {
             <div className="payment-right">
               {active === "cash" && (
                 <div className="upi-box">
-                  <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails[0]?.total_amount)}</span></button>
+                  <button onClick={PlaceOrderByCOD}><span>PLACE ORDER</span> <span>{formatPrice(orderDetails[0]?.net_amount)}</span></button>
                 </div>
               )}
               {active === "online" && (

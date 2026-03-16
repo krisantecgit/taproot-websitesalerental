@@ -3,6 +3,7 @@ import { TbTruckDelivery } from 'react-icons/tb'
 import { FaArrowRight, FaRegClock } from 'react-icons/fa6'
 import Header from '../header/Header'
 import "../CartPage/cartpage.css"
+import "./checkout-coupon.css"
 import { useDispatch, useSelector } from 'react-redux'
 import { FiTrash2 } from 'react-icons/fi'
 import { addToBuyCart, addToRentCart, decreaseBuyQty, decreaseRentQty, removeFromBuyCart, removeFromRentCart, setRentalPackage } from '../../redux/cartSlice'
@@ -16,13 +17,11 @@ import MonthOffcanvas from '../CartPage/MonthCanva'
 import CheckoutNavbar from '../CheckoutNavbar/CheckoutNavbar'
 import DeleteCartItemModal from '../CartPage/DeleteCartItemModal'
 import PackagesPlan from '../CartPage/Packages'
+import CouponOffcanvas from './CouponOffCanva'
 
 function Checkout() {
     const { buyCart, rentCart } = useSelector(store => store.cart)
-    const [showMonth, setShowMonth] = useState(false);
-    const [selectedItemId, setSelectedItemId] = useState(null);
     const [deliveryType, setDeliveryType] = useState("company-transport")
-    const [rentalData, setRentalData] = useState([])
     const [loginModal, setLoginModal] = useState(false)
     const [userId, setUserId] = useState(localStorage.getItem("userid"))
     const [orderData, setOrderData] = useState([])
@@ -36,24 +35,72 @@ function Checkout() {
     const [packagesData, setPackagesData] = useState([]);
     const [selectedPackage, setSelectedPackage] = useState(null);
     const [selectedCartItemId, setSelectedCartItemId] = useState(null);
+    const [saleCouponLoading, setSaleCouponLoading] = useState(false)
+    const [saleCoupon, setSaleCoupon] = useState([]);
+    const [rentCouponLoading, setRentcouponLoading] = useState(false)
+    const [offerCanva, setOfferCanva] = useState(false);
+    const [couponType, setCouponType] = useState(""); // sale or rental
+    const [rentCoupon, setRentCoupon] = useState([])
+    const [saleCouponApplied, setSaleCouponApplied] = useState([]);
+    const [rentCouponApplied, setRentCouponApplied] = useState([])
+    const appliedSaleCoupon = saleCouponApplied[0]?.coupon_applied || null;
+    const appliedRentCoupon = rentCouponApplied[0]?.coupon_applied || null;
     const dispatch = useDispatch();
     let navigate = useNavigate()
-    useEffect(() => {
-        async function fetchExistingOrderData() {
-            setLoading(true);
-            try {
-                const res = await axiosConfig(`/accounts/orderdetails/?order=${localStorage.getItem("orderId")}`);
-                setOrderData(res?.data?.results);
+    async function fetchExistingOrderData() {
+        setLoading(true);
+        try {
+            const res = await axiosConfig(`/accounts/orderdetails/?order=${localStorage.getItem("orderId")}`);
+            setOrderData(res?.data?.results);
+            if (res?.data?.results[0]?.order?.coupon_code &&
+                res.data.results[0].order.coupon_code.length > 0) {
 
-                // Sync cart data with backend
+                const coupons = res.data.results[0].order.coupon_code;
+
+                // Separate coupons by type
+                const saleCoupons = coupons.filter(coupon => coupon.coupon_type === "sale");
+                const rentCoupons = coupons.filter(coupon => coupon.coupon_type === "rental");
+
+                setSaleCouponApplied(saleCoupons);
+                setRentCouponApplied(rentCoupons);
                 syncCartWithOrderData(res?.data?.results);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
+            } else {
+                setSaleCouponApplied([])
+                setRentCouponApplied([])
             }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    async function getSaleCoupon() {
+        setSaleCouponLoading(true)
+        try {
+            const res = await axiosConfig("/catlog/coupons/?coupon_type=sale");
+            setSaleCoupon(res?.data?.results)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setSaleCouponLoading(false)
+        }
+    }
+    async function getRentCoupon() {
+        setRentcouponLoading(true)
+        try {
+            const res = await axiosConfig("/catlog/coupons/?coupon_type=rental");
+            setRentCoupon(res?.data?.results)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setRentcouponLoading(false)
+        }
+    }
+    useEffect(() => {
         fetchExistingOrderData();
+        getSaleCoupon()
+        getRentCoupon()
     }, []);
     const fetchPackagesForVariant = async (variantId) => {
         try {
@@ -64,16 +111,7 @@ function Checkout() {
             setPackagesData([]);
         }
     };
-    // useEffect(() => {
-    //     if (!loading) {
-    //         const hasExistingOrder = orderData.length > 0;
-    //         const hasCartItems = buyCart.length > 0 || rentCart.length > 0;
 
-    //         if (!hasExistingOrder && !hasCartItems) {
-    //             navigate("/cart");
-    //         }
-    //     }
-    // }, [loading, orderData, buyCart, rentCart, navigate]);
     useEffect(() => {
         if (buyCart.length === 0 && rentCart.length === 0) {
             navigate("/cart");
@@ -90,32 +128,7 @@ function Checkout() {
         }).format(price);
         return `$ ${formatted}`;
     };
-    // async function postPpriceBreakup() {
-    //     const totalBuyQty = buyCart.reduce((total, item) => total + (item?.qty || 0), 0);
-    //     const totalRentQty = rentCart.reduce((total, item) => total + (item?.qty || 0), 0);
 
-    //     const payload = {
-    //         items: [
-    //             ...(buyCart.length > 0 ? [{
-    //                 cart_type: "buy",
-    //                 quantity: totalBuyQty,
-    //                 sale_address_id: saleAddress?.id
-    //             }] : []),
-    //             ...(rentCart.length > 0 ? [{
-    //                 cart_type: "rent",
-    //                 quantity: totalRentQty,
-    //                 rental_address_id: rentalAddress?.id
-    //             }] : [])
-    //         ]
-    //     }
-    //     try {
-    //         const res = await axiosConfig.post(`/accounts/deliverycharges/`, payload)
-    //         setPriceBreakup(res?.data?.details)
-    //         console.log(res)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
     const rentalDeliveryCharge = priceBreakup?.find(
         item => item.cart_type === "rent"
     )?.delivery_charges || 0;
@@ -212,79 +225,7 @@ function Checkout() {
             console.log(error)
         }
     }
-    // async function handleRentQtyUpdate(item, type) {
-    //     try {
-    //         // const variantId = item?.varient?.id ?? item?.id;
-    //         const uniqueId = item?.unique_id;
 
-    //         const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-
-    //         const updatedCart = rentCart?.map(ele => {
-    //             if (ele.id === variantId) {
-    //                 if (type === "increase") {
-    //                     return { ...ele, qty: ele.qty + 1 };
-    //                 } else {
-    //                     return { ...ele, qty: ele.qty > 1 ? ele.qty - 1 : 1 };
-    //                 }
-    //             }
-    //             return ele;
-    //         });
-
-    //         // 3️⃣ Save updated cart immediately to localStorage + Redux
-    //         localStorage.setItem("rentCart", JSON.stringify(updatedCart));
-    //         if (type === "increase") {
-    //             dispatch(addToRentCart({ id: variantId }));
-    //         } else {
-    //             dispatch(decreaseRentQty(variantId));
-    //         }
-
-    //         const orderId = localStorage.getItem("orderId");
-    //         if (orderId) {
-    //             const rentAddress = JSON.parse(localStorage.getItem("rentalAddress"));
-    //             const saleAddress = JSON.parse(localStorage.getItem("saleAddress"));
-
-    //             const payload = {
-    //                 sale_addresses: saleAddress?.id || "",
-    //                 rental_addresses: rentAddress?.id || "",
-    //                 order_details: [
-    //                     ...(JSON.parse(localStorage.getItem("buyCart")) || [])?.map(ele => ({
-    //                         variant: ele.id,
-    //                         item_type: ele.type,
-    //                         quantity: ele.qty,
-    //                     })),
-    //                     ...updatedCart?.map(ele => ({
-    //                         variant: ele.id,
-    //                         quantity: ele.qty,
-    //                         item_type: "rental",
-    //                         rental_start_date: ele.fromDate,
-    //                         rental_end_date: ele.toDate,
-    //                     })),
-    //                 ],
-    //             };
-
-    //             await axiosConfig.patch(`/accounts/orders/${orderId}/`, payload);
-    //         }
-
-    //         // 5️⃣ Now refresh rental charges + order details from server
-    //         const res = await axiosConfig.post("/accounts/rental_charges/", {
-    //             variants: updatedCart?.map(e => ({
-    //                 variant_id: e.id,
-    //                 quantity: e.qty,
-    //                 from_date: e.fromDate,
-    //                 to_date: e.toDate,
-    //             })),
-    //         });
-    //         setRentalData(res?.data?.results || []);
-
-    //         const orderRes = await axiosConfig(
-    //             `/accounts/orderdetails/?order=${localStorage.getItem("orderId")}`
-    //         );
-    //         setOrderData(orderRes?.data?.results || []);
-    //         await postPpriceBreakup()
-    //     } catch (err) {
-    //         console.error("Update error:", err);
-    //     }
-    // }
     const handlePackageSelect = (packageData) => {
         if (selectedCartItemId) {
             // Update Redux
@@ -327,76 +268,7 @@ function Checkout() {
             toast.error("Failed to update package");
         }
     };
-    // const handleRentQtyUpdate = async (item, type) => {
-    //     try {
-    //         // 1. Get the unique_id from backend response
-    //         const uniqueId = item?.unique_id; // This comes from orderData
 
-    //         // 2. Find item in rentCart by unique_id (cartItemId)
-    //         const rentCart = JSON.parse(localStorage.getItem("rentCart")) || [];
-    //         const cartItem = rentCart.find(ele => ele.cartItemId === uniqueId);
-
-    //         if (!cartItem) return;
-
-    //         // 3. Update quantity
-    //         const updatedCart = rentCart.map(ele => {
-    //             if (ele.cartItemId === uniqueId) {  // ✅ Correct: compare by cartItemId
-    //                 return {
-    //                     ...ele,
-    //                     qty: type === "increase" ? ele.qty + 1 : Math.max(1, ele.qty - 1)
-    //                 };
-    //             }
-    //             return ele;
-    //         });
-
-    //         // 4. Update localStorage
-    //         localStorage.setItem("rentCart", JSON.stringify(updatedCart));
-
-    //         // 5. Update Redux
-    //         if (type === "increase") {
-    //             dispatch(addToRentCart(cartItem));
-    //         } else {
-    //             dispatch(decreaseRentQty(cartItem.cartItemId));
-    //         }
-
-    //         // 6. Send UPDATED payload to backend with package data
-    //         const orderId = localStorage.getItem("orderId");
-    //         if (orderId) {
-    //             const buyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
-
-    //             const payload = {
-    //                 sale_addresses: saleAddress?.id || "",
-    //                 rental_addresses: rentalAddress?.id || "",
-    //                 order_details: [
-    //                     ...buyCart.map(ele => ({
-    //                         variant: ele.id,
-    //                         item_type: "sale",
-    //                         quantity: ele.qty
-    //                     })),
-    //                     ...updatedCart.map(ele => ({
-    //                         variant: ele.id,
-    //                         quantity: ele.qty,
-    //                         item_type: "rental",
-    //                         rental_start_date: ele.fromDate,
-    //                         rental_end_date: ele.toDate,
-    //                         package_name: ele.selectedPackage?.package_name,  // ✅ SEND PACKAGE
-    //                         duration_value: ele.selectedPackage?.duration_value,  // ✅ SEND DURATION
-    //                         unique_id: ele.cartItemId  // ✅ SEND UNIQUE ID
-    //                     }))
-    //                 ]
-    //             };
-
-    //             await axiosConfig.patch(`/accounts/orders/${orderId}/`, payload);
-    //         }
-
-    //         // 7. Refresh data
-    //         const orderRes = await axiosConfig(`/accounts/orderdetails/?order=${orderId}`);
-    //         setOrderData(orderRes?.data?.results || []);
-
-    //     } catch (err) {
-    //         console.error("Update error:", err);
-    //     }
-    // }
     const handleRentQtyUpdate = async (item, type) => {
         try {
             const uniqueId = item?.unique_id;
@@ -686,10 +558,7 @@ function Checkout() {
     async function handleBuyQtyUpdate(item, type) {
         try {
             const variantId = item?.varient?.id ?? item?.id;
-
-            // 1️⃣ Get latest buyCart from localStorage
             const buyCart = JSON.parse(localStorage.getItem("buyCart")) || [];
-
             // 2️⃣ Update quantity locally
             const updatedCart = buyCart?.map(ele => {
                 if (ele.id === variantId) {
@@ -718,8 +587,19 @@ function Checkout() {
             }
 
             // 5️⃣ Refresh order details
-            const orderRes = await axiosConfig(`/accounts/orderdetails/?order=${localStorage.getItem("orderId")}`);
-            setOrderData(orderRes?.data?.results || []);
+            const res = await axiosConfig(`/accounts/orderdetails/?order=${localStorage.getItem("orderId")}`);
+            setOrderData(res?.data?.results || []);
+            if (res?.data?.results[0]?.order?.coupon_code) {
+                const coupons = res.data.results[0].order.coupon_code;
+                const saleCoupons = coupons.filter(coupon => coupon.coupon_type === "sale");
+                const rentCoupons = coupons.filter(coupon => coupon.coupon_type === "rental");
+
+                setSaleCouponApplied(saleCoupons);
+                setRentCouponApplied(rentCoupons);
+            } else {
+                setSaleCouponApplied([]);
+                setRentCouponApplied([]);
+            }
 
             await postPpriceBreakup();
 
@@ -756,6 +636,66 @@ function Checkout() {
             console.error("Delivery type update failed", err);
         }
     };
+    async function applySaleCoupon(couponCode, couponId) {
+        const orderId = localStorage.getItem("orderId")
+
+        if (appliedSaleCoupon === couponId) {
+            let payload = {
+                order_id: orderId,
+                coupon_code: couponCode,
+                coupon_type: "sale"
+            }
+            try {
+                await axiosConfig.post("/accounts/orders/remove-coupon/", payload)
+                await fetchExistingOrderData()
+                toast.success("remove coupon successfully")
+            } catch (error) {
+                console.log(error)
+            }
+        } else {
+            let payload = {
+                order_id: orderId,
+                coupon_code: couponCode
+            }
+            try {
+                await axiosConfig.post("/accounts/orders/apply-coupon/", payload);
+                await fetchExistingOrderData()
+                toast.success("coupon applied successfully")
+            } catch (error) {
+                toast.error(error.response.data.error[0])
+            }
+        }
+    }
+    async function applyRentCoupon(couponCode, couponId) {
+        const orderId = localStorage.getItem("orderId")
+
+        if (appliedRentCoupon === couponId) {
+            let payload = {
+                order_id: orderId,
+                coupon_code: couponCode,
+                coupon_type: "rental"
+            }
+            try {
+                await axiosConfig.post("/accounts/orders/remove-coupon/", payload)
+                await fetchExistingOrderData()
+                toast.success("remove coupon successfully")
+            } catch (error) {
+                console.log(error)
+            }
+        } else {
+            let payload = {
+                order_id: orderId,
+                coupon_code: couponCode
+            }
+            try {
+                await axiosConfig.post("/accounts/orders/apply-coupon/", payload);
+                await fetchExistingOrderData()
+                toast.success("coupon applied successfully")
+            } catch (error) {
+                toast.error(error.response.data.error[0])
+            }
+        }
+    }
 
     return (
         <>
@@ -763,7 +703,6 @@ function Checkout() {
             <div className="cart-container">
                 <div className="cart-left">
                     {
-
                         <>
                             {
                                 buyCart.length > 0 && (
@@ -785,7 +724,6 @@ function Checkout() {
                                             <div className="cart-section-header">
                                                 Buy Cart <span>{buyCart.length} items</span>
                                             </div>
-
                                             {
                                                 orderData.length > 0 ? (
                                                     orderData?.map((item) => (
@@ -1008,12 +946,115 @@ function Checkout() {
                             <div><button className={`transpport-btn ${deliveryType === "self-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("self-transport")}>Self Transport</button></div>
                         </div>
                         <div className='cart-btn mt-3' onClick={proceedToCheckout}>
-                            <div>{formatPrice(orderData[0]?.order?.total_amount)}</div>
+                            <div>{formatPrice(orderData[0]?.order?.net_amount)}</div>
                             <div>
                                 PROCEED <IoArrowForward size={17} />
                             </div>
                         </div>
                     </div>
+                    {
+                        buyCart.length > 0 && (
+                            <div className="coupon-section">
+                                <div className="coupon-head">
+                                    <div className="coupon-left">
+                                        <img
+                                            src={require("../Assets/percent-img.png")}
+                                            alt="coupon"
+                                            className="coupon-percent"
+                                        />
+
+                                        <div>
+                                            <p className="coupon-title">Sale Offers & Discounts</p>
+                                            <p className="coupon-view"
+                                                onClick={() => {
+                                                    setCouponType("sale");
+                                                    setOfferCanva(true);
+                                                }}
+                                            >View all</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="coupon-right" onClick={() => { setCouponType("sale"); setOfferCanva(true); }}>
+                                        Have a Coupon code?
+                                    </div>
+
+                                </div>
+
+                                <div className="coupon-slider">
+                                    {saleCoupon?.map((coupon) => (
+                                        <div className="coupon-card" key={coupon.id}>
+                                            <p className="coupon-offer">
+                                                {coupon.description || coupon.offer_text || "Special Offer"} {/* Make sure to show the offer text */}
+                                            </p>
+
+                                            <div className={`coupon-ticket ${appliedSaleCoupon === coupon.id ? "applied" : ""}`}>
+                                                <span className="coupon-code">
+                                                    {coupon.code}
+                                                </span>
+                                                <button className="coupon-apply" onClick={() => applySaleCoupon(coupon.code, coupon.id)}>
+                                                    {appliedSaleCoupon === coupon.id ? "Remove" : "Apply"}
+                                                </button>
+                                            </div>
+
+                                            <p className="coupon-terms">
+                                                *Terms and Conditions
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </div>
+                        )
+                    }
+                    {
+                        rentCart.length > 0 && (
+                            <div className="coupon-section">
+                                <div className="coupon-head">
+                                    <div className="coupon-left">
+                                        <img
+                                            src={require("../Assets/percent-img.png")}
+                                            alt="coupon"
+                                            className="coupon-percent"
+                                        />
+
+                                        <div>
+                                            <p className="coupon-title">Rent Offers & Discounts</p>
+                                            <p className="coupon-view" onClick={() => { setCouponType("rental"); setOfferCanva(true); }}>View all</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="coupon-right" onClick={() => { setCouponType("rental"); setOfferCanva(true); }}>
+                                        Have a Coupon code?
+                                    </div>
+
+                                </div>
+
+                                <div className="coupon-slider">
+                                    {rentCoupon?.map((coupon) => (
+                                        <div className="coupon-card" key={coupon.id}>
+                                            <p className="coupon-offer">
+                                                {coupon.description || coupon.offer_text || "Special Offer"}
+                                            </p>
+
+                                            <div className={`coupon-ticket ${appliedRentCoupon === coupon.id ? "applied" : ""}`}>
+                                                <span className="coupon-code">
+                                                    {coupon.code}
+                                                </span>
+                                                <button className="coupon-apply" onClick={() => applyRentCoupon(coupon.code, coupon.id)}>
+                                                    {appliedRentCoupon === coupon.id ? "Remove" : "Apply"}
+                                                </button>
+                                            </div>
+
+                                            <p className="coupon-terms">
+                                                *Terms and Conditions
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                            </div>
+                        )
+                    }
                     <div className='price-breakup-section'>
                         {
                             orderData.length > 0 && (
@@ -1078,9 +1119,17 @@ function Checkout() {
                                                                     </div>
                                                                 </div>
                                                             }
+                                                            {
+                                                                rentCouponApplied && rentCouponApplied.length > 0 && (
+                                                                    <div className="breakup-item text-success">
+                                                                        <div>Coupon Discount</div>
+                                                                        <div>-{formatPrice(rentCouponApplied[0]?.coupon_discount)}</div>
+                                                                    </div>
+                                                                )
+                                                            }
                                                             <div className="breakup-item">
                                                                 <div>Rental Total</div>
-                                                                <div>{formatPrice(rentalTotal)}</div>
+                                                                <div>{formatPrice(rentalTotal - (rentCouponApplied[0]?.coupon_discount || 0))}</div>
                                                             </div>
                                                         </div>
 
@@ -1125,16 +1174,23 @@ function Checkout() {
                                                                 deliveryType === "company-transport" && <div className="breakup-item">
                                                                     <div>Delivery Charges</div>
                                                                     <div>
-                                                                        {/* {priceBreakup?.map((rb, index) => (
-                                                                            rb.cart_type === "buy" && <div key={index}>{formatPrice(rb.delivery_charges)}</div>
-                                                                        ))} */}
                                                                         ${buyDeliveryCharge}
                                                                     </div>
                                                                 </div>
                                                             }
+                                                            {
+                                                                saleCouponApplied && saleCouponApplied.length > 0 && (
+                                                                    <div className="breakup-item text-success">
+                                                                        <div>Coupon Discount</div>
+                                                                        <div>-{formatPrice(saleCouponApplied[0]?.coupon_discount)}</div>
+                                                                    </div>
+                                                                )
+                                                            }
                                                             <div className="breakup-item">
                                                                 <div>Sale Total</div>
-                                                                <div>{formatPrice(buyTotal)}</div>
+                                                                <div>
+                                                                    {formatPrice(buyTotal - (saleCouponApplied[0]?.coupon_discount || 0))}
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -1172,6 +1228,18 @@ function Checkout() {
                     }
                 }}
                 selectedItem={selectedItem}
+            />
+            <CouponOffcanvas
+                show={offerCanva}
+                handleClose={() => setOfferCanva(false)}
+                couponType={couponType}
+                saleCoupon={saleCoupon}
+                rentCoupon={rentCoupon}
+                applySaleCoupon={applySaleCoupon}
+                applyRentCoupon={applyRentCoupon}
+                appliedSaleCoupon={appliedSaleCoupon}
+                appliedRentCoupon={appliedRentCoupon}
+                refreshCoupons={fetchExistingOrderData}
             />
             {!userId && <LoginModal show={loginModal} onHide={() => setLoginModal(false)} onLoginSuccess={handleLoginSuccess} />}
         </>

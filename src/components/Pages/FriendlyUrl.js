@@ -14,9 +14,8 @@ const FriendlyUrlComponent = () => {
     const fetchFriendlyData = async () => {
       try {
         const res = await axiosConfig.get(`/catlog/seo-url/${friendlyurl}`);
-        const result = res.data;
-        setData(result);
-        setType(result.product_type);
+        setData(res.data.product_data);
+        setType(res.data.product_type);
       } catch (err) {
         console.error("Error loading friendly URL", err);
         navigate("/404");
@@ -25,7 +24,7 @@ const FriendlyUrlComponent = () => {
     fetchFriendlyData();
   }, [friendlyurl]);
 
-  if (!data) return <p className="d-flex justify-content-center align-items-center" style={{height : "100vh"}}><img src={require("../Assets/spinner.gif")} alt="Loading content" height={150} width={150} /></p>;
+  if (!data) return <p className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}><img src={require("../Assets/spinner.gif")} alt="Loading content" height={150} width={150} /></p>;
 
   return (
     <div className="friendly-page-container">
@@ -37,8 +36,12 @@ const FriendlyUrlComponent = () => {
 
       {type === "category" && (
         <>
-          <Product friendlyData ={data} />
+          <Product friendlyData={data} />
         </>
+      )}
+
+      {type === "promotionalcategory" && (
+        <Product products={data.results} isPromotional={true} />
       )}
 
       {type === "page" && (
@@ -48,7 +51,7 @@ const FriendlyUrlComponent = () => {
         </div>
       )}
 
-      {!["product", "category", "page"].includes(type) && (
+      {!["product", "category", "promotionalcategory", "page"].includes(type) && (
         <p>Unknown content type: {type}</p>
       )}
     </div>
