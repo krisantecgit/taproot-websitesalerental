@@ -7,7 +7,7 @@ import { FaArrowRight, FaTrash } from "react-icons/fa";
 import axiosConfig from "../../Services/axiosConfig"
 function ProductSection({ products = [], loading = false, searchListingType, onRefresh }) {
   const location = useLocation();
-   
+
   const navigate = useNavigate();
   const { categoryurl } = useParams();
 
@@ -43,14 +43,14 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
       state: { item: product, listingType: urlType }
     });
   }
-async function removeProduct(id) {
-  try {
-    await axiosConfig.delete(`/catlog/wishlists/${id}/`)
-    if(onRefresh) onRefresh()
-  } catch (error) {
-    console.log(error)
+  async function removeProduct(id) {
+    try {
+      await axiosConfig.delete(`/catlog/wishlists/${id}/`)
+      if (onRefresh) onRefresh()
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
   if (loading) return <img src={loader} alt="loading" />;
 
   if (!loading && products.length === 0) return <p className="d-flex justify-content-center align-items-center">No products found.</p>;
@@ -61,8 +61,8 @@ async function removeProduct(id) {
         <img src={loader} alt="loading" />
       ) : (
         products.map((product) => {
+          console.log(product, "llllllll")
           const listingType = getListingType(product);
-console.log(product,"Prrrrrrrrrrrrrrr")
           return (
             <div
               className="product-card"
@@ -133,12 +133,14 @@ console.log(product,"Prrrrrrrrrrrrrrr")
                       </div>
                     )}
                   </div>
-                  {console.log(product,"poiuytrew")}
-                    <div className="hover-icon">
-                      {
-                        location.pathname === "/my/wishlist" ?  <FaTrash onClick={(e)=>{e.stopPropagation();removeProduct(product.wishlistId);}} className="delete-icon" /> : <FaArrowRight className="forward-icon" />
-                      }
-                    </div>
+                  {product.sale_stock <= product.debug?.applied_threshold && (
+                    <div className="stock-error">Product going to out of stock</div>
+                  )}
+                  <div className="hover-icon">
+                    {
+                      location.pathname === "/my/wishlist" ? <FaTrash onClick={(e) => { e.stopPropagation(); removeProduct(product.wishlistId); }} className="delete-icon" /> : <FaArrowRight className="forward-icon" />
+                    }
+                  </div>
                 </div>
               </div>
             </div>

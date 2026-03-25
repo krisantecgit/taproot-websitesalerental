@@ -99,7 +99,7 @@ const category = params.get("category") || "";
     const price_max = params.get("price_max") || "";
     const options = params.get("options") || "";
       const res = await axiosConfig.get(
-        `/catlog/category-variants/?listing_type=${listingType}&search=${encodeURIComponent(decodedQuery)}&category=${category}&subcategory=${subcategory}&price_min=${price_min}&price_max=${price_max}&options=${options}`
+        `/catlog/category-variants/?listing_type=${listingType}&search=${encodeURIComponent(decodedQuery)}?suspended=false&category=${category}&subcategory=${subcategory}&price_min=${price_min}&price_max=${price_max}&options=${options}`
       );
       setProducts(res?.data?.results || []);
     }

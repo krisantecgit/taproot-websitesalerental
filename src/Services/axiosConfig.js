@@ -1,8 +1,8 @@
 import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: "https://api-uat.taprootcrm.com/",
-  baseURL: "http://192.168.1.12:1234",
-  // baseURL: "http://192.168.0.160:1234",
+  // baseURL: "http://192.168.1.9:1234",
+  // baseURL: "http://192.168.0.180:4567",
 });
 
 // Add a request interceptor to attach the token from localStorage
@@ -13,9 +13,9 @@ axiosInstance.interceptors.request.use((config) => {
   }
 
   // config.headers["domain"] = "uat.taprootcrm.com";
-  config.headers["domain"] = "192.168.1.12";
+  // config.headers["domain"] = "192.168.0.180";
   // config.headers["domain"] = "central";
-  // config.headers["domain"] = window.location.hostname.replace("www.", "");
+  config.headers["domain"] = window.location.hostname.replace("www.", "");
   return config;
 });
 

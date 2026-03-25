@@ -336,7 +336,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             onLoading(true);
 
             // const selectedCategory = friendlyData?.product_data?.slug || friendlyData?.product_data?.name || "";
-            const selectedCategory = friendlyData?.product_data?.name || "";
+            const selectedCategory = friendlyData?.name || "";
 
             const priceMin = params.get("price_min") || "";
             const priceMax = params.get("price_max") || "";
@@ -347,7 +347,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             //     `/catlog/category-variants/?listing_type=${categoryurl}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             // );
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}?suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             );
             onProductsChange(res.data.results || []);
         } catch (err) {

@@ -23,6 +23,7 @@
 
 .coupon-title {
     margin: 0;
+    font-size: 17px;
     font-weight: 600;
     white-space: nowrap; /* Keep text on one line */
 }

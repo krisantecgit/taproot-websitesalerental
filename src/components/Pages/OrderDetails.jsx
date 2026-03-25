@@ -68,11 +68,11 @@ function OrderDetails() {
         Number(orderData[0]?.net_amount || 0) + Number(orderData[0]?.delivery_charges);
     async function handlePrint(id) {
         try {
-            const res = await axiosConfig(`/accounts/pdf/${id}/`, {responseType : "blob"})
-            const file = new Blob([res.data], {type : "application/pdf"})
+            const res = await axiosConfig(`/accounts/pdf/${id}/`, { responseType: "blob" })
+            const file = new Blob([res.data], { type: "application/pdf" })
             const fileUrl = URL.createObjectURL(file)
             window.open(fileUrl, "_blank", "noopener, noreferrer")
-        } catch(error) {
+        } catch (error) {
             console.log(error)
             alert("pdf not available")
         }
@@ -88,7 +88,7 @@ function OrderDetails() {
                                     <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
                                     <div className='d-flex gap-2 align-items-center'>
                                         <h4 className='mb-0'>Order Id: {orderId}</h4>
-                                        <FaEye style={{cursor : "pointer"}} onClick={()=> handlePrint(orderId)} />
+                                        <FaEye style={{ cursor: "pointer" }} onClick={() => handlePrint(orderId)} />
                                     </div>
                                 </div>
                                 {orderData.map((item) => (
@@ -174,8 +174,12 @@ function OrderDetails() {
                                                                 -{formatPrice(price * qty - offer * qty)}
                                                             </div>
                                                         </div>
+                                                        <div className="breakup-item text-success">
+                                                            <div>(F) Rental Coupon Discount</div>
+                                                            <div>-{formatPrice(orderData[0]?.rental_coupon_discount)}</div>
+                                                        </div>
                                                         <div className="breakup-item">
-                                                            <div>(F) Delivery Charges</div>
+                                                            <div>(G) Delivery Charges</div>
                                                             <div>{formatPrice(item.delivery_charges)}</div>
                                                         </div>
                                                         <div className="breakup-item">
@@ -237,13 +241,16 @@ function OrderDetails() {
                                                                 -{formatPrice(price * qty - offer * qty)}
                                                             </div>
                                                         </div>
-
+                                                        <div className="breakup-item text-success">
+                                                            <div>(E) Sale Coupon Discount</div>
+                                                            <div>-{formatPrice(orderData[0]?.sale_coupon_discount)}</div>
+                                                        </div>
                                                         <div className="breakup-item">
-                                                            <div>(E) Net Price</div>
+                                                            <div>(F) Net Price</div>
                                                             <div>{formatPrice(offer * qty)}</div>
                                                         </div>
                                                         <div className="breakup-item">
-                                                            <div>(F) Delivery Charges</div>
+                                                            <div>(G) Delivery Charges</div>
                                                             <div>{formatPrice(saleDeliveryCharge)}</div>
                                                         </div>
 
@@ -256,7 +263,6 @@ function OrderDetails() {
 
                                             <div className="breakup-item">
                                                 <div>Sale Total</div>
-                                                {/* <div>{formatPrice(Number(orderData[0]?.order?.sale_total_amount))}</div> */}
                                                 <div>{formatPrice(saleTotalWithDelivery)}</div>
                                             </div>
                                         </div>
