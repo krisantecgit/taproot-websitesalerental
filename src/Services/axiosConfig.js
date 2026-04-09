@@ -1,7 +1,7 @@
 import axios from "axios";
 const axiosInstance = axios.create({
-  baseURL: "https://api-uat.taprootcrm.com/",
-  // baseURL: "http://192.168.1.9:1234",
+  // baseURL: "https://api-uat.taprootcrm.com/",
+  baseURL: "http://192.168.0.180:4567",
   // baseURL: "http://192.168.0.180:4567",
 });
 
@@ -13,9 +13,10 @@ axiosInstance.interceptors.request.use((config) => {
   }
 
   // config.headers["domain"] = "uat.taprootcrm.com";
-  // config.headers["domain"] = "192.168.0.180";
+  config.headers["domain"] = "192.168.0.180";
+  // config.headers["domain"] = "192.168.100.114";
   // config.headers["domain"] = "central";
-  config.headers["domain"] = window.location.hostname.replace("www.", "");
+  // config.headers["domain"] = window.location.hostname.replace("www.", "");
   return config;
 });
 

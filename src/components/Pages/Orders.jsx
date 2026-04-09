@@ -5,11 +5,14 @@ import bag from "../Assets/bag.png"
 import tick from "../Assets/tick.png"
 import orderImg from "../Assets/orderimg.png"
 import "./order.css"
+import ExtendModal from './ExtendModal'
 function Orders() {
   const [order, setOrder] = useState([])
   const [loading, setLoading] = useState(false)
   const [btnActive, setBtnActive] = useState("all")
-  const [orderType, setOrderType] = useState("")
+  const [orderType, setOrderType] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   useEffect(() => {
     async function fetchOrders() {
       setLoading(true)
@@ -84,14 +87,17 @@ function Orders() {
                         // </NavLink>
                         <NavLink
                           to={`/account/orders/order-details?orderID=${order.id}&type=${order.order_type}${order.order_type === "rental"
-                              ? `&rental_id=${order.rental_order_id}`
-                              : ""
+                            ? `&rental_id=${order.rental_order_id}`
+                            : ""
                             }&address=${order.address_id}`}
                         >
                           <button className="order-view-button">view details</button>
                         </NavLink>
                       )}
                     </div>
+                    {
+                      order.order_type === "rental" && (<button className='extend-btn' onClick={() => { setSelectedOrder(order); setShowModal(true) }}>Extend</button>)
+                    }
                   </div>
                   <hr />
                 </div>
@@ -101,6 +107,15 @@ function Orders() {
           )
         }
       </div>
+      {
+        showModal && (
+          <ExtendModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            order={selectedOrder}
+          />
+        )
+      }
     </div>
   )
 }
