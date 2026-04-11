@@ -11,9 +11,19 @@ function Section({ listingType }) {
   const fetchProducts = async () => {
     try {
       const res = await axiosConfig.get(`/catlog/category-variants/?listing_type=${listingType}`)
-      setProducts(res?.data?.results);
+      setProducts(res?.data?.results || []);
+
+      let nextUrl = res?.data?.next;
+      while (nextUrl) {
+        let fetchUrl = nextUrl.replace(/^https?:\/\/[^\/]+/, '');
+        const nextRes = await axiosConfig.get(fetchUrl);
+        if (nextRes?.data?.results) {
+          setProducts(prev => [...prev, ...nextRes.data.results]);
+        }
+        nextUrl = nextRes?.data?.next;
+      }
     } catch (error) {
-      console.log(error)
+      console.log("fetchProducts error:", error)
     }
   }
   function handleNavigate(product) {
