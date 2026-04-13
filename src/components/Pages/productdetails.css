@@ -45,6 +45,7 @@
     height: 100%;
     object-fit: cover;
     object-position: left center;
+    display: none;
 }
 
 .main-image {
@@ -162,7 +163,8 @@
     width: 40%;
     padding: 32px;
     height: 400px;
-    overflow-y: auto;
+    /* overflow-y: auto;   */
+    /* CREATING UNNECESSARY SCROLLBAR */
 }
 
 .product-right.buy-bg {

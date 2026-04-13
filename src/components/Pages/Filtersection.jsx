@@ -66,6 +66,27 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         if (!activeListingType || isPromotional) return;
         fetchProductsFromURL();
     }, [activeListingType]);
+    const collectAllRemaining = async (initialNext) => {
+        let nextUrl = initialNext;
+        while (nextUrl) {
+            try {
+                let fetchUrl = nextUrl.replace(/^https?:\/\/[^\/]+/, '');
+                const nextRes = await axiosConfig.get(fetchUrl);
+                if (nextRes?.data?.results) {
+                    onProductsChange(prev => {
+                        const previous = typeof prev === 'function' ? prev() : (prev || []);
+                        // Avoid duplicates if possible, or just append
+                        return [...previous, ...nextRes.data.results];
+                    });
+                }
+                nextUrl = nextRes?.data?.next || null;
+            } catch (err) {
+                console.error("collectAllRemaining error", err);
+                break;
+            }
+        }
+    };
+
     async function fetchCategories() {
         try {
             const res = await axiosConfig.get(`/catlog/with-${categoryurl}-or-both/`);
@@ -190,14 +211,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 price_max: priceMax || "",
             });
 
-            // const res = await axiosConfig.get(
-            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
-            // );
             const res = await axiosConfig.get(
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
+            if (res.data.next) {
+                collectAllRemaining(res.data.next);
+            }
             setShowFilter(false);
         } catch (err) {
             console.error("applyFilters", err);
@@ -230,14 +251,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 price_max: priceMax || "",
             });
 
-            // const res = await axiosConfig.get(
-            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
-            // );
             const res = await axiosConfig.get(
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
+            if (res.data.next) {
+                collectAllRemaining(res.data.next);
+            }
         } catch (err) {
             console.error("applySubCategoryFilter", err);
         } finally {
@@ -266,6 +287,9 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             );
 
             onProductsChange(res.data.results || []);
+            if (res.data.next) {
+                collectAllRemaining(res.data.next);
+            }
         } catch (err) {
             console.error("handleSortChange", err);
         } finally {
@@ -324,7 +348,10 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             // Use name instead of slug for API call
             const encodedName = encodeURIComponent(name);
             const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
-            onProductsChange(res?.data?.results)
+            onProductsChange(res?.data?.results || []);
+            if (res?.data?.next) {
+                collectAllRemaining(res.data.next);
+            }
         } catch (error) {
             console.log(error)
         } finally {
@@ -343,13 +370,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const options = params.get("options") || "";
             const subcategory = params.get("subcategory") || "";
 
-            // const res = await axiosConfig.get(
-            //     `/catlog/category-variants/?listing_type=${categoryurl}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
-            // );
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}?suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             );
             onProductsChange(res.data.results || []);
+            if (res.data.next) {
+                collectAllRemaining(res.data.next);
+            }
         } catch (err) {
             console.error("fetchProductsFromURL", err);
         } finally {
@@ -384,94 +411,92 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     //         }
     //     }
     // }, [friendlyData, categoryurl]);
+    // 1. Fetch main generic filter data only on load/url change
     useEffect(() => {
         fetchCategories();
         fetchFilterData();
-        const price_min = params.get("price_min");
-        const price_max = params.get("price_max");
-        const optionsParam = params.get("options");
-        const subcategoryParam = params.get("subcategory");
+    }, [categoryurl]);
 
-        const filtersFromURL = {};
-        if (price_min && price_max) {
-            filtersFromURL.price = [{ min: Number(price_min), max: Number(price_max) }];
-            setSelectedPriceRanges([{ id: 1, min: Number(price_min), max: Number(price_max) }]);
-        }
-
-        if (optionsParam) {
-            const optionNames = decodeURIComponent(optionsParam).split(",").filter(Boolean);
-            // Convert to state format: { randomId: [{ name: "Red" }, { name: "Large" }] }
-            const optionsObj = {};
-            if (optionNames.length > 0) {
-                optionsObj["fromURL"] = optionNames.map((name, i) => ({ id: i + 1, name }));
-            }
-            filtersFromURL.options = optionsObj;
-            setSelectedOptions(optionsObj);
-        }
-        // ✅ Save to state
-        setAppliedFilters(filtersFromURL);
-        // ✅ Load filtered products if any URL filters exist
-        const hasFilters = price_min || price_max || optionsParam || subcategoryParam;
-        if (!isPromotional && hasFilters) {
-            fetchProductsFromURL();
-        }
-
-        // ✅ Fetch subcategories for active category
+    // 2. Fetch subcategories safely after category mapping or friendlyData is available
+    useEffect(() => {
         if (friendlyData?.product_data?.id) {
             fetchSubcategories(friendlyData.product_data.id);
-        }
-
-        if (category.length > 0 && friendlyurl) {
+        } else if (category.length > 0 && friendlyurl) {
             const activeCategory = category.find(cat => cat.slug === friendlyurl);
             if (activeCategory) {
                 fetchSubcategories(activeCategory.id);
             }
         }
+    }, [friendlyData, category, friendlyurl]);
 
-    }, [friendlyData, categoryurl, activeListingType]);
+    // 3. Search page special subcategory fetch
     useEffect(() => {
         if (isSearchPage && category.length > 0) {
-            searchSubcategory()
+            searchSubcategory();
         }
     }, [isSearchPage, category]);
 
-
-
+    // 4. Parse URL filters and trigger product fetch
     useEffect(() => {
         const price_min = searchParams.get("price_min");
         const price_max = searchParams.get("price_max");
-        const subcategoryParam = searchParams.get("subcategory");
         const optionsParam = searchParams.get("options");
+        const subcategoryParam = searchParams.get("subcategory");
+
+        const filtersFromURL = {};
 
         // Price from URL
         if (price_min && price_max) {
             const min = Number(price_min);
             const max = Number(price_max);
+            filtersFromURL.price = [{ min, max }];
             const matched = priceRanges.find(r => r.min === min && r.max === max);
             setSelectedPriceRanges(matched ? [matched] : [{ id: 999, min, max, label: `$${min} - $${max}` }]);
+        } else {
+            setSelectedPriceRanges([]);
         }
 
         // Subcategories from URL
         if (subcategoryParam) {
             const selectedSubcatsFromURL = decodeURIComponent(subcategoryParam).split(",").filter(Boolean);
             setSelectedSubcats(selectedSubcatsFromURL);
+        } else {
+            setSelectedSubcats([]);
         }
 
         // Options from URL
         if (optionsParam) {
             try {
-                const decodedOptions = JSON.parse(decodeURIComponent(optionsParam));
-                setSelectedOptions(decodedOptions);
+                // If the parameter is JSON (from second hook)
+                if (optionsParam.startsWith("{") || optionsParam.startsWith("[")) {
+                    const decodedOptions = JSON.parse(decodeURIComponent(optionsParam));
+                    setSelectedOptions(decodedOptions);
+                    filtersFromURL.options = decodedOptions;
+                } else {
+                    // Normal comma separated (from first hook)
+                    const optionNames = decodeURIComponent(optionsParam).split(",").filter(Boolean);
+                    const optionsObj = {};
+                    if (optionNames.length > 0) {
+                        optionsObj["fromURL"] = optionNames.map((name, i) => ({ id: i + 1, name }));
+                    }
+                    filtersFromURL.options = optionsObj;
+                    setSelectedOptions(optionsObj);
+                }
             } catch {
                 console.warn("Invalid options format in URL");
             }
+        } else {
+            setSelectedOptions({});
         }
 
+        setAppliedFilters(filtersFromURL);
 
+        // Fetch products on initial mount or when data updates
         if (!isPromotional) {
             fetchProductsFromURL();
         }
-    }, []);
+
+    }, [friendlyData, categoryurl, activeListingType]); // Triggered perfectly when page is fully ready
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {
