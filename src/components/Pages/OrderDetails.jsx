@@ -59,7 +59,7 @@ function OrderDetails() {
             ? Number(orderData[0]?.order?.sale_delivery_charges || 0)
             : 0;
     const saleTotalWithDelivery =
-        Number(orderData[0]?.order?.sale_total_amount || 0) + saleDeliveryCharge;
+        Number(orderData[0]?.order?.net_amount || 0);
     const rentDeliveryCharge =
         orderData.length > 0
             ? Number(orderData[0]?.order?.rental_delivery_charges || 0)
