@@ -1,10 +1,46 @@
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import loader from "../Assets/spinner.gif";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./product.css";
 import { FaArrowRight, FaTrash } from "react-icons/fa";
-import axiosConfig from "../../Services/axiosConfig"
+import axiosConfig from "../../Services/axiosConfig";
+
+function ImageSlider({ images, product }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const intervalRef = useRef(null);
+
+  function startSlide() {
+    if (images.length <= 1) return;
+    intervalRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % images.length);
+    }, 1200);
+  }
+
+  function stopSlide() {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    setActiveIndex(0);
+  }
+
+  return (
+    <div
+      className="image-slide"
+      onMouseEnter={startSlide}
+      onMouseLeave={stopSlide}
+    >
+      {images.map((im, index) => (
+        <img
+          key={index}
+          src={im?.image?.image}
+          alt={im?.image?.name || product.name}
+          className={`slide-image ${index === activeIndex ? "active" : ""}`}
+        />
+      ))}
+    </div>
+  );
+}
+
 function ProductSection({ products = [], loading = false, searchListingType, onRefresh }) {
   const location = useLocation();
 
@@ -69,20 +105,7 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
               key={product.id}
               onClick={() => handleNavigate(product)}
             >
-              <div
-                className="image-slide"
-                onMouseOver={(e) => e.currentTarget.classList.add("hover")}
-                onMouseOut={(e) => e.currentTarget.classList.remove("hover")}
-              >
-                {product.images?.map((im, index) => (
-                  <img
-                    key={index}
-                    src={im?.image?.image}
-                    alt={im?.image?.name || product.name}
-                    className={`slide-image ${index === 0 ? "active" : ""}`}
-                  />
-                ))}
-              </div>
+              <ImageSlider images={product.images || []} product={product} />
 
               <div className="product-card-body">
                 <h4 className="product-name">{product.name}</h4>

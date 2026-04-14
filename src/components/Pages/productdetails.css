@@ -22,36 +22,21 @@
     display: flex;
     position: relative;
     gap: 5px;
-    width: 95%;
+    width: 100%;
     height: 400px;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-image-wrapper {
-    flex: 0 0 80%;
-}
-
-.next-image-wrapper {
-    flex: 0 0 25%;
-    min-width: 25%;
-    max-width: 25%;
-    overflow: hidden;
+    flex: 1;
     height: 100%;
-    position: relative;
-}
-
-.next-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: left center;
-    display: none;
 }
 
 .main-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .search-plus {
@@ -145,6 +130,7 @@
     gap: 10px;
     margin-top: 15px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .thumbnail {

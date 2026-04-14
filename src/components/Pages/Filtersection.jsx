@@ -29,6 +29,12 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const [selectedVariantId, setSelectedVariantId] = useState(null);
     const isSearchPage = window.location.pathname.includes('/search/results');
 
+    // ── single source of truth for current category name ──────────────────────
+    const getSelectedCategory = () =>
+        friendlyData?.name ||
+        friendlyData?.product_data?.name ||
+        "";
+
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
 
     const [showFilter, setShowFilter] = useState(false);
@@ -189,7 +195,8 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     async function applyFilters() {
         try {
             onLoading(true);
-            const selectedCategory = friendlyData?.product_data?.name || "";
+            const selectedCategory = getSelectedCategory();
+            const subcatParam = selectedSubcats.join(",");
             const optionNames = buildOptionString(selectedOptions);
             let priceMin = "";
             let priceMax = "";
@@ -197,7 +204,6 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             if (selectedPriceRanges.length > 0) {
                 const allMins = selectedPriceRanges.map(r => Number(r.min));
                 const allMaxs = selectedPriceRanges.map(r => Number(r.max));
-
                 priceMin = Math.min(...allMins);
                 priceMax = Math.max(...allMaxs);
             }
@@ -206,13 +212,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 price: selectedPriceRanges,
             });
             setSearchParams({
+                subcategory: subcatParam || "",
                 options: optionNames || "",
                 price_min: priceMin || "",
                 price_max: priceMax || "",
             });
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
@@ -230,17 +237,15 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     async function applySubCategoryFilter() {
         try {
             onLoading(true);
-            const selectedCategory = friendlyData?.product_data?.name || "";
+            const selectedCategory = getSelectedCategory();
             const optionNames = buildOptionString(selectedOptions);
             const subcatParam = selectedSubcats.join(",");
             let priceMin = "";
             let priceMax = "";
 
-
             if (selectedPriceRanges.length > 0) {
                 const allMins = selectedPriceRanges.map(range => range.min).filter(min => min !== "");
                 const allMaxs = selectedPriceRanges.map(range => range.max).filter(max => max !== "");
-
                 priceMin = allMins.length > 0 ? Math.min(...allMins) : "";
                 priceMax = allMaxs.length > 0 ? Math.max(...allMaxs) : "";
             }
@@ -252,7 +257,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             });
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=&category=${selectedCategory}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
             onProductsChange(res.data.results || []);
@@ -270,11 +275,9 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         try {
             setActiveSort(label);
             onLoading(true);
-            const selectedCategory = friendlyData?.product_data?.name || "";
+            const selectedCategory = getSelectedCategory();
             setSearchParams((p) => {
                 const next = Object.fromEntries([...p]);
-                next.collection = selectedCategory || "";
-
                 next.sortBy = label;
                 return next;
             });
@@ -283,7 +286,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const price_max = params.get("price_max") || "";
             const options = params.get("options") || "";
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&sortBy=${encodeURIComponent(label)}&&price_min=${price_min}&price_max=${price_max}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcategory)}&sortBy=${encodeURIComponent(label)}&price_min=${price_min}&price_max=${price_max}&options=${encodeURIComponent(options)}`
             );
 
             onProductsChange(res.data.results || []);

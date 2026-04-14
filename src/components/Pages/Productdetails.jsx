@@ -161,13 +161,6 @@ function Productdetails() {
 
                                     </div>
                                 </div>
-                                <div className="next-image-wrapper">
-                                    <img
-                                        src={images[(currentIndex + 1) % images.length].image}
-                                        alt="Next"
-                                        className="next-image"
-                                    />
-                                </div>
                             </>
                         )}
                         <button className="arrow left" onClick={handlePrev}>
