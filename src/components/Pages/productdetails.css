@@ -148,7 +148,7 @@
 .product-right {
     width: 40%;
     padding: 32px;
-    height: 400px;
+    min-height: 400px;
     /* overflow-y: auto;   */
     /* CREATING UNNECESSARY SCROLLBAR */
 }
@@ -159,6 +159,42 @@
 
 .product-right.rent-bg {
     background-color: rgb(254, 244, 232);
+}
+
+/* Variant Options Styles */
+.variant-options-container {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.variant-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+}
+
+.variant-option-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.variant-type-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.variant-option-value {
+    font-size: 14px;
+    color: #222;
+    font-weight: 500;
 }
 
 .single-option {

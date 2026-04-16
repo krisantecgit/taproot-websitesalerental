@@ -27,6 +27,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const [variantOptions, setVariantOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState({});
     const [selectedVariantId, setSelectedVariantId] = useState(null);
+    const [totalCount, setTotalCount] = useState(0);
     const isSearchPage = window.location.pathname.includes('/search/results');
 
     // ── single source of truth for current category name ──────────────────────
@@ -127,6 +128,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         setLoadingMore(true);
         try {
             const res = await axiosConfig.get(nextUrl);
+            setTotalCount(prev => res.data.count !== undefined ? res.data.count : prev);
             onProductsChange(prev => [...prev, ...res.data.results]);
             setNextUrl(res.data.next || null);
         } catch (err) {
@@ -222,6 +224,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
+            setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
             if (res.data.next) {
                 collectAllRemaining(res.data.next);
@@ -260,6 +263,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
             );
 
+            setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
             if (res.data.next) {
                 collectAllRemaining(res.data.next);
@@ -289,6 +293,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcategory)}&sortBy=${encodeURIComponent(label)}&price_min=${price_min}&price_max=${price_max}&options=${encodeURIComponent(options)}`
             );
 
+            setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
             if (res.data.next) {
                 collectAllRemaining(res.data.next);
@@ -351,6 +356,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             // Use name instead of slug for API call
             const encodedName = encodeURIComponent(name);
             const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
+            setTotalCount(res?.data?.count || 0);
             onProductsChange(res?.data?.results || []);
             if (res?.data?.next) {
                 collectAllRemaining(res.data.next);
@@ -376,6 +382,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const res = await axiosConfig.get(
                 `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             );
+            setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
             if (res.data.next) {
                 collectAllRemaining(res.data.next);
@@ -569,7 +576,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                     ) : (
                         <div className="searched-data">
                             <div>
-                                <span className="search-query">{query}</span> <span className="ms-2 search-count">{products.length} Items</span>
+                                <span className="search-query">{query}</span> <span className="ms-2 search-count">{totalCount || products.length} Items</span>
                             </div>
                             <div className="listing-type-container">
                                 <div className={`listing-type ${activeListingType === "buy" ? "active" : ""}`} onClick={() => handleActiveListingType("buy")}>BUY</div>

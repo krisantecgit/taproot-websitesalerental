@@ -4,6 +4,7 @@ import loader from "../Assets/spinner.gif";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./product.css";
 import { FaArrowRight, FaTrash } from "react-icons/fa";
+import { FaPalette, FaRuler } from "react-icons/fa";
 import axiosConfig from "../../Services/axiosConfig";
 
 function ImageSlider({ images, product }) {
@@ -109,6 +110,21 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
 
               <div className="product-card-body">
                 <h4 className="product-name">{product.name}</h4>
+
+                {product.options && product.options.length > 0 && (
+                  <div className="product-options-grid">
+                    {product.options.map((opt) => (
+                      <div className="product-option-item" key={opt.id}>
+
+                        <div className="option-text">
+                          <span className="option-label">{opt.variant_type}:</span>
+                          <span className="option-value">{opt.variant_option}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="product-price-box">
                   <span className="product-tag">{listingType}</span>
 
@@ -116,36 +132,24 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                     {/* For sale products */}
                     {listingType === "sale" && (
                       <>
+                       
                         {Number(product.prices?.sale_offer_price) > 0 ? (
-                          <>
-                            {/* Offer price */}
-                            <div className="offer-price">
-                              {formatPrice(product.prices.sale_offer_price)}
-                            </div>
-
-                            {/* Old price + discount */}
-                            <div className="product-price-section">
-                              <div className="product-discount">
-                                {Math.round(
-                                  ((product.prices.sale_price -
-                                    product.prices.sale_offer_price) /
-                                    product.prices.sale_price) *
-                                  100
-                                )}
-                                % OFF
-                              </div>
-                              <div className="product-price product-old-price">
-                                {formatPrice(product.prices.sale_price)}
-                              </div>
-
-                            </div>
-                          </>
+                          <div className="price-row">
+                            <span className="offer-price">{formatPrice(product.prices.sale_offer_price)}</span>
+                            <span className="product-old-price">{formatPrice(product.prices.sale_price)}</span>
+                            <span className="discount-badge">
+                              {Math.round(
+                                ((product.prices.sale_price - product.prices.sale_offer_price) /
+                                  product.prices.sale_price) * 100
+                              )}% OFF
+                            </span>
+                          </div>
                         ) : (
-                          // No offer → show only normal price
-                          <div className="offer-price">
-                            {formatPrice(product.prices.sale_price)}
+                          <div className="price-row">
+                            <span className="offer-price">{formatPrice(product.prices.sale_price)}</span>
                           </div>
                         )}
+
                       </>
                     )}
 
@@ -157,7 +161,7 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                     )}
                   </div>
                   {product.sale_stock <= product.debug?.applied_threshold && (
-                    <div className="stock-error">Product going to out of stock</div>
+                    <div className="stock-error">Limited stock available</div>
                   )}
                   <div className="hover-icon">
                     {

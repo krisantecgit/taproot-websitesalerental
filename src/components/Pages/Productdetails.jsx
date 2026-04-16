@@ -195,6 +195,21 @@ function Productdetails() {
                         </div>
                     </div>
                     <div className='product-right-title'>{productDetails?.name}</div>
+                    
+                    {/* Variant Options Section */}
+                    {productDetails?.options && productDetails.options.length > 0 && (
+                        <div className="variant-options-container">
+                            <div className="variant-options-grid">
+                                {productDetails.options.map((option) => (
+                                    <div key={option.id} className="variant-option-item">
+                                        <span className="variant-type-label">{option.variant_type}</span>
+                                        <span className="variant-option-value">{option.variant_option}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="radio-group">
                         {productDetails?.varient_listing_type && (
                             <>

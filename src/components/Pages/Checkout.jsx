@@ -747,7 +747,7 @@ function Checkout() {
                                                                     <div className="cart-item-prices mt-2">
                                                                         <span className="old-price">{formatPrice(item.price)}</span>
                                                                         <span className="discount-badge">
-                                                                            -{Math.round(Number(((item.price - item.offer_price) / item.price)) * 100)}%
+                                                                            {Math.round(Number(((item.price - item.offer_price) / item.price)) * 100)}%
                                                                         </span>
                                                                         <span className="new-price">{formatPrice(item.offer_price)}</span>
                                                                     </div>
