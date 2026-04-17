@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axiosConfig from "../../Services/axiosConfig"
 import "./addresses.css"
+import "./address.css"
 import { BiEdit, BiTrash } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import { IoLocationOutline } from 'react-icons/io5';

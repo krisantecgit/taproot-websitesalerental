@@ -66,7 +66,7 @@ function Payment() {
           <div className="amout-total-h">
             <p><HiOutlineCurrencyDollar /></p>
             <p className="amount-title">Total amount payable now</p>
-            <p className="amount-saved">You have saved {formatPrice(orderDetails[0]?.total_amount-orderDetails[0]?.net_amount)} on this order</p>
+            {/* <p className="amount-saved">You have saved {formatPrice(orderDetails[0]?.total_amount-orderDetails[0]?.net_amount)} on this order</p> */}
           </div>
           <div className="total-payment">{formatPrice(orderDetails[0]?.net_amount)}</div>
         </div>

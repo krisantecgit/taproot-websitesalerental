@@ -65,14 +65,6 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             onListingTypeChange(type);
         }
     }
-    // useEffect(() => {
-    //     if (!activeListingType) return;
-    //     fetchProductsFromURL();   // re-fetch API with new listing type
-    // }, [activeListingType]);
-    useEffect(() => {
-        if (!activeListingType || isPromotional) return;
-        fetchProductsFromURL();
-    }, [activeListingType]);
     const collectAllRemaining = async (initialNext) => {
         let nextUrl = initialNext;
         while (nextUrl) {
@@ -502,11 +494,11 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         setAppliedFilters(filtersFromURL);
 
         // Fetch products on initial mount or when data updates
-        if (!isPromotional) {
+        if (!isPromotional && activeListingType) {
             fetchProductsFromURL();
         }
 
-    }, [friendlyData, categoryurl, activeListingType]); // Triggered perfectly when page is fully ready
+    }, [friendlyData, categoryurl, activeListingType, searchParams]); // Re-fetch when filters or listing type change
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {
