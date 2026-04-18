@@ -22,7 +22,7 @@ function SearchedData() {
       const searchQuery = new URLSearchParams({
         listing_type: listingType || "buy",
         search: decodedQuery,
-        suspended: "false",
+        is_suspended: "false",
         category: params.get("category") || "",
         subcategory: params.get("subcategory") || "",
         price_min: params.get("price_min") || "",

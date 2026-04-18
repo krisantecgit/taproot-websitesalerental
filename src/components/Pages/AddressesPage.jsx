@@ -17,6 +17,11 @@ function AddressesPage() {
   const [selected, setSelected] = useState(null);
   const [editId, setEditId] = useState(null)
   const [query, setQuery] = useState("");
+
+  const [zipcodeCheck, setZipcodeCheck] = useState("");
+  const [zipcodeStatus, setZipcodeStatus] = useState(null);
+  const [checkingZip, setCheckingZip] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     address_line_1: "",
@@ -32,12 +37,54 @@ function AddressesPage() {
     city: "",
     user: userId
   })
+
+
+  const checkZipcode = async () => {
+    if (!zipcodeCheck) return;
+
+    setCheckingZip(true);
+    try {
+      const res = await axiosConfig.get(
+        `/masters/check-zipcode-availability/?sale_zipcode=${zipcodeCheck}`
+      );
+
+      // normalize
+      setZipcodeStatus(res?.data?.sale_zipcode ?? null);
+
+    } catch (err) {
+      setZipcodeStatus({ status: "Error", message: "Something went wrong" });
+    } finally {
+      setCheckingZip(false);
+    }
+  };
+
+  const syncStoredAddresses = (nextAddresses = []) => {
+    const storedKeys = ["saleAddress", "rentalAddress"];
+
+    storedKeys.forEach((key) => {
+      const storedValue = localStorage.getItem(key);
+      if (!storedValue) return;
+
+      try {
+        const parsedAddress = JSON.parse(storedValue);
+        const addressStillExists = nextAddresses.some((address) => address.id === parsedAddress?.id);
+
+        if (!addressStillExists) {
+          localStorage.removeItem(key);
+        }
+      } catch (error) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
   const inputRef = useRef();
   async function fetchAddress() {
     setLoading(true)
     try {
       const res = await axiosConfig.get(`/accounts/address/?user=${userId}&is_suspended=false`)
-      setAddresses(res?.data?.results)
+      const nextAddresses = res?.data?.results || [];
+      setAddresses(nextAddresses)
+      syncStoredAddresses(nextAddresses)
     } catch (error) {
       console.log(error)
     } finally {
@@ -153,13 +200,13 @@ function AddressesPage() {
     }
   }
   useEffect(() => {
-          if (selected?.address) {
-              setFormData(prev => ({
-                  ...prev,
-                  address_line_1: selected.address
-              }));
-          }
-      }, [selected]);
+    if (selected?.address) {
+      setFormData(prev => ({
+        ...prev,
+        address_line_1: selected.address
+      }));
+    }
+  }, [selected]);
   useEffect(() => {
     if (step !== "map" || !selected || !window.google) return;
     const map = new window.google.maps.Map(document.getElementById("map"), {
@@ -187,6 +234,36 @@ function AddressesPage() {
             {
               step === "default" && (
                 <>
+                  <div className="zipcode-top-box">
+                    <div className="zip-input-group">
+                      <input
+                        type="text"
+                        placeholder="Enter Zipcode"
+                        maxLength={6}
+                        value={zipcodeCheck}
+                        onChange={(e) => {
+                          setZipcodeCheck(e.target.value);
+                          setZipcodeStatus(null);
+                        }}
+                      />
+                      <button onClick={checkZipcode}>Check</button>
+                    </div>
+
+                    {checkingZip && <div className="zip-info">Checking...</div>}
+
+                    {zipcodeStatus && (
+                      <div
+                        className={`zip-info ${
+                          zipcodeStatus?.status === "Available" ? "success" : "error"
+                        }`}
+                      >
+                        {zipcodeStatus?.status === "Available"
+                          ? "Service available"
+                          : "Service not available"}
+                      </div>
+                    )}
+                  </div>
+
                   <button className="add-btn" onClick={() => setStep("add")}>
                     + Add new address
                   </button>

@@ -10,7 +10,9 @@ function Section({ listingType }) {
   let navigate = useNavigate();
   const fetchProducts = async () => {
     try {
-      const res = await axiosConfig.get(`/catlog/category-variants/?listing_type=${listingType}`)
+      const res = await axiosConfig.get(
+        `/catlog/category-variants/?listing_type=${listingType}&is_suspended=false`
+      );
       setProducts(res?.data?.results || []);
 
       let nextUrl = res?.data?.next;

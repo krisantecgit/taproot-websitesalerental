@@ -202,6 +202,12 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 priceMax = Math.max(...allMaxs);
             }
             setAppliedFilters({
+                subcategory: [...selectedSubcats],
+                options: selectedOptions,
+                price: selectedPriceRanges,
+            });
+            setAppliedFilters({
+                subcategory: [...selectedSubcats],
                 options: selectedOptions,
                 price: selectedPriceRanges,
             });
@@ -251,9 +257,19 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 price_max: priceMax || "",
             });
 
+           
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
-            );
+  `/catlog/category-variants/?
+  listing_type=${activeListingType}
+  &search=${encodeURIComponent(query || "")}
+  &category=${encodeURIComponent(selectedCategory)}
+  &subcategory=${encodeURIComponent(subcatParam || "")}
+  &price_min=${priceMin || ""}
+  &price_max=${priceMax || ""}
+  &options=${encodeURIComponent(optionNames || "")}
+  &is_suspended=false
+  `.replace(/\s+/g, "")
+);
 
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
@@ -281,8 +297,19 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const price_min = params.get("price_min") || "";
             const price_max = params.get("price_max") || "";
             const options = params.get("options") || "";
+
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcategory)}&sortBy=${encodeURIComponent(label)}&price_min=${price_min}&price_max=${price_max}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?
+  listing_type=${activeListingType}
+  &search=${encodeURIComponent(query || "")}
+  &category=${encodeURIComponent(selectedCategory)}
+  &subcategory=${encodeURIComponent(subcategory || "")}
+  &sortBy=${encodeURIComponent(label || "")}
+  &price_min=${price_min || ""}
+  &price_max=${price_max || ""}
+  &options=${encodeURIComponent(options || "")}
+  &is_suspended=false
+  `.replace(/\s+/g, "")
             );
 
             setTotalCount(res?.data?.count || 0);
@@ -372,7 +399,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const subcategory = params.get("subcategory") || "";
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}
+&search=${encodeURIComponent(query || "")}
+&is_suspended=false
+&category=${selectedCategory}
+&subcategory=${encodeURIComponent(subcategory)}
+&price_min=${priceMin}
+&price_max=${priceMax}
+&options=${encodeURIComponent(options)}`
             );
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
@@ -462,8 +496,10 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         if (subcategoryParam) {
             const selectedSubcatsFromURL = decodeURIComponent(subcategoryParam).split(",").filter(Boolean);
             setSelectedSubcats(selectedSubcatsFromURL);
+            filtersFromURL.subcategory = selectedSubcatsFromURL;
         } else {
             setSelectedSubcats([]);
+            filtersFromURL.subcategory = [];
         }
 
         // Options from URL
@@ -519,6 +555,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const current = decodeURIComponent(params.get("subcategory") || "").split(",").filter(Boolean);
             const updated = current.filter(item => item !== value);
             setSelectedSubcats(updated);
+            setAppliedFilters(prev => ({ ...prev, subcategory: updated }));
             if (updated.length) params.set("subcategory", encodeURIComponent(updated.join(",")));
             else params.delete("subcategory");
         }
@@ -589,26 +626,28 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             <div className="filter-sections">
                 <div className="applied-filters">
                     {
-                        (selectedOptions.length > 0 || selectedPriceRanges.length > 0 || selectedSubcats.length > 0) && (
+                        (Object.values(appliedFilters.options || {}).flat().length > 0 ||
+                            (appliedFilters.price || []).length > 0 ||
+                            (appliedFilters.subcategory || []).length > 0) && (
                             <p className="applied-filter">Applied Filters:</p>
                         )
                     }
 
-                    {selectedSubcats.map((sub) => (
+                    {(appliedFilters.subcategory || []).map((sub) => (
                         <span key={sub} className="filter-tags">
                             {sub}
                             <span className="remove-icon" onClick={() => handleRemoveFilter("subcategory", sub)}>×</span>
                         </span>
                     ))}
 
-                    {selectedPriceRanges.map((p) => (
+                    {(appliedFilters.price || []).map((p) => (
                         <span key={`${p.min}-${p.max}`} className="filter-tags">
                             ${p.min} - ${p.max}
                             <span className="remove-icon" onClick={() => handleRemoveFilter("price", `${p.min}-${p.max}`)}>×</span>
                         </span>
                     ))}
 
-                    {Object.values(selectedOptions).flat().map((opt) => (
+                    {Object.values(appliedFilters.options || {}).flat().map((opt) => (
                         <span key={opt.name} className="filter-tags">
                             {opt.name}
                             <span className="remove-icon" onClick={() => handleRemoveFilter("option", opt.name)}>×</span>

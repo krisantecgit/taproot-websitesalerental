@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FiSearch } from "react-icons/fi";
 import { TbTruckDelivery } from "react-icons/tb";
 import "./address.css";
+import "./addresses.css";
 import { IoLocationOutline } from "react-icons/io5";
 import axiosConfig from "../../Services/axiosConfig"
 import { toast } from "react-toastify";
@@ -22,6 +23,9 @@ export default function AddressPage() {
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [addresses, setAddresses] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(0)
+    const [zipcodeCheck, setZipcodeCheck] = useState("");
+    const [zipcodeStatus, setZipcodeStatus] = useState(null);
+    const [checkingZip, setCheckingZip] = useState(false);
     const inputRef = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -62,6 +66,54 @@ export default function AddressPage() {
     useEffect(() => {
         fetchAddress()
     }, [userId])
+
+    useEffect(() => {
+        setZipcodeCheck("");
+        setZipcodeStatus(null);
+    }, [addressType]);
+
+    const checkZipcode = async () => {
+        if (!zipcodeCheck) return;
+
+        setCheckingZip(true);
+        try {
+            let url = `/masters/check-zipcode-availability/?`;
+            if (addressType === "sale") {
+                url += `sale_zipcode=${zipcodeCheck}`;
+            } else {
+                url += `rental_zipcode=${zipcodeCheck}`;
+            }
+
+            const res = await axiosConfig.get(url);
+            const statusData =
+                addressType === "sale"
+                    ? res?.data?.sale_zipcode ?? null
+                    : res?.data?.rental_zipcode ?? null;
+
+            setZipcodeStatus(statusData);
+            if (statusData?.status === "Available") {
+                setFormData((prev) => ({ ...prev, zipcode: zipcodeCheck }));
+            }
+        } catch (error) {
+            setZipcodeStatus({ status: "Error", message: "Something went wrong" });
+        } finally {
+            setCheckingZip(false);
+        }
+    };
+
+    const handleAddAddress = () => {
+        if (zipcodeStatus?.status !== "Available") {
+            toast.error(
+                addressType === "sale"
+                    ? "Please check a sale serviceable zipcode before adding an address"
+                    : "Please check a rental serviceable zipcode before adding an address"
+            );
+            return;
+        }
+
+        setFormData((prev) => ({ ...prev, zipcode: zipcodeCheck }));
+        setStep("add");
+    };
     const getSuggestions = (val) => {
         if (!window.google || val.length < 2) return setSuggestions([]);
         new window.google.maps.places.AutocompleteService().getPlacePredictions(
@@ -115,6 +167,11 @@ export default function AddressPage() {
     async function formSubmit(e) {
         e.preventDefault();
 
+        if (formData.zipcode !== zipcodeCheck || zipcodeStatus?.status !== "Available") {
+            toast.error("Please verify the zipcode before adding the address");
+            return;
+        }
+
         const payload = {
             ...formData,
             latitude: selected?.lat || "",
@@ -131,6 +188,8 @@ export default function AddressPage() {
             if (res.data.success) {
                 toast.success(res.data.message);
             }
+            setZipcodeCheck("");
+            setZipcodeStatus(null);
             setStep("default")
             await fetchAddress()
         } catch (error) {
@@ -201,7 +260,35 @@ export default function AddressPage() {
                     {step === "default" && (
                         <>
                             <h3>Select Delivery Address</h3>
-                            <button onClick={() => setStep("add")} className="address-add-btn">
+                            <div className="zipcode-top-box">
+                                <div className="zip-input-group">
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Zipcode"
+                                        maxLength={6}
+                                        value={zipcodeCheck}
+                                        onChange={(e) => {
+                                            setZipcodeCheck(e.target.value);
+                                            setZipcodeStatus(null);
+                                        }}
+                                    />
+                                    <button onClick={checkZipcode}>Check</button>
+                                </div>
+
+                                {checkingZip && <div className="zip-info">Checking...</div>}
+
+                                {zipcodeStatus && (
+                                    <div
+                                        className={`zip-info ${zipcodeStatus?.status === "Available" ? "success" : "error"
+                                            }`}
+                                    >
+                                        {zipcodeStatus?.status === "Available"
+                                            ? "Service available"
+                                            : "Service not available"}
+                                    </div>
+                                )}
+                            </div>
+                            <button onClick={handleAddAddress} className="address-add-btn">
                                 + Add new address
                             </button>
                             <div className="address-container">
