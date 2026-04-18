@@ -191,6 +191,9 @@ function AddressesPage() {
       if (res.data.success) {
         toast.success(res.data.message);
       }
+      setQuery("")
+      setSuggestions([])
+      setSelected(null)
       setStep("default")
       await fetchAddress()
     } catch (error) {
@@ -340,8 +343,27 @@ function AddressesPage() {
                 </div>
                 <div id="map" className="map-view" />
                 <div className="map-actions">
-                  <button type="button" onClick={() => setStep("add")} className="address-confirm-btn">change</button>
-                  <button className="address-confirm-btn" onClick={() => setStep("address")}>confirm</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuery("");
+                      setSuggestions([]);
+                      setStep("add");
+                    }}
+                    className="address-confirm-btn"
+                  >
+                    change
+                  </button>
+                  <button
+                    className="address-confirm-btn"
+                    onClick={() => {
+                      setQuery("");
+                      setSuggestions([]);
+                      setStep("address");
+                    }}
+                  >
+                    confirm
+                  </button>
                 </div>
               </>
             )}
@@ -350,7 +372,11 @@ function AddressesPage() {
                 <div className="selected-addresses-box">
                   <div className="address-head">
                     <div className="area-name"><IoLocationOutline className="map-alt me-1" />{selected?.address?.split(",")[0]}</div>
-                    <div> <button className="address-confirm-btn" onClick={() => setStep("add")}>
+                    <div> <button className="address-confirm-btn" onClick={() => {
+                      setQuery("");
+                      setSuggestions([]);
+                      setStep("add");
+                    }}>
                       CHANGE
                     </button></div>
                   </div>

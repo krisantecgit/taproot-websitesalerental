@@ -190,6 +190,9 @@ export default function AddressPage() {
             }
             setZipcodeCheck("");
             setZipcodeStatus(null);
+            setQuery("");
+            setSuggestions([]);
+            setSelected(null);
             setStep("default")
             await fetchAddress()
         } catch (error) {
@@ -265,7 +268,7 @@ export default function AddressPage() {
                                     <input
                                         type="text"
                                         placeholder="Enter Zipcode"
-                                        maxLength={6}
+                                        maxLength={5}
                                         value={zipcodeCheck}
                                         onChange={(e) => {
                                             setZipcodeCheck(e.target.value);
@@ -374,8 +377,27 @@ export default function AddressPage() {
                             </div>
                             <div id="map" className="map-view" />
                             <div className="map-actions">
-                                <button type="button" onClick={() => setStep("add")} className="address-confirm-btn">change</button>
-                                <button className="address-confirm-btn" onClick={() => setStep("address")}>confirm</button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setQuery("");
+                                        setSuggestions([]);
+                                        setStep("add");
+                                    }}
+                                    className="address-confirm-btn"
+                                >
+                                    change
+                                </button>
+                                <button
+                                    className="address-confirm-btn"
+                                    onClick={() => {
+                                        setQuery("");
+                                        setSuggestions([]);
+                                        setStep("address");
+                                    }}
+                                >
+                                    confirm
+                                </button>
                             </div>
                         </>
                     )}
@@ -386,7 +408,12 @@ export default function AddressPage() {
                                     <div className="area-name"><IoLocationOutline className="map-alt me-1" />{selected?.address?.split(",")[0]}</div>
                                     <button
                                         className="address-confirm-btn"
-                                        onClick={(e) => { e.preventDefault(); setStep("add"); }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setQuery("");
+                                            setSuggestions([]);
+                                            setStep("add");
+                                        }}
                                     >
                                         CHANGE
                                     </button>
