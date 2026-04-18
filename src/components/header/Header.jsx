@@ -104,7 +104,7 @@ function Header() {
 
         <div className={`menu-item ${path === "buy" ? "active" : ""}`} onClick={() => navigate("/buy")}>
           <LuCircleCheck className="icon" />
-          <span>Buy</span>
+          <span>Sale</span>
           <IoChevronDownOutline className="chevron" />
         </div>
 

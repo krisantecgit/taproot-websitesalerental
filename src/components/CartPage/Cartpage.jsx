@@ -514,7 +514,7 @@ function Cartpage() {
 
                         <div className="empty-cart-options">
                             <div className="option-left">
-                                <p>Looking to<br />BUY furniture?</p>
+                                <p>Looking to<br />Sale furniture?</p>
                             </div>
 
                             <div className="option-right">

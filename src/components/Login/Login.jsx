@@ -164,7 +164,7 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
       setMsg(data.message || "Verified!");
       setErr("");
 
-      if (data.new_user === false) {
+      if (data.new_user === true) {
         setStep("userdata");
       } else {
         if (onLoginSuccess) onLoginSuccess(data.user_id);
@@ -232,8 +232,8 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
         {step === "input" && (
           <div className="text-center">
             <div className="heading">
-              <div>Let’s</div>
-              <div>get <span>Started</span></div>
+              {/* <div>Let’s</div> */}
+              <div> <span>Login</span></div>
             </div>
             <p className="login-title">
               Enter your phone number to proceed

@@ -257,9 +257,9 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 price_max: priceMax || "",
             });
 
-           
+
             const res = await axiosConfig.get(
-  `/catlog/category-variants/?
+                `/catlog/category-variants/?
   listing_type=${activeListingType}
   &search=${encodeURIComponent(query || "")}
   &category=${encodeURIComponent(selectedCategory)}
@@ -269,7 +269,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
   &options=${encodeURIComponent(optionNames || "")}
   &is_suspended=false
   `.replace(/\s+/g, "")
-);
+            );
 
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
@@ -399,14 +399,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const subcategory = params.get("subcategory") || "";
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}
-&search=${encodeURIComponent(query || "")}
-&is_suspended=false
-&category=${selectedCategory}
-&subcategory=${encodeURIComponent(subcategory)}
-&price_min=${priceMin}
-&price_max=${priceMax}
-&options=${encodeURIComponent(options)}`
+                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&is_suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
             );
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);

@@ -18,7 +18,7 @@ function Footer() {
 
                 <div className="footer-links">
                     <div href="/">Home</div>
-                    <div href="/buy">Buy Furniture</div>
+                    <div href="/buy">Sale Furniture</div>
                     <div href="/rent">Rent Furniture</div>
                     <div href="/investors">For Investors</div>
 
