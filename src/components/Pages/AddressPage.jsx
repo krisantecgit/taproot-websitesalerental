@@ -94,19 +94,17 @@ export default function AddressPage() {
         setCheckingZip(true);
         try {
             let url = `/masters/check-zipcode-availability/?`;
-            if (addressType === "sale") {
-                url += `sale_zipcode=${zipcodeCheck}`;
-            } else {
+            if (addressType === "rental") {
                 url += `rental_zipcode=${zipcodeCheck}`;
+            } else {
+                url += `sale_zipcode=${zipcodeCheck}`;
             }
 
             const res = await axiosConfig.get(url);
             const statusData =
-                addressType === "sale"
-                    ? res?.data?.sale_zipcode ?? null
-                    : addressType === "rental"
+                addressType === "rental"
                     ? res?.data?.rental_zipcode ?? null
-                    : res?.data?.sale_zipcode ?? null; // For "both", assume sale zipcode check is enough or fallback
+                    : res?.data?.sale_zipcode ?? null;
 
             setZipcodeStatus(statusData);
             if (statusData?.status === "Available") {
@@ -120,15 +118,7 @@ export default function AddressPage() {
     };
 
     const handleAddAddress = () => {
-        if (zipcodeStatus?.status !== "Available") {
-            toast.error(
-                addressType === "sale"
-                    ? "Please check a sale serviceable zipcode before adding an address"
-                    : "Please check a rental serviceable zipcode before adding an address"
-            );
-            return;
-        }
-
+        // Mirrored exactly from AddressesPage.jsx as requested
         setFormData((prev) => ({ ...prev, zipcode: zipcodeCheck }));
         setStep("add");
     };
