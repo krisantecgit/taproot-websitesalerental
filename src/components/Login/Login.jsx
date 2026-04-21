@@ -236,16 +236,15 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
               <div> <span>Login</span></div>
             </div>
             <p className="login-title">
-              Enter your phone number to proceed
+              Enter your mobile number or email to proceed
             </p>
             <div className="d-flex align-items-center mb-3" style={{ justifyContent: "center" }}>
               <input
                 className="form-control"
                 style={{ maxWidth: "290px", border: "1px solid " }}
-                placeholder="Mobile Number"
+                placeholder="Mobile Number / Email"
                 value={contact}
                 ref={inpRef}
-                maxLength={10}
                 onChange={(e) => {
                   setContact(e.target.value);
                   setErr("");

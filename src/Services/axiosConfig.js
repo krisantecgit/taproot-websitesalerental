@@ -9,7 +9,6 @@ axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token"); // Retrieve the token from localStorage
   if (token) {
     config.headers["Authorization"] = `Token ${token}`; // Add the token to the request headers
-  }
 
   config.headers["domain"] = "uat.taprootcrm.com";
   // config.headers["domain"] = "192.168.0.180";
