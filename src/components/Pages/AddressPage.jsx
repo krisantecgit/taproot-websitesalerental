@@ -104,7 +104,9 @@ export default function AddressPage() {
             const statusData =
                 addressType === "sale"
                     ? res?.data?.sale_zipcode ?? null
-                    : res?.data?.rental_zipcode ?? null;
+                    : addressType === "rental"
+                    ? res?.data?.rental_zipcode ?? null
+                    : res?.data?.sale_zipcode ?? null; // For "both", assume sale zipcode check is enough or fallback
 
             setZipcodeStatus(statusData);
             if (statusData?.status === "Available") {
@@ -233,15 +235,21 @@ export default function AddressPage() {
             const isAvailable =
                 addressType === "sale"
                     ? result.sale_zipcode?.status === "Available"
-                    : result.rental_zipcode?.status === "Available";
+                    : addressType === "rental"
+                    ? result.rental_zipcode?.status === "Available"
+                    : result.sale_zipcode?.status === "Available" && result.rental_zipcode?.status !== "Unavailable";
 
             if (isAvailable) {
                 if (addressType === 'sale') {
                     localStorage.setItem('saleAddress', JSON.stringify(selectedAddress));
                     toast.success("Sale delivery available for this zipcode!");
-                } else {
+                } else if (addressType === 'rental') {
                     localStorage.setItem('rentalAddress', JSON.stringify(selectedAddress));
                     toast.success("Rental delivery available for this zipcode!");
+                } else {
+                    localStorage.setItem('saleAddress', JSON.stringify(selectedAddress));
+                    localStorage.setItem('rentalAddress', JSON.stringify(selectedAddress));
+                    toast.success("Delivery available for this zipcode!");
                 }
 
                 navigate(-1);
@@ -260,8 +268,10 @@ export default function AddressPage() {
 
             if (addressType === 'sale') {
                 url += `sale_zipcode=${zipcode}`;
-            } else {
+            } else if (addressType === 'rental') {
                 url += `rental_zipcode=${zipcode}`;
+            } else {
+                url += `sale_zipcode=${zipcode}`; // Both mode fallback
             }
 
             const response = await axiosConfig.get(url);
@@ -321,7 +331,10 @@ export default function AddressPage() {
                                                 localStorage.setItem("defaultAddressId", add?.id);
                                                 if (addressType === 'sale') {
                                                     localStorage.setItem('saleAddress', JSON.stringify(add));
+                                                } else if (addressType === 'rental') {
+                                                    localStorage.setItem('rentalAddress', JSON.stringify(add));
                                                 } else {
+                                                    localStorage.setItem('saleAddress', JSON.stringify(add));
                                                     localStorage.setItem('rentalAddress', JSON.stringify(add));
                                                 }
                                             }}
@@ -587,7 +600,7 @@ export default function AddressPage() {
                                 className="address-proceed-btn"
                                 onClick={handleValidate}
                             >
-                                {addressType === 'sale' ? 'Use for Sale Delivery' : 'Use for Rental Delivery'}
+                                {addressType === 'sale' ? 'Use for Sale Delivery' : addressType === 'rental' ? 'Use for Rental Delivery' : 'Use this Delivery Address'}
                             </button>
                         )
                     }
