@@ -112,6 +112,7 @@ function Cartpage() {
 
     const saleAddress = localStorage.getItem("saleAddress") ? JSON.parse(localStorage.getItem("saleAddress")) : null
     const rentalAddress = localStorage.getItem("rentalAddress") ? JSON.parse(localStorage.getItem("rentalAddress")) : null
+    const unifiedAddress = saleAddress || rentalAddress;
 
     async function proceedToCheckout() {
         if (!userId) {
@@ -127,20 +128,14 @@ function Cartpage() {
             return;
         }
 
-        if (userId && !saleAddress && buyCart.length > 0) {
-            toast.error("Please select sale delivery address");
-            navigate('/address', { state: { addressType: 'sale' } });
+        if (userId && !unifiedAddress && (buyCart.length > 0 || rentCart.length > 0)) {
+            toast.error("Please select a delivery address");
+            navigate('/address', { state: { addressType: 'both' } });
             return;
         }
 
-        if (userId && !rentalAddress && rentCart.length > 0) {
-            toast.error("Please select rental delivery address");
-            navigate('/address', { state: { addressType: 'rental' } });
-            return;
-        }
-
-        const buyAddressId = buyCart.length > 0 ? saleAddress?.id : ""
-        const rentAddressId = rentCart.length > 0 ? rentalAddress?.id : ""
+        const buyAddressId = buyCart.length > 0 ? unifiedAddress?.id : ""
+        const rentAddressId = rentCart.length > 0 ? unifiedAddress?.id : ""
 
         const payload = {
             sale_addresses: buyAddressId,
@@ -250,39 +245,38 @@ function Cartpage() {
                     <div className="cart-container">
                         <div className="cart-left">
                             {
+                                unifiedAddress ? (
+                                    <div className='cart-delivery-estimate mb-3'>
+                                        <div className='cart-delivery-estimate-left'>
+                                            <div>
+                                                <p className='deliver-address'>Delivering to : <span>{unifiedAddress?.name || ""}</span></p>
+                                                <p className='delivery-full-add'>
+                                                    Floor : {unifiedAddress.flat_no}, {unifiedAddress.address_line_1}, {unifiedAddress.address_line_2}, {unifiedAddress.landmark}, {unifiedAddress.city}, {unifiedAddress.state}, {unifiedAddress.country}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className='cart-delivery-estimate-right'>
+                                            <button onClick={() => navigate("/address", { state: { addressType: 'both' } })}>change</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className='cart-delivery-estimate mb-3'>
+                                        <div className='cart-delivery-estimate-left'>
+                                            <p className='delivery-detail'>
+                                                Select Delivery Address
+                                            </p>
+                                        </div>
+                                        <div className='cart-delivery-estimate-right'>
+                                            {
+                                                userId ? <button onClick={() => navigate("/address", { state: { addressType: 'both' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            {
                                 buyCart.length > 0 && (
                                     <>
-                                        {
-                                            saleAddress ? (
-                                                <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>
-                                                        <div>
-                                                            <p className='deliver-address'>Delivering to : <span>{saleAddress?.name || ""}</span></p>
-                                                            <p className='delivery-full-add'>
-                                                                Floor : {saleAddress.flat_no}, {saleAddress.address_line_1}, {saleAddress.address_line_2}, {saleAddress.landmark}, {saleAddress.city}{saleAddress.state}{saleAddress.country}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='cart-delivery-estimate-right'>
-                                                        <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>change</button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>
-                                                        <p className='delivery-detail'>
-                                                            Select address
-                                                        </p>
-
-                                                    </div>
-                                                    <div className='cart-delivery-estimate-right'>
-                                                        {
-                                                            userId ? <button onClick={() => navigate("/address", { state: { addressType: 'sale' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            )
-                                        }
                                         <div className="cart-section-box">
                                             <div className="cart-section-header">
                                                 Buy Cart <span>{buyCart.length} items</span>
@@ -336,39 +330,6 @@ function Cartpage() {
                             {
                                 rentCart.length > 0 && (
                                     <div className='mt-3'>
-                                        {
-                                            rentalAddress ? (
-                                                <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>
-                                                        <div>
-                                                            <p className='deliver-address'>Delivering to : <span>{rentalAddress?.name}</span></p>
-                                                            <p className='delivery-full-add'>
-                                                                Floor : {rentalAddress.flat_no}, {rentalAddress.address_line_1}, {rentalAddress.address_line_2}, {rentalAddress.landmark}, {rentalAddress.city}{rentalAddress.state}{rentalAddress.country}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='cart-delivery-estimate-right'>
-                                                        <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>change</button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className='cart-delivery-estimate'>
-                                                    <div className='cart-delivery-estimate-left'>
-                                                        {/* <TbTruckDelivery className='truck-icon' /> */}
-                                                        <p className='delivery-detail'>
-                                                            Select address
-                                                        </p>
-                                                        <div>
-                                                        </div>
-                                                    </div>
-                                                    <div className='cart-delivery-estimate-right'>
-                                                        {
-                                                            userId ? <button onClick={() => navigate("/address", { state: { addressType: 'rental' } })}>Choose</button> : <button onClick={() => setLoginModal(true)}>Choose</button>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            )
-                                        }
                                         <div className="cart-section-box mb-4">
                                             <div className="cart-section-header">
                                                 Rent Cart <span>{rentCart.length} items</span>
