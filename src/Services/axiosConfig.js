@@ -1,8 +1,7 @@
 import axios from "axios";
 const axiosInstance = axios.create({
   baseURL: "https://api-uat.taprootcrm.com/",
-  // baseURL: "http://192.168.0.180:4567",
-  // baseURL: "http://192.168.0.180:4567",
+  // baseURL: "http://192.168.0.180:4567", 
 });
 
 // Add a request interceptor to attach the token from localStorage

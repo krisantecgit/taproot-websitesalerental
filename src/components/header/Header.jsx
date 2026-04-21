@@ -9,6 +9,7 @@ import useDebouncedValue from "../../utils/Debounce"
 import axiosConfig from "../../Services/axiosConfig"
 import { useSelector } from "react-redux"
 import LoginModal from "../Login/Login"
+import { toast } from "react-toastify"
 
 function Header() {
   const searchRef = useRef(null)
@@ -22,6 +23,11 @@ function Header() {
   const [products, setProducts] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debouncedSearchTerm = useDebouncedValue(query, 1000)
+
+  const [currentLocation, setCurrentLocation] = useState(
+    localStorage.getItem("userLocation") || "Detect location"
+  );
+
   const location = useLocation()
   const [path, setPath] = useState("")
   function getUrl() {
@@ -62,6 +68,84 @@ function Header() {
     }
   }, [])
 
+  const API_KEY = "AIzaSyDD8frd15FoMhemosVqGvVBCHaRjLgNszc";
+
+  const detectLocation = (showToast = false) => {
+    if (!navigator.geolocation) {
+      if (showToast) toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+  
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+  
+        if (!window.google?.maps) {
+          if (showToast) toast.error("Maps failed to load.");
+          return;
+        }
+
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode(
+          { location: { lat: latitude, lng: longitude } },
+          (results, status) => {
+            if (status === "OK" && results[0]) {
+              const addressComponents = results[0].address_components;
+              let shortName = results[0].formatted_address.split(",")[0];
+              
+              const locality = addressComponents.find(c => c.types.includes("locality"));
+              const sublocality = addressComponents.find(c => c.types.includes("sublocality") || c.types.includes("sublocality_level_1") || c.types.includes("neighborhood"));
+              
+              if (sublocality) {
+                shortName = sublocality.short_name || sublocality.long_name;
+              } else if (locality) {
+                shortName = locality.short_name || locality.long_name;
+              }
+              
+              setCurrentLocation(shortName);
+              localStorage.setItem("userLocation", shortName);
+              if (showToast) toast.success("Location successfully detected!");
+            }
+          }
+        );
+      },
+      (error) => {
+        console.warn("Geolocation permission denied or error:", error.message);
+        if (error.code === error.PERMISSION_DENIED) {
+           toast.warn("Location permission denied. Please enable it in your browser settings to detect your location.");
+        } else if (showToast) {
+           toast.error(`Unable to retrieve your location: ${error.message}`);
+        }
+      }
+    );
+  };
+
+  useEffect(() => {
+    // Only detect automatically if no saved location is present
+    const loadGoogleAndDetect = () => {
+      const savedLocation = localStorage.getItem("userLocation");
+      if (!savedLocation) {
+        detectLocation();
+      }
+    };
+
+    if (window.google) {
+      loadGoogleAndDetect();
+      return;
+    }
+  
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
+    script.async = true;
+    script.onload = () => {
+      loadGoogleAndDetect();
+    };
+  
+    document.head.appendChild(script);
+  }, []); // Run on mount only (empty array = not on every render)
+
+  
+
   const handleSearchClick = () => {
     setShowSuggestions(true)
   }
@@ -94,11 +178,13 @@ function Header() {
           <img src={logo} alt="logo" />
         </div>
 
-        <div className="location">
+        <div className="location" onClick={() => detectLocation(true)}>
           <IoLocationOutline className="icon" />
-          <div>
-            <span className="label">Delivery to</span><br />
-            <span className="pincode">560001</span>
+          <div className="location-content">
+            <span className="label">Delivery to</span>
+            <span className="detect-location" title={currentLocation || "Detect Location"}>
+              {currentLocation || "Detect Location"}
+            </span>
           </div>
         </div>
 

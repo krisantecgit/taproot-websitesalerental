@@ -22,7 +22,7 @@ export default function AddressPage() {
     const [selected, setSelected] = useState(null);
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [addresses, setAddresses] = useState([]);
-    const [selectedIndex, setSelectedIndex] = useState(0)
+     const [selectedIndex, setSelectedIndex] = useState(0);
     const [zipcodeCheck, setZipcodeCheck] = useState("");
     const [zipcodeStatus, setZipcodeStatus] = useState(null);
     const [checkingZip, setCheckingZip] = useState(false);
@@ -54,15 +54,31 @@ export default function AddressPage() {
         script.onload = () => setScriptLoaded(true);
         document.head.appendChild(script);
     }, []);
+  
     async function fetchAddress() {
-        try {
-            const res = await axiosConfig.get(`/accounts/address/?user=${userId}&is_suspended=false`)
-            setAddresses(res?.data?.results)
-            dispatch(setAddress(res?.data?.results))
-        } catch (error) {
-            console.log(error)
+    try {
+        const res = await axiosConfig.get(`/accounts/address/?user=${userId}&is_suspended=false`);
+
+        const list = res?.data?.results ?? [];
+
+        setAddresses(list);
+        dispatch(setAddress(list));
+
+        // 🔥 set default based on saved ID
+        const savedId = localStorage.getItem("defaultAddressId");
+
+        if (savedId) {
+            const index = list.findIndex(a => String(a?.id) === String(savedId));
+            if (index !== -1) {
+                setSelectedIndex(index);
+            }
         }
+
+    } catch (error) {
+        console.log(error);
     }
+}
+
     useEffect(() => {
         fetchAddress()
     }, [userId])
@@ -302,6 +318,7 @@ export default function AddressPage() {
                                             className={`address-box ${selectedIndex === ind ? "active" : ""}`}
                                             onClick={() => {
                                                 setSelectedIndex(ind);
+                                                localStorage.setItem("defaultAddressId", add?.id);
                                                 if (addressType === 'sale') {
                                                     localStorage.setItem('saleAddress', JSON.stringify(add));
                                                 } else {
@@ -316,11 +333,11 @@ export default function AddressPage() {
                                                     <FaRegCircle className="check-icon" />
                                                 )}
                                                 {add.name}{" "}
-                                                {ind === 0 && <span className="default-badge">Default</span>}
+                                                {selectedIndex === ind && <span className="default-badge">Default</span>}
                                             </div>
 
                                             <div className="user-city">
-                                                {add?.city} {add?.pincode}
+                                                {add?.city} {add?.zipcode}
                                             </div>
 
                                             <div className="user-address">
