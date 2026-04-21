@@ -45,7 +45,6 @@ function Orders() {
     if (type === "all") setOrderType("")
     if (type === "sale") setOrderType("sale")
     if (type === "rental") setOrderType("rental")
-    if (type === "both") setOrderType("both")
   }
   return (
     <div>
@@ -54,7 +53,6 @@ function Orders() {
           <button onClick={() => handleType("all")} className={`${btnActive === "all" ? "active" : ""}`}>All</button>
           <button onClick={() => handleType("sale")} className={`${btnActive === "sale" ? "active" : ""}`}>Sale</button>
           <button onClick={() => handleType("rental")} className={`${btnActive === "rental" ? "active" : ""}`}>Rental</button>
-          <button onClick={() => handleType("both")} className={`${btnActive === "both" ? "active" : ""}`}>Both</button>
         </div>
         {loading ? (
           <div className="loader-container">

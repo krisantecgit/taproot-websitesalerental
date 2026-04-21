@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import axiosConfig from "../../Services/axiosConfig";
 import "./orderdetails.css"
 import { TbTruckDelivery } from 'react-icons/tb';
-import { FaEye } from 'react-icons/fa';
+import { FaFileDownload } from 'react-icons/fa';
 
 function OrderDetails() {
     let [searchParams] = useSearchParams();
@@ -71,7 +71,12 @@ function OrderDetails() {
             const res = await axiosConfig(`/accounts/pdf/${id}/`, { responseType: "blob" })
             const file = new Blob([res.data], { type: "application/pdf" })
             const fileUrl = URL.createObjectURL(file)
-            window.open(fileUrl, "_blank", "noopener, noreferrer")
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.setAttribute('download', `Invoice_${id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
         } catch (error) {
             console.log(error)
             alert("pdf not available")
@@ -88,7 +93,9 @@ function OrderDetails() {
                                     <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
                                     <div className='d-flex gap-2 align-items-center'>
                                         <h4 className='mb-0'>Order Id: {orderId}</h4>
-                                        <FaEye style={{ cursor: "pointer" }} onClick={() => handlePrint(orderId)} />
+                                        <button className="btn btn-sm d-flex align-items-center gap-2" style={{ backgroundColor: "rgb(6, 155, 170)", color: "white", border: "none" }} onClick={() => handlePrint(orderId)}>
+                                            <FaFileDownload /> Download Invoice
+                                        </button>
                                     </div>
                                 </div>
                                 {orderData.map((item) => (
