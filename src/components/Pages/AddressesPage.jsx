@@ -242,7 +242,7 @@ function AddressesPage() {
                       <input
                         type="text"
                         placeholder="Enter Zipcode"
-                        maxLength={6}
+                        maxLength={5}
                         value={zipcodeCheck}
                         onChange={(e) => {
                           setZipcodeCheck(e.target.value);
@@ -267,7 +267,10 @@ function AddressesPage() {
                     )}
                   </div>
 
-                  <button className="add-btn" onClick={() => setStep("add")}>
+                  <button className="add-btn" onClick={() => {
+                    setFormData(prev => ({ ...prev, zipcode: zipcodeCheck }));
+                    setStep("add");
+                  }}>
                     + Add new address
                   </button>
 
@@ -480,7 +483,7 @@ function AddressesPage() {
                           className="input-box-address"
                           placeholder="Zipcode"
                           required
-                          maxLength={6}
+                          maxLength={5}
                           value={formData.zipcode}
                           onChange={(e) =>
                             setFormData({ ...formData, zipcode: e.target.value })
