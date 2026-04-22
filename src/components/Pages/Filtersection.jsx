@@ -568,7 +568,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         }
 
         setSearchParams(params);
-        applyFilters();
+        // applyFilters();
     };
 
 
