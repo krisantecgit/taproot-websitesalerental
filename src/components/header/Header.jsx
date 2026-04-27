@@ -75,11 +75,11 @@ function Header() {
       if (showToast) toast.error("Geolocation is not supported by your browser");
       return;
     }
-  
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-  
+
         if (!window.google?.maps) {
           if (showToast) toast.error("Maps failed to load.");
           return;
@@ -92,16 +92,16 @@ function Header() {
             if (status === "OK" && results[0]) {
               const addressComponents = results[0].address_components;
               let shortName = results[0].formatted_address.split(",")[0];
-              
+
               const locality = addressComponents.find(c => c.types.includes("locality"));
               const sublocality = addressComponents.find(c => c.types.includes("sublocality") || c.types.includes("sublocality_level_1") || c.types.includes("neighborhood"));
-              
-              if (sublocality) {
-                shortName = sublocality.short_name || sublocality.long_name;
-              } else if (locality) {
-                shortName = locality.short_name || locality.long_name;
+
+              if (locality) {
+                shortName = locality?.short_name ?? locality?.long_name;
+              } else if (sublocality) {
+                shortName = sublocality?.short_name ?? sublocality?.long_name;
               }
-              
+
               setCurrentLocation(shortName);
               localStorage.setItem("userLocation", shortName);
               if (showToast) toast.success("Location successfully detected!");
@@ -112,9 +112,9 @@ function Header() {
       (error) => {
         console.warn("Geolocation permission denied or error:", error.message);
         if (error.code === error.PERMISSION_DENIED) {
-           toast.warn("Location permission denied. Please enable it in your browser settings to detect your location.");
+          toast.warn("Location permission denied. Please enable it in your browser settings to detect your location.");
         } else if (showToast) {
-           toast.error(`Unable to retrieve your location: ${error.message}`);
+          toast.error(`Unable to retrieve your location: ${error.message}`);
         }
       }
     );
@@ -133,18 +133,18 @@ function Header() {
       loadGoogleAndDetect();
       return;
     }
-  
+
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places`;
     script.async = true;
     script.onload = () => {
       loadGoogleAndDetect();
     };
-  
+
     document.head.appendChild(script);
   }, []); // Run on mount only (empty array = not on every render)
 
-  
+
 
   const handleSearchClick = () => {
     setShowSuggestions(true)
@@ -164,7 +164,7 @@ function Header() {
     setLoginModal(false);
   }
   function HandleWishlist() {
-    if(userId) {
+    if (userId) {
       navigate("/my/wishlist")
     } else {
       setLoginModal(true)
@@ -181,7 +181,7 @@ function Header() {
         <div className="location" onClick={() => detectLocation(true)}>
           <IoLocationOutline className="icon" />
           <div className="location-content">
-            <span className="label">Delivery to</span>
+            {/* <span className="label">Delivery to</span> */}
             <span className="detect-location" title={currentLocation || "Detect Location"}>
               {currentLocation || "Detect Location"}
             </span>

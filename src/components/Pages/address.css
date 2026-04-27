@@ -336,7 +336,7 @@
 }
 
 .address-proceed-btn {
-    background-color: transparent;
+    background-color: #fff;
     font-family: "Work Sans", Recline;
     font-weight: 500;
     font-size: 0.75rem;
@@ -365,10 +365,10 @@
 
 .address-box {
     color: rgba(0, 0, 0, 0.87);
-    border: none;
-    border-radius: 8px;
-    box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
-    transition: 1s ease-in-out;
+    border: 1px solid #ddd; /* 👈 add border */
+    border-radius: 6px; /* slightly sharper than 8px */
+    box-shadow: none; /* 👈 remove shadow */
+    transition: all 0.2s ease;
     background: white;
     padding: 15px 20px;
     width: 700px;
@@ -376,17 +376,21 @@
 }
 
 .address-box.active {
-    color: rgba(0, 0, 0, 0.87);
-    border: none;
-    border-radius: 8px;
-    box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
-    transition: 1s ease-in-out;
-    background: linear-gradient(rgb(180, 225, 229) 0%, rgb(206, 237, 240) 100%);
+    border: 1px solid #00aacc; /* 👈 highlight selected */
+    background: #f3fbfc; /* subtle instead of gradient */
 }
 
 .checked {
     color: #00aacc;
     font-weight: bold;
+}
+
+.address-box-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
 }
 
 .user-name {
@@ -431,4 +435,10 @@
 .user-mob {
     font-size: 14px;
     font-weight: 600;
+}
+
+.address-card-proceed-btn {
+    display: inline-flex;
+    margin-top: 0;
+    flex-shrink: 0;
 }

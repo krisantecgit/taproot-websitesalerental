@@ -329,14 +329,34 @@ export default function AddressPage() {
                                                 }
                                             }}
                                         >
-                                            <div className="user-name">
-                                                {selectedIndex === ind ? (
-                                                    <FaCheckCircle className="check-icon checked" />
-                                                ) : (
-                                                    <FaRegCircle className="check-icon" />
+                                            <div className="address-box-header">
+                                                <div className="user-name">
+                                                    {selectedIndex === ind ? (
+                                                        <FaCheckCircle className="check-icon checked" />
+                                                    ) : (
+                                                        <FaRegCircle className="check-icon" />
+                                                    )}
+                                                    {add.name}{" "}
+                                                    {selectedIndex === ind && <span className="default-badge">Default</span>}
+                                                </div>
+
+                                                {selectedIndex === ind && (
+                                                    <button
+                                                        type="button"
+                                                        className="address-proceed-btn address-card-proceed-btn"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedIndex(ind);
+                                                            handleValidate();
+                                                        }}
+                                                    >
+                                                        {addressType === 'sale'
+                                                            ? 'Use for Sale Delivery'
+                                                            : addressType === 'rental'
+                                                            ? 'Use for Rental Delivery'
+                                                            : 'Use this Delivery Address'}
+                                                    </button>
                                                 )}
-                                                {add.name}{" "}
-                                                {selectedIndex === ind && <span className="default-badge">Default</span>}
                                             </div>
 
                                             <div className="user-city">
@@ -351,6 +371,7 @@ export default function AddressPage() {
                                             <div className="user-mob-no">
                                                 Contact Number : <span className="mob">{add.mobileno}</span>
                                             </div>
+
                                         </div>
                                     ))}
                                 </div>
@@ -584,16 +605,6 @@ export default function AddressPage() {
                                 : "Add a new address to get a delivery estimate."}
                         </div>
                     </div>
-                    {
-                        step === "default" && (
-                            <button
-                                className="address-proceed-btn"
-                                onClick={handleValidate}
-                            >
-                                {addressType === 'sale' ? 'Use for Sale Delivery' : addressType === 'rental' ? 'Use for Rental Delivery' : 'Use this Delivery Address'}
-                            </button>
-                        )
-                    }
 
                 </div>
             </div>
