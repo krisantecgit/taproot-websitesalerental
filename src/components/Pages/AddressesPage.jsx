@@ -7,6 +7,46 @@ import { toast } from 'react-toastify';
 import { IoLocationOutline } from 'react-icons/io5';
 import { FiSearch } from 'react-icons/fi';
 const API_KEY = "AIzaSyDD8frd15FoMhemosVqGvVBCHaRjLgNszc";
+
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
+
 function AddressesPage() {
   const userId = localStorage.getItem("userid")
   const [step, setStep] = useState("default")
@@ -505,16 +545,21 @@ function AddressesPage() {
                       </div>
                       <div className="input-field">
                         <label htmlFor="houseNo">State <span className="sup-color">*</span></label>
-                        <input
-                          type="text"
-                          className="input-box-address"
-                          placeholder="State"
+                        <select
+                          className="input-box-address address-select-field"
                           required
-                          value={formData.state}
+                          value={formData.state || ""}
                           onChange={(e) =>
                             setFormData({ ...formData, state: e.target.value })
                           }
-                        />
+                        >
+                          <option value="">Select State</option>
+                          {INDIAN_STATES.map((stateName) => (
+                            <option key={stateName} value={stateName}>
+                              {stateName}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>

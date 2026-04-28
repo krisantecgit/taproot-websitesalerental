@@ -93,6 +93,25 @@
     border: 1px solid rgb(6, 155, 170);
     border-radius: 6px;
 }
+
+.order-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+.order-action-buttons a {
+    display: inline-flex;
+    text-decoration: none;
+}
+
+.order-action-buttons .btn,
+.order-action-buttons .order-view-button {
+    white-space: nowrap;
+}
+
 .extend-btn {
     background-color: #aed5e3;
     width: auto;

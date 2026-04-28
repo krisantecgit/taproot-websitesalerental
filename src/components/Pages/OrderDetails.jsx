@@ -4,6 +4,7 @@ import axiosConfig from "../../Services/axiosConfig";
 import "./orderdetails.css"
 import { TbTruckDelivery } from 'react-icons/tb';
 import { FaFileDownload } from 'react-icons/fa';
+import { IoArrowBack } from "react-icons/io5";
 
 function OrderDetails() {
     let [searchParams] = useSearchParams();
@@ -89,6 +90,13 @@ function OrderDetails() {
                     (
                         <div>
                             <div className="order-details-wrapper">
+                                <button
+                                    type="button"
+                                    className="order-back-button"
+                                    onClick={() => navigate(-1)}
+                                >
+                                    <IoArrowBack /> Back to Orders
+                                </button>
                                 <div className='d-flex justify-content-between'>
                                     <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
                                     <div className='d-flex gap-2 align-items-center'>

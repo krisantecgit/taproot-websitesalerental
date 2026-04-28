@@ -6,6 +6,7 @@ import tick from "../Assets/tick.png"
 import orderImg from "../Assets/orderimg.png"
 import "./order.css"
 import ExtendModal from './ExtendModal'
+import { FaFileDownload } from 'react-icons/fa';
 function Orders() {
   const [order, setOrder] = useState([])
   const [loading, setLoading] = useState(false)
@@ -46,6 +47,25 @@ function Orders() {
     if (type === "sale") setOrderType("sale")
     if (type === "rental") setOrderType("rental")
   }
+
+  async function handlePrint(id) {
+    try {
+      const res = await axiosConfig(`/accounts/pdf/${id}/`, { responseType: "blob" })
+      const file = new Blob([res.data], { type: "application/pdf" })
+      const fileUrl = URL.createObjectURL(file)
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.setAttribute('download', `Invoice_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.log(error)
+      alert("pdf not available")
+    }
+  }
+
+
   return (
     <div>
       <div className="order-overflow" >
@@ -75,7 +95,7 @@ function Orders() {
                           <h5 className="order_id">Order Id:{order?.id}&nbsp;-&nbsp;
                             {/* ${order.order_type === "rental" ? order.rental_total_amount : order.sale_total_amount} */}
                             {order?.net_amount}
-                             </h5>
+                          </h5>
                           <p className="">Placed on {timeString(order.order_date)}</p>
                         </div>
                         <div className={`status_badge ${order.orderstatus === "Cart" || order.orderstatus === "Placed" ? "green" : "grey"}`}>
@@ -83,17 +103,25 @@ function Orders() {
                         </div>
                       </div>
                       {(
-                        // <NavLink to={`${order.id}/${order?.address_id}`}>
-                        //   <button type="button" className="order-view-button">view details</button>
-                        // </NavLink>
-                        <NavLink
-                          to={`/account/orders/order-details?orderID=${order.id}&type=${order.order_type}${order.order_type === "rental"
-                            ? `&rental_id=${order.rental_order_id}`
-                            : ""
-                            }&address=${order.address_id}`}
-                        >
-                          <button className="order-view-button">view details</button>
-                        </NavLink>
+                        <div className="order-action-buttons">
+                          <button
+                            type="button"
+                            className="btn btn-sm d-flex align-items-center gap-2"
+                            style={{ backgroundColor: "rgb(6, 155, 170)", color: "white", border: "none" }}
+                            onClick={() => handlePrint(order.id)}
+                          >
+                            <FaFileDownload />
+                            <span>Invoice Download</span>
+                          </button>
+                          <NavLink
+                            to={`/account/orders/order-details?orderID=${order.id}&type=${order.order_type}${order.order_type === "rental"
+                              ? `&rental_id=${order.rental_order_id}`
+                              : ""
+                              }&address=${order.address_id}`}
+                          >
+                            <button className="order-view-button">view details</button>
+                          </NavLink>
+                        </div>
                       )}
                     </div>
                     {

@@ -56,7 +56,12 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
 
   function getListingType(product) {
     if (location.pathname.includes("/search/results")) {
-      return searchListingType === "buy" ? "sale" : "rental";
+      if (searchListingType === "buy") return "sale";
+      if (searchListingType === "rent") return "rental";
+
+      if (product.varient_listing_type === "buy/rent") return "buy/rent";
+      if (product.varient_listing_type === "buy") return "sale";
+      if (product.varient_listing_type === "rent") return "rental";
     }
     if (product.wishlistType) {
       return product.wishlistType === "sale" ? "sale" : "rental";
@@ -72,9 +77,9 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
   }
 
   function handleNavigate(product) {
-    const listingType = getListingType(searchListingType || product);
+    const listingType = getListingType(product);
 
-    const urlType = listingType === "sale" ? "buy" : "rent";
+    const urlType = listingType === "rental" ? "rent" : "buy";
 
     navigate(`/${urlType}/product/${product.slug}`, {
       state: { item: product, listingType: urlType }
@@ -126,13 +131,11 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                 )}
 
                 <div className="product-price-box">
-                  <span className="product-tag">{listingType}</span>
+                  <span className="product-tag">{listingType === "buy/rent" ? "buy / rent" : listingType}</span>
 
                   <div className="product-price-row">
-                    {/* For sale products */}
                     {listingType === "sale" && (
                       <>
-                       
                         {Number(product.prices?.sale_offer_price) > 0 ? (
                           <div className="price-row">
                             <span className="offer-price">{formatPrice(product.prices.sale_offer_price)}</span>
@@ -153,10 +156,26 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                       </>
                     )}
 
-                    {/* For rental products */}
                     {listingType === "rental" && product.prices?.rental_price && (
                       <div className="offer-price">
                         {formatPrice(product.prices.rental_price)} / Day
+                      </div>
+                    )}
+
+                    {listingType === "buy/rent" && (
+                      <div className="price-row dual-price-row">
+                        <span className="offer-price">
+                          {formatPrice(
+                            Number(product.prices?.sale_offer_price) > 0
+                              ? product.prices?.sale_offer_price
+                              : product.prices?.sale_price
+                          )}
+                        </span>
+                        {product.prices?.rental_price && (
+                          <span className="dual-rental-price">
+                            {formatPrice(product.prices.rental_price)} / Day
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>

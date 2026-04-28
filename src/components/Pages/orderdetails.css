@@ -3,6 +3,25 @@
   background: #fff;
 }
 
+.order-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px 14px;
+  border: 1px solid rgba(6, 155, 170, 0.35);
+  border-radius: 999px;
+  background: #eef9fb;
+  color: rgb(6, 155, 170);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.order-back-button:hover {
+  background: rgb(6, 155, 170);
+  color: #fff;
+}
+
 .order-item {
   display: flex;
   justify-content: space-between;

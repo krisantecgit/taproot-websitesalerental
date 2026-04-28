@@ -11,7 +11,7 @@ function SearchedData() {
   const query = params.get("q");
   const decodedQuery = query?.replace(/-/g, " ");
   const [products, setProducts] = useState([]);
-  const [listingType, setListingType] = useState(params.get("listing_type") || "buy");
+  const [listingType, setListingType] = useState(params.get("listing_type") || "");
 
   useEffect(() => {
     let isActive = true;
@@ -20,7 +20,6 @@ function SearchedData() {
       if (!decodedQuery) return;
 
       const searchQuery = new URLSearchParams({
-        listing_type: listingType || "buy",
         search: decodedQuery,
         is_suspended: "false",
         category: params.get("category") || "",
@@ -29,6 +28,10 @@ function SearchedData() {
         price_max: params.get("price_max") || "",
         options: params.get("options") || "",
       });
+
+      if (listingType) {
+        searchQuery.set("listing_type", listingType);
+      }
 
       try {
         const res = await axiosConfig.get(`/catlog/category-variants/?${searchQuery.toString()}`);

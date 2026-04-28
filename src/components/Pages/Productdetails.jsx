@@ -29,6 +29,7 @@ function Productdetails() {
     const [toDate, setToDate] = useState(null);
     const [wishListed, setWishListed] = useState(false)
     const [error, setError] = useState("")
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
     let navigate = useNavigate()
     const formatPrice = (price) =>
@@ -135,6 +136,10 @@ function Productdetails() {
         }
     }
 
+    const descriptionHtml = product?.description || "";
+    const plainDescription = descriptionHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const shouldShowReadMore = plainDescription.length > 320;
+
     return (
         <div>
             <Header />
@@ -185,183 +190,180 @@ function Productdetails() {
                         ))}
                     </div>
                     <div className="product-name">{productDetails?.name}</div>
-                    <div dangerouslySetInnerHTML={{ __html: product.description }}></div>
-                </div>
-                <div className={`product-right ${selectedOption === "buy" ? "buy-bg" : "rent-bg"}`}>
-                    <div className='product-right-listingtype'>
-                        <div>{productDetails?.varient_listing_type}</div>
-                        <div>
-                            <Wishlist productData={productDetails} selectedOption={selectedOption} wishListed={wishListed} onLoad={fetchIsWishlist} />
-                        </div>
+                    <div className="product-description-section">
+                        <div
+                            className={`product-description ${isDescriptionExpanded ? "expanded" : "collapsed"}`}
+                            dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                        ></div>
+                        {shouldShowReadMore && (
+                            <button
+                                type="button"
+                                className="product-description-toggle"
+                                onClick={() => setIsDescriptionExpanded((prev) => !prev)}
+                            >
+                                {isDescriptionExpanded ? "Read less" : "Read more"}
+                            </button>
+                        )}
                     </div>
-                    <div className='product-right-title'>{productDetails?.name}</div>
-                    
-                    {/* Variant Options Section */}
-                    {productDetails?.options && productDetails.options.length > 0 && (
-                        <div className="variant-options-container">
-                            <div className="variant-options-grid">
-                                {productDetails.options.map((option) => (
-                                    <div key={option.id} className="variant-option-item">
-                                        <span className="variant-type-label">{option.variant_type}</span>
-                                        <span className="variant-option-value">{option.variant_option}</span>
-                                    </div>
-                                ))}
+                </div>
+                <div className="product-right-column">
+                    <div className={`product-right ${selectedOption === "buy" ? "buy-bg" : "rent-bg"}`}>
+                        <div className='product-right-listingtype'>
+                            <div>{productDetails?.varient_listing_type}</div>
+                            <div>
+                                <Wishlist productData={productDetails} selectedOption={selectedOption} wishListed={wishListed} onLoad={fetchIsWishlist} />
                             </div>
                         </div>
-                    )}
+                        <div className='product-right-title'>{productDetails?.name}</div>
 
-                    <div className="radio-group">
-                        {productDetails?.varient_listing_type && (
-                            <>
-                                {(() => {
-                                    const currentType = selectedOption;
-                                    const type = productDetails.varient_listing_type; // buy / rent / buy/rent
-
-                                    const showBuy = type === "buy" || type === "buy/rent";
-                                    const showRent = type === "rent" || type === "buy/rent";
-
-                                    // order depends on current type (Rent first if selected)
-                                    const options =
-                                        currentType === "rent"
-                                            ? [{ key: "rent" }, { key: "buy" }]
-                                            : [{ key: "buy" }, { key: "rent" }];
-
-                                    return (
-                                        <>
-                                            {options.map(({ key }) => {
-                                                if ((key === "buy" && showBuy) || (key === "rent" && showRent)) {
-                                                    const price =
-                                                        key === "buy"
-                                                            ? productDetails.prices?.sale_offer_price
-                                                            : productDetails.prices?.rental_price;
-                                                    const oldPrice =
-                                                        key === "buy" ? productDetails.prices?.sale_price : null;
-
-                                                    const isActive = currentType === key;
-
-                                                    return (
-                                                        <div key={key}>
-                                                            <div
-                                                                className="d-flex justify-content-between mt-3"
-                                                                onClick={() => {
-                                                                    if (currentType !== key) handleListingSwitch(key);
-                                                                }}
-                                                            >
-                                                                <div className="single-option">
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="14"
-                                                                        height="14"
-                                                                        viewBox="0 0 24 24"
-                                                                        fill="none"
-                                                                        stroke={isActive ? "#069baa" : "#535252ff"}
-                                                                        strokeWidth="2"
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                    >
-                                                                        <circle cx="12" cy="12" r="10" />
-                                                                        {isActive && <circle cx="12" cy="12" r="5" fill="#069baa" />}
-                                                                    </svg>
-                                                                    <label className="ms-1" style={{ cursor: "pointer" }}>
-                                                                        {key === "buy" ? "Buy" : "Rent"}
-                                                                    </label>
-                                                                </div>
-
-                                                                {key === "rent" && (
-                                                                    <div className="option-price" style={{ fontWeight: 600 }}>
-                                                                        {formatPrice(price)}
-                                                                        <span style={{ fontSize: "14px", marginLeft: "4px" }}>/Day</span>
-                                                                    </div>
-                                                                )}
-
-                                                                {key === "buy" && oldPrice && (
-                                                                    <div className="product-details-offer-price">
-                                                                        {oldPrice && price ? <span className="product-old-price-right">{formatPrice(oldPrice)}</span> : <span className='product-discount-right'>{formatPrice(oldPrice)}</span>}
-                                                                        <span className="product-discount-right">
-                                                                            {oldPrice && price
-                                                                                ? `${Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF`
-                                                                                : ""}
-                                                                        </span>
-                                                                    </div>
-                                                                )}
-
-                                                            </div>
-                                                            {key === "rent" && currentType === "rent" && (
-                                                                <div className="rent-date-section mt-2">
-                                                                    <div className="date-picker-row">
-                                                                        <div className="date-field">
-                                                                            <label>From:</label>
-                                                                            <DatePicker
-                                                                                selected={fromDate}
-                                                                                onChange={(date) => setFromDate(date)}
-                                                                                dateFormat="dd/MM/yyyy"
-                                                                                placeholderText="Select start date"
-                                                                                minDate={new Date()}
-                                                                                className="custom-date-input"
-                                                                                popperPlacement="bottom-start"
-                                                                            />
-                                                                        </div>
-                                                                        {/* <div className="date-field">
-                                                                            <label>To:</label>
-                                                                            <DatePicker
-                                                                                selected={toDate}
-                                                                                onChange={(date) => setToDate(date)}
-                                                                                dateFormat="dd/MM/yyyy"
-                                                                                placeholderText="Select end date"
-                                                                                minDate={fromDate || new Date()}
-                                                                                className="custom-date-input"
-                                                                                popperPlacement="bottom-start"
-                                                                            />
-                                                                        </div> */}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                            {isActive && (
-                                                                <div className='cart-btn-section mt-3'>
-                                                                    <div className="cart-btn mt-3" onClick={() =>
-                                                                        handleAddToCart(key, {
-                                                                            id: productDetails?.id,
-                                                                            name: productDetails?.name,
-                                                                            friendlyurl: friendlyurl,
-                                                                            type: key,
-                                                                            image: images?.[0]?.image,
-                                                                            oldPrice: key === "buy" ? productDetails?.prices?.sale_price : null,
-                                                                            offerPrice:
-                                                                                key === "buy"
-                                                                                    ? productDetails?.prices?.sale_offer_price || productDetails?.prices?.sale_price
-                                                                                    : productDetails?.prices?.rental_price,
-
-                                                                            rentPerDay: key === "rent" ? productDetails?.prices?.rental_price : null,
-                                                                        })
-                                                                    }
-                                                                    >
-                                                                        <div>
-                                                                            {formatPrice(price || oldPrice)}
-                                                                            {key === "rent" && <span style={{ fontSize: "14px", marginLeft: "4px" }}>/Day</span>}
-                                                                        </div>
-                                                                        <div>
-                                                                            ADD TO CART <IoArrowForward size={17} />
-                                                                        </div>
-                                                                    </div>
-                                                                    {
-                                                                        error && (
-                                                                            <span className='text-danger text-sm'>{error}</span>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            )}
-
-                                                        </div>
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </>
-                                    );
-                                })()}
-
-                            </>
+                        {productDetails?.options && productDetails.options.length > 0 && (
+                            <div className="variant-options-container">
+                                <div className="variant-options-grid">
+                                    {productDetails.options.map((option) => (
+                                        <div key={option.id} className="variant-option-item">
+                                            <span className="variant-type-label">{option.variant_type}</span>
+                                            <span className="variant-option-value">{option.variant_option}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         )}
+
+                        <div className="radio-group">
+                            {productDetails?.varient_listing_type && (
+                                <>
+                                    {(() => {
+                                        const currentType = selectedOption;
+                                        const type = productDetails.varient_listing_type;
+
+                                        const showBuy = type === "buy" || type === "buy/rent";
+                                        const showRent = type === "rent" || type === "buy/rent";
+
+                                        const options =
+                                            currentType === "rent"
+                                                ? [{ key: "rent" }, { key: "buy" }]
+                                                : [{ key: "buy" }, { key: "rent" }];
+
+                                        return (
+                                            <>
+                                                {options.map(({ key }) => {
+                                                    if ((key === "buy" && showBuy) || (key === "rent" && showRent)) {
+                                                        const price =
+                                                            key === "buy"
+                                                                ? productDetails.prices?.sale_offer_price
+                                                                : productDetails.prices?.rental_price;
+                                                        const oldPrice =
+                                                            key === "buy" ? productDetails.prices?.sale_price : null;
+
+                                                        const isActive = currentType === key;
+
+                                                        return (
+                                                            <div key={key}>
+                                                                <div
+                                                                    className="d-flex justify-content-between mt-3"
+                                                                    onClick={() => {
+                                                                        if (currentType !== key) handleListingSwitch(key);
+                                                                    }}
+                                                                >
+                                                                    <div className="single-option">
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="14"
+                                                                            height="14"
+                                                                            viewBox="0 0 24 24"
+                                                                            fill="none"
+                                                                            stroke={isActive ? "#069baa" : "#535252ff"}
+                                                                            strokeWidth="2"
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                        >
+                                                                            <circle cx="12" cy="12" r="10" />
+                                                                            {isActive && <circle cx="12" cy="12" r="5" fill="#069baa" />}
+                                                                        </svg>
+                                                                        <label className="ms-1" style={{ cursor: "pointer" }}>
+                                                                            {key === "buy" ? "Buy" : "Rent"}
+                                                                        </label>
+                                                                    </div>
+
+                                                                    {key === "rent" && (
+                                                                        <div className="option-price" style={{ fontWeight: 600 }}>
+                                                                            {formatPrice(price)}
+                                                                            <span style={{ fontSize: "14px", marginLeft: "4px" }}>/Day</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {key === "buy" && oldPrice && (
+                                                                        <div className="product-details-offer-price">
+                                                                            {oldPrice && price ? <span className="product-old-price-right">{formatPrice(oldPrice)}</span> : <span className='product-discount-right'>{formatPrice(oldPrice)}</span>}
+                                                                            <span className="product-discount-right">
+                                                                                {oldPrice && price
+                                                                                    ? `${Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF`
+                                                                                    : ""}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+
+                                                                </div>
+                                                                {key === "rent" && currentType === "rent" && (
+                                                                    <div className="rent-date-section mt-2">
+                                                                        <div className="date-picker-row">
+                                                                            <div className="date-field">
+                                                                                <label>From:</label>
+                                                                                <DatePicker
+                                                                                    selected={fromDate}
+                                                                                    onChange={(date) => setFromDate(date)}
+                                                                                    dateFormat="dd/MM/yyyy"
+                                                                                    placeholderText="Select start date"
+                                                                                    minDate={new Date()}
+                                                                                    className="custom-date-input"
+                                                                                    popperPlacement="bottom-start"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                {isActive && (
+                                                                    <div className='cart-btn-section mt-3'>
+                                                                        <div className="cart-btn mt-3" onClick={() =>
+                                                                            handleAddToCart(key, {
+                                                                                id: productDetails?.id,
+                                                                                name: productDetails?.name,
+                                                                                friendlyurl: friendlyurl,
+                                                                                type: key,
+                                                                                image: images?.[0]?.image,
+                                                                                oldPrice: key === "buy" ? productDetails?.prices?.sale_price : null,
+                                                                                offerPrice:
+                                                                                    key === "buy"
+                                                                                        ? productDetails?.prices?.sale_offer_price || productDetails?.prices?.sale_price
+                                                                                        : productDetails?.prices?.rental_price,
+                                                                                rentPerDay: key === "rent" ? productDetails?.prices?.rental_price : null,
+                                                                            })
+                                                                        }
+                                                                        >
+                                                                            <div>
+                                                                                {formatPrice(price || oldPrice)}
+                                                                                {key === "rent" && <span style={{ fontSize: "14px", marginLeft: "4px" }}>/Day</span>}
+                                                                            </div>
+                                                                            <div>
+                                                                                ADD TO CART <IoArrowForward size={17} />
+                                                                            </div>
+                                                                        </div>
+                                                                        {error && (
+                                                                            <span className='text-danger text-sm'>{error}</span>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return null;
+                                                })}
+                                            </>
+                                        );
+                                    })()}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

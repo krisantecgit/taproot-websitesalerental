@@ -18,8 +18,8 @@ function Header() {
   const [userId, setUserId] = useState(localStorage.getItem("userid"))
   const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState(localStorage.getItem("name"))
-  const search = searchParams.get("query");
-  const [query, setQuery] = useState(search);
+  const search = searchParams.get("q");
+  const [query, setQuery] = useState(search || "");
   const [products, setProducts] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debouncedSearchTerm = useDebouncedValue(query, 1000)
@@ -55,6 +55,13 @@ function Header() {
   useEffect(() => {
     setPath(getUrl());
   }, [location]);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q !== null) {
+      setQuery(q);
+    }
+  }, [searchParams]);
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {

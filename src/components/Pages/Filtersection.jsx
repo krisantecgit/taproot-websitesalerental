@@ -16,11 +16,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const navigate = useNavigate();
     const location = useLocation()
     const carouselRef = useRef(null);
+    const isSearchPage = window.location.pathname.includes('/search/results');
     const [category, setCategory] = useState([]);
     const [subcategoryProducts, setSubCategoryProducts] = useState([]);
     const [selectedSubcats, setSelectedSubcats] = useState([]);
     const [activeSort, setActiveSort] = useState("Featured");
-    const [activeListingType, setActiveListingType] = useState(searchListingType || categoryurl)
+    const [activeListingType, setActiveListingType] = useState(
+        isSearchPage ? (searchListingType || "") : (searchListingType || categoryurl)
+    )
     const [filterData, setFilterData] = useState([]);
     const [nextUrl, setNextUrl] = useState(null);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -28,7 +31,6 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const [selectedOptions, setSelectedOptions] = useState({});
     const [selectedVariantId, setSelectedVariantId] = useState(null);
     const [totalCount, setTotalCount] = useState(0);
-    const isSearchPage = window.location.pathname.includes('/search/results');
 
     // ── single source of truth for current category name ──────────────────────
     const getSelectedCategory = () =>
@@ -47,8 +49,8 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         { id: 3, label: "$10,000 - $20,000", min: 10000, max: 20000 },
     ];
     useEffect(() => {
-        setActiveListingType(searchListingType || categoryurl)
-    }, [searchListingType, categoryurl])
+        setActiveListingType(isSearchPage ? (searchListingType || "") : (searchListingType || categoryurl))
+    }, [searchListingType, categoryurl, isSearchPage])
     // async function handleActiveListingType(type) {
     //     setActiveListingType(type);
     //     if (isSearchPage && onListingTypeChange) {
@@ -186,6 +188,39 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const buildOptionString = (optsObj) =>
         Object.values(optsObj).flat().map((o) => o.name).join(",");
 
+    const buildCategoryVariantsUrl = ({
+        selectedCategory = "",
+        subcategory = "",
+        priceMin = "",
+        priceMax = "",
+        optionNames = "",
+        sortBy = "",
+        includeSuspended = true,
+    } = {}) => {
+        const apiParams = new URLSearchParams({
+            search: query || "",
+            category: selectedCategory,
+            subcategory,
+            price_min: priceMin,
+            price_max: priceMax,
+            options: optionNames,
+        });
+
+        if (activeListingType) {
+            apiParams.set("listing_type", activeListingType);
+        }
+
+        if (sortBy) {
+            apiParams.set("sortBy", sortBy);
+        }
+
+        if (includeSuspended) {
+            apiParams.set("is_suspended", "false");
+        }
+
+        return `/catlog/category-variants/?${apiParams.toString()}`;
+    };
+
     async function applyFilters() {
         try {
             onLoading(true);
@@ -219,7 +254,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             });
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&category=${encodeURIComponent(selectedCategory)}&subcategory=${encodeURIComponent(subcatParam)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(optionNames)}`
+                buildCategoryVariantsUrl({
+                    selectedCategory,
+                    subcategory: subcatParam,
+                    priceMin,
+                    priceMax,
+                    optionNames,
+                    includeSuspended: false,
+                })
             );
 
             setTotalCount(res?.data?.count || 0);
@@ -259,16 +301,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
 
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?
-  listing_type=${activeListingType}
-  &search=${encodeURIComponent(query || "")}
-  &category=${encodeURIComponent(selectedCategory)}
-  &subcategory=${encodeURIComponent(subcatParam || "")}
-  &price_min=${priceMin || ""}
-  &price_max=${priceMax || ""}
-  &options=${encodeURIComponent(optionNames || "")}
-  &is_suspended=false
-  `.replace(/\s+/g, "")
+                buildCategoryVariantsUrl({
+                    selectedCategory,
+                    subcategory: subcatParam || "",
+                    priceMin: priceMin || "",
+                    priceMax: priceMax || "",
+                    optionNames: optionNames || "",
+                })
             );
 
             setTotalCount(res?.data?.count || 0);
@@ -299,17 +338,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const options = params.get("options") || "";
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?
-  listing_type=${activeListingType}
-  &search=${encodeURIComponent(query || "")}
-  &category=${encodeURIComponent(selectedCategory)}
-  &subcategory=${encodeURIComponent(subcategory || "")}
-  &sortBy=${encodeURIComponent(label || "")}
-  &price_min=${price_min || ""}
-  &price_max=${price_max || ""}
-  &options=${encodeURIComponent(options || "")}
-  &is_suspended=false
-  `.replace(/\s+/g, "")
+                buildCategoryVariantsUrl({
+                    selectedCategory,
+                    subcategory: subcategory || "",
+                    priceMin: price_min || "",
+                    priceMax: price_max || "",
+                    optionNames: options || "",
+                    sortBy: label || "",
+                })
             );
 
             setTotalCount(res?.data?.count || 0);
@@ -374,7 +410,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             onLoading(true)
             // Use name instead of slug for API call
             const encodedName = encodeURIComponent(name);
-            const res = await axiosConfig(`/catlog/category-variants/?listing_type=${activeListingType}&category=${encodedName}`)
+            const apiParams = new URLSearchParams({
+                category: encodedName,
+            });
+            if (activeListingType) {
+                apiParams.set("listing_type", activeListingType);
+            }
+            const res = await axiosConfig(`/catlog/category-variants/?${apiParams.toString()}`)
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res?.data?.results || []);
             if (res?.data?.next) {
@@ -399,7 +441,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const subcategory = params.get("subcategory") || "";
 
             const res = await axiosConfig.get(
-                `/catlog/category-variants/?listing_type=${activeListingType}&search=${encodeURIComponent(query || "")}&is_suspended=false&category=${selectedCategory}&subcategory=${encodeURIComponent(subcategory)}&price_min=${priceMin}&price_max=${priceMax}&options=${encodeURIComponent(options)}`
+                buildCategoryVariantsUrl({
+                    selectedCategory,
+                    subcategory,
+                    priceMin,
+                    priceMax,
+                    optionNames: options,
+                })
             );
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
@@ -523,7 +571,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         setAppliedFilters(filtersFromURL);
 
         // Fetch products on initial mount or when data updates
-        if (!isPromotional && activeListingType) {
+        if (!isPromotional) {
             fetchProductsFromURL();
         }
 
