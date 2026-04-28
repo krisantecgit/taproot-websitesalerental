@@ -438,9 +438,16 @@
 }
 
 .address-card-proceed-btn {
-    display: inline-flex;
-    margin-top: 0;
-    flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 0;
+  flex-shrink: 0;
+  transition: all 0.2s ease; /* ✅ fixed */
+}
+
+.address-proceed-btn:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 .address-select-field {

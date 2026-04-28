@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import "./App.css"
 import FriendlyUrlComponent from './components/Pages/FriendlyUrl';
 import AccountLayout from './components/AccountLayout/AccountLayout';
 import Logout from './utils/Logout';

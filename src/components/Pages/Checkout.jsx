@@ -78,7 +78,7 @@ function Checkout() {
     async function getSaleCoupon() {
         setSaleCouponLoading(true)
         try {
-            const res = await axiosConfig("/catlog/coupons/?coupon_type=sale");
+            const res = await axiosConfig("/catlog/coupons/?coupon_type=sale&is_suspended=false");
             setSaleCoupon(res?.data?.results)
         } catch (error) {
             console.log(error)
@@ -89,7 +89,7 @@ function Checkout() {
     async function getRentCoupon() {
         setRentcouponLoading(true)
         try {
-            const res = await axiosConfig("/catlog/coupons/?coupon_type=rental");
+            const res = await axiosConfig("/catlog/coupons/?coupon_type=rental&is_suspended=false");
             setRentCoupon(res?.data?.results)
         } catch (error) {
             console.log(error)
@@ -901,34 +901,6 @@ function Checkout() {
                     }
                 </div>
                 <div className="cart-right">
-                    <div className='cart-right-fix-box'>
-                        {
-                            buyCart.length > 0 && (
-                                <div className='buy-rent-price-container'>
-                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><BiCheckCircle className="styled-clock" /></div><span>Buy</span></div>
-                                    <div className='total-price'>{formatPrice(orderData[0]?.order?.sale_total_amount)}</div>
-                                </div>
-                            )
-                        }
-                        {
-                            rentCart.length > 0 && (
-                                <div className='buy-rent-price-container mt-2'>
-                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><FaRegClock className="styled-clock" /></div><span>Rent</span></div>
-                                    <div className='total-price'>{formatPrice(orderData[0]?.order?.rental_total_amount)}</div>
-                                </div>
-                            )
-                        }
-                        <div className='choose-transport'>
-                            <div><button className={`transpport-btn ${deliveryType === "company-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("company-transport")}>Company Transport</button></div>
-                            <div><button className={`transpport-btn ${deliveryType === "self-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("self-transport")}>Self Transport</button></div>
-                        </div>
-                        <div className='cart-btn mt-3' onClick={proceedToCheckout}>
-                            <div>{formatPrice(orderData[0]?.order?.net_amount)}</div>
-                            <div>
-                                PROCEED <IoArrowForward size={17} />
-                            </div>
-                        </div>
-                    </div>
                     {
                         buyCart.length > 0 && (
                             <div className="coupon-section">
@@ -1181,6 +1153,34 @@ function Checkout() {
 
                             )
                         }
+                    </div>
+                    <div className='cart-right-fix-box'>
+                        {
+                            buyCart.length > 0 && (
+                                <div className='buy-rent-price-container'>
+                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><BiCheckCircle className="styled-clock" /></div><span>Buy</span></div>
+                                    <div className='total-price'>{formatPrice(orderData[0]?.order?.sale_total_amount)}</div>
+                                </div>
+                            )
+                        }
+                        {
+                            rentCart.length > 0 && (
+                                <div className='buy-rent-price-container mt-2'>
+                                    <div className='left-buy-rent-price'><div className="clock-wrapper"><FaRegClock className="styled-clock" /></div><span>Rent</span></div>
+                                    <div className='total-price'>{formatPrice(orderData[0]?.order?.rental_total_amount)}</div>
+                                </div>
+                            )
+                        }
+                        <div className='choose-transport'>
+                            <div><button className={`transpport-btn ${deliveryType === "company-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("company-transport")}>Company Transport</button></div>
+                            <div><button className={`transpport-btn ${deliveryType === "self-transport" ? "active" : ""}`} onClick={() => handleDeliveryTypeChange("self-transport")}>Self Transport</button></div>
+                        </div>
+                        <div className='cart-btn mt-3' onClick={proceedToCheckout}>
+                            <div>{formatPrice(orderData[0]?.order?.net_amount)}</div>
+                            <div>
+                                PROCEED <IoArrowForward size={17} />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -14,6 +14,45 @@ import CheckoutNavbar from "../CheckoutNavbar/CheckoutNavbar";
 
 const API_KEY = "AIzaSyDD8frd15FoMhemosVqGvVBCHaRjLgNszc";
 
+const INDIAN_STATES = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Lakshadweep",
+    "Puducherry",
+];
+
 export default function AddressPage() {
     const userId = localStorage.getItem("userid")
     const [step, setStep] = useState("default");
@@ -577,15 +616,21 @@ export default function AddressPage() {
                                         </div>
                                         <div className="input-field">
                                             <label htmlFor="houseNo">State  <span className="sup-color">*</span></label>
-                                            <input
-                                                type="text"
-                                                className="input-box-address"
-                                                placeholder="State"
-                                                value={formData.state}
+                                            <select
+                                                className="input-box-address address-select-field"
+                                                required
+                                                value={formData.state || ""}
                                                 onChange={(e) =>
                                                     setFormData({ ...formData, state: e.target.value })
                                                 }
-                                            />
+                                            >
+                                                <option value="">Select State</option>
+                                                {INDIAN_STATES.map((stateName) => (
+                                                    <option key={stateName} value={stateName}>
+                                                        {stateName}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

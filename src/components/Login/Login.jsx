@@ -70,6 +70,10 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
       }
     }
     else {
+      if (trimmed.length > 254) {
+        setErr("Email exceeds maximum allowed length (254 characters)");
+        return;
+      }
       if (emailRegex.test(trimmed)) {
         setContactType("email");
       } else {
@@ -100,6 +104,11 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
   const handleUserDataSubmit = async () => {
     if (!userName.trim()) {
       setErr("Name is required");
+      return;
+    }
+
+    if (userEmail.length > 254) {
+      setErr("Email exceeds maximum allowed length (254 characters)");
       return;
     }
 
@@ -246,8 +255,23 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
                 value={contact}
                 ref={inpRef}
                 onChange={(e) => {
-                  setContact(e.target.value);
-                  setErr("");
+                  const value = e.target.value;
+
+                  // allow only numbers up to 10 OR email
+                  if (/^\d*$/.test(value)) {
+                    if (value.length <= 10) {
+                      setContact(value);
+                      setErr("");
+                    }
+                  } else {
+                    // email: enforce 254 char max (RFC 5321)
+                    if (value.length > 254) {
+                      setErr("Email exceeds maximum allowed length (254 characters)");
+                    } else {
+                      setContact(value);
+                      setErr("");
+                    }
+                  }
                 }}
               />
 
@@ -325,7 +349,15 @@ const LoginModal = ({ show, onHide, onLoginSuccess }) => {
                 type="email"
                 placeholder="Enter Email"
                 value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 254) {
+                    setUserEmail(value);
+                    setErr("");
+                  } else {
+                    setErr("Email exceeds maximum allowed length (254 characters)");
+                  }
+                }}
               />
             </div>
 

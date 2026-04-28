@@ -1,13 +1,19 @@
 .coupon-section {
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 50px;
+    padding: 18px;
+    border-radius: 16px;
+    margin-top: 24px;
+    background: #ffffff;
+    border: 1px solid #e7edf3;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
 /* HEADER */
 .coupon-head {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .coupon-left {
@@ -25,55 +31,51 @@
     margin: 0;
     font-size: 17px;
     font-weight: 600;
-    white-space: nowrap; /* Keep text on one line */
+    color: #111827;
 }
 
 .coupon-view {
-    margin: 0;
+    margin: 4px 0 0;
     font-size: 12px;
     color: #555;
-    white-space: nowrap; /* Keep text on one line */
 }
 
 .coupon-right {
     color: #008c8c;
     cursor: pointer;
-    font-weight: 400;
-    white-space: nowrap; /* Keep text on one line */
-    flex-shrink: 0; /* Prevent shrinking */
+    font-weight: 600;
+    flex-shrink: 0;
 }
 
 /* SLIDER */
 .coupon-slider {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 15px;
     margin-top: 15px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    align-items: flex-start;
-    padding-bottom: 5px; /* Add some padding for scrollbar */
+    overflow: visible;
+    align-items: stretch;
+    padding-bottom: 0;
 }
 
 /* CARD - Fixed width */
 .coupon-card {
-    background: rgb(255, 245, 183);
-    width: 180px;
-    min-width: 180px;  /* Fixed width - won't expand */
-    max-width: 180px;  /* Prevent expanding beyond this */
-    padding: 7px 10px;
+    background: linear-gradient(180deg, #fff8d8 0%, #fff2b5 100%);
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 12px;
     border-radius: 12px;
-    flex: 0 0 auto;
-    box-sizing: border-box; /* Include padding in width calculation */
+    box-sizing: border-box;
+    border: 1px solid rgba(196, 167, 64, 0.24);
 }
 
 .coupon-offer {
     font-weight: 600;
     margin-bottom: 12px;
     font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; /* Keep offer text on one line */
+    line-height: 1.45;
+    color: #1f2937;
 }
 
 /* TICKET STYLE */
@@ -123,23 +125,6 @@
     text-align: center;
     font-size: 10px;
     margin-top: 8px;
+    margin-bottom: 0;
     color: #666;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* SCROLLBAR */
-.coupon-slider::-webkit-scrollbar {
-    height: 6px;
-}
-
-.coupon-slider::-webkit-scrollbar-thumb {
-    background: #bbb;
-    border-radius: 10px;
-}
-
-.coupon-slider::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 10px;
 }

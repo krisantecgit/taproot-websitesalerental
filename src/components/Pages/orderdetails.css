@@ -22,6 +22,27 @@
   color: #fff;
 }
 
+.order-details-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.order-summary-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.order-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .order-item {
   display: flex;
   justify-content: space-between;
@@ -67,6 +88,23 @@
   font-weight: 700;
 }
 
+.invoice-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.invoice-status-badge.rejected {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
 .breakup-background2 {
     background-color: rgb(249, 249, 249);
     padding: 20px 10px;
@@ -75,6 +113,71 @@
     /* width: 50%; */
     /* float: right; */
 }
+
+.price-breakup-section {
+  display: grid;
+  gap: 20px;
+}
+
+.data-container-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-container {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.break-header h4 {
+  margin: 0 0 14px;
+}
+
+.break-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.breakup-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eceff3;
+}
+
+.breakup-item:last-child {
+  border-bottom: none;
+}
+
+.breakup-item > div:first-child {
+  flex: 1;
+  min-width: 0;
+  color: #4b5563;
+}
+
+.breakup-item > div:last-child {
+  flex: 0 0 auto;
+  max-width: 45%;
+  text-align: right;
+  font-weight: 600;
+  color: #111827;
+  word-break: break-word;
+}
+
+.discount-green {
+  margin-top: 10px;
+  color: #198754;
+  font-weight: 600;
+  text-align: right;
+}
+
 .spinner-container {
   display: flex;
   justify-content: center;
@@ -133,6 +236,19 @@
 
 /* Mobile */
 @media (max-width: 600px) {
+  .order-details-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .breakup-item {
+    gap: 10px;
+  }
+
+  .breakup-item > div:last-child {
+    max-width: 50%;
+  }
+
   .delivery-address-card {
     padding: 14px;
   }

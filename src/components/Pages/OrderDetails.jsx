@@ -59,14 +59,19 @@ function OrderDetails() {
         orderData.length > 0
             ? Number(orderData[0]?.order?.sale_delivery_charges || 0)
             : 0;
+
     const saleTotalWithDelivery =
-        Number(orderData[0]?.order?.net_amount || 0);
+        Number(orderData[0]?.order?.sale_total_amount || 0) +
+        Number(orderData[0]?.order?.sale_delivery_charges || 0);
+
     const rentDeliveryCharge =
         orderData.length > 0
             ? Number(orderData[0]?.order?.rental_delivery_charges || 0)
             : 0;
     const rentTotalWithDelivery =
-        Number(orderData[0]?.net_amount || 0) + Number(orderData[0]?.delivery_charges);
+    Number(orderData[0]?.order?.rental_total_amount || 0) +
+    Number(orderData[0]?.order?.rental_delivery_charges || 0);
+    const invoiceStatus = orderData[0]?.order?.invoice_status;
     async function handlePrint(id) {
         try {
             const res = await axiosConfig(`/accounts/pdf/${id}/`, { responseType: "blob" })
@@ -97,10 +102,17 @@ function OrderDetails() {
                                 >
                                     <IoArrowBack /> Back to Orders
                                 </button>
-                                <div className='d-flex justify-content-between'>
-                                    <h4>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
+                                <div className="order-details-topbar">
+                                    <div className="order-summary-meta">
+                                        <h4 className='mb-0'>{orderData.length} item{orderData.length > 1 ? "s" : ""}</h4>
+                                        <div className="order-meta-row">
+                                            <h4 className='mb-0'>Order Id: {orderId}</h4>
+                                            {invoiceStatus === "Rejected" && (
+                                                <span className="invoice-status-badge rejected">Invoice Rejected</span>
+                                            )}
+                                        </div>
+                                    </div>
                                     <div className='d-flex gap-2 align-items-center'>
-                                        <h4 className='mb-0'>Order Id: {orderId}</h4>
                                         <button className="btn btn-sm d-flex align-items-center gap-2" style={{ backgroundColor: "rgb(6, 155, 170)", color: "white", border: "none" }} onClick={() => handlePrint(orderId)}>
                                             <FaFileDownload /> Download Invoice
                                         </button>
@@ -137,11 +149,16 @@ function OrderDetails() {
 
                                         <div className="data-container-parent">
                                             {rentalItems.map((item) => {
-                                                const basePrice = Number(item.varient.prices.rental_price);
+                                                const basePrice = Number(
+                                                    item?.varient?.product?.rental_price ??
+                                                    item?.varient?.prices?.rental_price ??
+                                                    0
+                                                );
                                                 const qty = Number(item.quantity);
                                                 const duration = Number(item.rental_duration);
-                                                const price = Number(item.price);
-                                                const offer = Number(item.offer_price);
+                                                const rentalBaseTotal = basePrice * duration * qty;
+                                                const rentalSubtotal = Number(item.total_price || 0);
+                                                const rentalDiscount = Math.max(rentalBaseTotal - rentalSubtotal, 0);
                                                 return (
                                                     <div className="data-container" key={item.id}>
                                                         <div className="break-item-title">
@@ -179,19 +196,19 @@ function OrderDetails() {
 
                                                         <div className="breakup-item">
                                                             <div>(D) Total Price (A × B × C)</div>
-                                                            <div>{formatPrice(basePrice * duration * qty)}</div>
+                                                            <div>{formatPrice(rentalBaseTotal)}</div>
                                                         </div>
 
                                                         <div className="breakup-item text-success">
                                                             <div>(E) Rental Discount</div>
                                                             <div>
                                                                 -{Math.round(Number(item.discount_percentage))}%{" "}
-                                                                -{formatPrice(price * qty - offer * qty)}
+                                                                -{formatPrice(rentalDiscount)}
                                                             </div>
                                                         </div>
                                                         <div className="breakup-item text-success">
                                                             <div>(F) Rental Coupon Discount</div>
-                                                            <div>-{formatPrice(orderData[0]?.rental_coupon_discount)}</div>
+                                                            <div>-{formatPrice(item?.rental_coupon_discount || 0)}</div>
                                                         </div>
                                                         <div className="breakup-item">
                                                             <div>(G) Delivery Charges</div>
@@ -199,11 +216,11 @@ function OrderDetails() {
                                                         </div>
                                                         <div className="breakup-item">
                                                             <div>Net Amount</div>
-                                                            <div>{formatPrice(orderData[0]?.offer_price)}</div>
+                                                            <div>{formatPrice(item?.net_amount || 0)}</div>
                                                         </div>
 
                                                         <div className="discount-green">
-                                                            You Will Save {formatPrice(price * qty - offer * qty)}
+                                                            You Will Save {formatPrice(rentalDiscount)}
                                                         </div>
                                                     </div>
                                                 );
@@ -211,7 +228,7 @@ function OrderDetails() {
 
                                             <div className="breakup-item">
                                                 <div>Rental Total</div>
-                                                <div>{formatPrice(orderData[0]?.net_amount)}</div>
+                                                <div>{formatPrice(rentTotalWithDelivery)}</div>
                                             </div>
                                         </div>
                                     </div>
