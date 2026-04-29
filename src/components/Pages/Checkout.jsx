@@ -899,6 +899,8 @@ function Checkout() {
                         )
 
                     }
+                    <div className="cart-sticky-sections">
+                    </div>
                 </div>
                 <div className="cart-right">
                     {

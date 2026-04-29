@@ -274,10 +274,11 @@ function Cartpage() {
                                     </div>
                                 )
                             }
-                            {
-                                buyCart.length > 0 && (
-                                    <>
-                                        <div className="cart-section-box">
+                            <div className="cart-sticky-sections">
+                                {
+                                    buyCart.length > 0 && (
+                                        <>
+                                            <div className="cart-section-box">
                                             <div className="cart-section-header">
                                                 Buy Cart <span>{buyCart.length} items</span>
                                             </div>
@@ -323,14 +324,14 @@ function Cartpage() {
                                                 </div>
 
                                             ))}
-                                        </div>
-                                    </>
-                                )
-                            }
-                            {
-                                rentCart.length > 0 && (
-                                    <div className='mt-3'>
-                                        <div className="cart-section-box mb-4">
+                                            </div>
+                                        </>
+                                    )
+                                }
+                                {
+                                    rentCart.length > 0 && (
+                                        <div className='mt-3'>
+                                            <div className="cart-section-box mb-4">
                                             <div className="cart-section-header">
                                                 Rent Cart <span>{rentCart.length} items</span>
                                             </div>
@@ -424,10 +425,11 @@ function Cartpage() {
                                                     </div>
                                                 );
                                             })}
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            }
+                                    )
+                                }
+                            </div>
                         </div>
                         <div className="cart-right">
                             <div className='cart-right-fix-box'>

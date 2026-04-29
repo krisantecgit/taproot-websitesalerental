@@ -66,6 +66,9 @@
     border: 1px solid #e5e5e5;
     overflow: hidden;
     margin-top: 20px;
+}
+
+.cart-sticky-sections {
     position: sticky;
     top: 110px;
 }
