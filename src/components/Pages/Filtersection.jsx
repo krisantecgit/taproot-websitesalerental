@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axiosConfig from "../../Services/axiosConfig";
+import { getActiveStoreId, setActiveStoreId } from "../../Services/storeService";
 import { IoChevronBack, IoChevronForward, IoArrowDown, IoArrowForward } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
 import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
@@ -12,6 +13,8 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const { friendlyurl } = useParams();
     const [params] = useSearchParams()
     const query = params.get("q");
+    const storeIdFromUrl = params.get("store_id");
+    const [storeId, setStoreId] = useState(storeIdFromUrl || localStorage.getItem("store_id") || "");
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const location = useLocation()
@@ -51,6 +54,21 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     useEffect(() => {
         setActiveListingType(isSearchPage ? (searchListingType || "") : (searchListingType || categoryurl))
     }, [searchListingType, categoryurl, isSearchPage])
+
+    useEffect(() => {
+        let isActive = true;
+
+        async function resolveStoreId() {
+            const resolvedStoreId = storeIdFromUrl ? setActiveStoreId(storeIdFromUrl) : await getActiveStoreId();
+            if (isActive) setStoreId(resolvedStoreId || "");
+        }
+
+        resolveStoreId();
+
+        return () => {
+            isActive = false;
+        };
+    }, [storeIdFromUrl]);
     // async function handleActiveListingType(type) {
     //     setActiveListingType(type);
     //     if (isSearchPage && onListingTypeChange) {
@@ -68,10 +86,15 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         }
     }
     const collectAllRemaining = async (initialNext) => {
+        if (!storeId) return;
         let nextUrl = initialNext;
         while (nextUrl) {
             try {
-                let fetchUrl = nextUrl.replace(/^https?:\/\/[^\/]+/, '');
+                let fetchUrl = nextUrl.replace(/^https?:\/\/[^/]+/, '');
+                if (storeId && !fetchUrl.includes("store_id=")) {
+                    const joiner = fetchUrl.includes("?") ? "&" : "?";
+                    fetchUrl = `${fetchUrl}${joiner}store_id=${encodeURIComponent(storeId)}`;
+                }
                 const nextRes = await axiosConfig.get(fetchUrl);
                 if (nextRes?.data?.results) {
                     onProductsChange(prev => {
@@ -89,8 +112,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     };
 
     async function fetchCategories() {
+        if (!storeId) return;
         try {
-            const res = await axiosConfig.get(`/catlog/with-${categoryurl}-or-both/`);
+            const res = await axiosConfig.get(
+                storeId
+                    ? `/catlog/with-${categoryurl}-or-both/?store_id=${encodeURIComponent(storeId)}`
+                    : `/catlog/with-${categoryurl}-or-both/`
+            );
             setCategory(res.data);
         } catch (err) {
             console.error("fetchCategories", err);
@@ -118,10 +146,15 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     //     }
     // }
     const loadMoreProducts = async () => {
-        if (!nextUrl || loadingMore) return;
+        if (!storeId || !nextUrl || loadingMore) return;
         setLoadingMore(true);
         try {
-            const res = await axiosConfig.get(nextUrl);
+            let fetchUrl = nextUrl;
+            if (storeId && fetchUrl && !String(fetchUrl).includes("store_id=")) {
+                const joiner = String(fetchUrl).includes("?") ? "&" : "?";
+                fetchUrl = `${fetchUrl}${joiner}store_id=${encodeURIComponent(storeId)}`;
+            }
+            const res = await axiosConfig.get(fetchUrl);
             setTotalCount(prev => res.data.count !== undefined ? res.data.count : prev);
             onProductsChange(prev => [...prev, ...res.data.results]);
             setNextUrl(res.data.next || null);
@@ -145,29 +178,37 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [nextUrl, loadingMore, location.pathname]);
+    }, [nextUrl, loadingMore, location.pathname, storeId]);
 
 
     async function fetchSubcategories(categoryId) {
-        if (!categoryId) return;
+        if (!storeId || !categoryId) return;
         try {
-            const res = await axiosConfig.get(`/catlog/sub-categories/?category=${categoryId}&is_suspended=false`);
+            const res = await axiosConfig.get(
+                `/catlog/sub-categories/?category=${categoryId}&is_suspended=false${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
+            );
             setSubCategoryProducts(res.data.results || []);
         } catch (err) {
             console.error("fetchSubcategories", err);
         }
     }
     async function searchSubcategory() {
+        if (!storeId) return;
         try {
-            const res = await axiosConfig.get(`/catlog/sub-categories/?is_suspended=false`);
+            const res = await axiosConfig.get(
+                `/catlog/sub-categories/?is_suspended=false${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
+            );
             setSubCategoryProducts(res.data.results || []);
         } catch (err) {
             console.error("fetchSubcategories", err);
         }
     }
     async function fetchFilterData() {
+        if (!storeId) return;
         try {
-            const res = await axiosConfig.get(`/catlog/variants/?page=1&page_size=30`);
+            const res = await axiosConfig.get(
+                `/catlog/variants/?page=1&page_size=30${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
+            );
             setFilterData(res.data.results || []);
         } catch (err) {
             console.error("fetchFilterData", err);
@@ -175,9 +216,12 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     }
 
     async function fetchVariantOptions(variantId) {
+        if (!storeId) return;
         try {
             setSelectedVariantId(variantId);
-            const res = await axiosConfig.get(`/catlog/variantoptions/?variant_type=${variantId}`);
+            const res = await axiosConfig.get(
+                `/catlog/variantoptions/?variant_type=${variantId}${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
+            );
             setVariantOptions(res.data.results || []);
         } catch (err) {
             console.error("fetchVariantOptions", err);
@@ -206,6 +250,10 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             options: optionNames,
         });
 
+        if (storeId) {
+            apiParams.set("store_id", storeId);
+        }
+
         if (activeListingType) {
             apiParams.set("listing_type", activeListingType);
         }
@@ -222,6 +270,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     };
 
     async function applyFilters() {
+        if (!storeId) return;
         try {
             onLoading(true);
             const selectedCategory = getSelectedCategory();
@@ -246,11 +295,16 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 options: selectedOptions,
                 price: selectedPriceRanges,
             });
-            setSearchParams({
-                subcategory: subcatParam || "",
-                options: optionNames || "",
-                price_min: priceMin || "",
-                price_max: priceMax || "",
+            // Ensure store_id stays in the URL so subsequent requests keep scoping to the right store.
+            // (React Router's setSearchParams with an object replaces the whole querystring.)
+            setSearchParams((prev) => {
+                const next = Object.fromEntries([...prev]);
+                next.subcategory = subcatParam || "";
+                next.options = optionNames || "";
+                next.price_min = priceMin || "";
+                next.price_max = priceMax || "";
+                if (storeId) next.store_id = storeId;
+                return next;
             });
 
             const res = await axiosConfig.get(
@@ -278,6 +332,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     }
 
     async function applySubCategoryFilter() {
+        if (!storeId) return;
         try {
             onLoading(true);
             const selectedCategory = getSelectedCategory();
@@ -292,11 +347,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 priceMin = allMins.length > 0 ? Math.min(...allMins) : "";
                 priceMax = allMaxs.length > 0 ? Math.max(...allMaxs) : "";
             }
-            setSearchParams({
-                subcategory: subcatParam || "",
-                options: optionNames || "",
-                price_min: priceMin || "",
-                price_max: priceMax || "",
+            setSearchParams((prev) => {
+                const next = Object.fromEntries([...prev]);
+                next.subcategory = subcatParam || "";
+                next.options = optionNames || "";
+                next.price_min = priceMin || "";
+                next.price_max = priceMax || "";
+                if (storeId) next.store_id = storeId;
+                return next;
             });
 
 
@@ -323,6 +381,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     }
 
     async function handleSortChange(label) {
+        if (!storeId) return;
         try {
             setActiveSort(label);
             onLoading(true);
@@ -401,6 +460,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     //     }
     // }
     async function handleCategoryClick(slug, id, name) {
+        if (!storeId) return;
         if (slug !== friendlyurl) {
             navigate(`/${categoryurl}/${slug}`);
         }
@@ -416,6 +476,9 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             if (activeListingType) {
                 apiParams.set("listing_type", activeListingType);
             }
+            if (storeId) {
+                apiParams.set("store_id", storeId);
+            }
             const res = await axiosConfig(`/catlog/category-variants/?${apiParams.toString()}`)
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res?.data?.results || []);
@@ -429,6 +492,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         }
     }
     async function fetchProductsFromURL() {
+        if (!storeId) return;
         try {
             onLoading(true);
 
@@ -492,7 +556,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     useEffect(() => {
         fetchCategories();
         fetchFilterData();
-    }, [categoryurl]);
+    }, [categoryurl, storeId]);
 
     // 2. Fetch subcategories safely after category mapping or friendlyData is available
     useEffect(() => {
@@ -504,14 +568,14 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 fetchSubcategories(activeCategory.id);
             }
         }
-    }, [friendlyData, category, friendlyurl]);
+    }, [friendlyData, category, friendlyurl, storeId]);
 
     // 3. Search page special subcategory fetch
     useEffect(() => {
         if (isSearchPage && category.length > 0) {
             searchSubcategory();
         }
-    }, [isSearchPage, category]);
+    }, [isSearchPage, category, storeId]);
 
     // 4. Parse URL filters and trigger product fetch
     useEffect(() => {
@@ -575,7 +639,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             fetchProductsFromURL();
         }
 
-    }, [friendlyData, categoryurl, activeListingType, searchParams]); // Re-fetch when filters or listing type change
+    }, [friendlyData, categoryurl, activeListingType, searchParams, storeId]); // Re-fetch when filters or listing type change
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {

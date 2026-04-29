@@ -44,6 +44,10 @@
   padding: 20px;
   box-shadow: rgba(34, 34, 34, 0.1) 0px 8px 16px;
 }
+.addres-action-icon {
+  margin-left: 10px;  /* spacing between icons */
+  cursor: pointer;
+}
 
 .add-username {
   font-family: "Work Sans";

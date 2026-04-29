@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { useEffect, useRef, useState } from "react"
 import useDebouncedValue from "../../utils/Debounce"
 import axiosConfig from "../../Services/axiosConfig"
+import { getActiveStoreId, setActiveStoreId } from "../../Services/storeService"
 import { useSelector } from "react-redux"
 import LoginModal from "../Login/Login"
 import { toast } from "react-toastify"
@@ -16,7 +17,7 @@ function Header() {
   let navigate = useNavigate();
   const [loginModal, setLoginModal] = useState(false)
   const [userId, setUserId] = useState(localStorage.getItem("userid"))
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState(localStorage.getItem("name"))
   const search = searchParams.get("q");
   const [query, setQuery] = useState(search || "");
@@ -128,6 +129,15 @@ function Header() {
   };
 
   useEffect(() => {
+    const urlStoreId = searchParams.get("store_id");
+    if (urlStoreId) {
+      setActiveStoreId(urlStoreId);
+    } else {
+      getActiveStoreId();
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     // Only detect automatically if no saved location is present
     const loadGoogleAndDetect = () => {
       const savedLocation = localStorage.getItem("userLocation");
@@ -157,10 +167,13 @@ function Header() {
     setShowSuggestions(true)
   }
 
-  const handleSearchSubmit = (searchValue = query) => {
+  const handleSearchSubmit = async (searchValue = query) => {
     const valueToSearch = searchValue || query;
     if (valueToSearch) {
-      navigate(`/search/results?q=${encodeURIComponent(valueToSearch)}`);
+      const storeId = searchParams.get("store_id") || await getActiveStoreId();
+      navigate(
+        `/search/results?q=${encodeURIComponent(valueToSearch)}${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
+      );
       setShowSuggestions(false);
       setQuery(valueToSearch)
     }

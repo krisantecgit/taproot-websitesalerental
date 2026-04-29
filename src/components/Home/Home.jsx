@@ -7,6 +7,7 @@ import FeedbackCarousel from "../FeedBack/FeedbackCarousel";
 import AdvertiseBanner from "../AdvertiseBanner/AdvertiseBanner";
 import Footer from "../Footer/Footer";
 import axiosConfig from "../../Services/axiosConfig";
+import { getActiveStoreId } from "../../Services/storeService";
 import FullWidthBanner from "../carousel/FullWidthBanner";
 import MultipleBannerSection from "../MultipleBanners/MultipleBanners";
 import "./homepage.css"
@@ -47,6 +48,7 @@ function Home() {
     };
 
     useEffect(() => {
+        getActiveStoreId();
         getData();
     }, []);
 

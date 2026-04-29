@@ -2,6 +2,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axiosConfig from "../../Services/axiosConfig";
+import { getActiveStoreId, setActiveStoreId } from "../../Services/storeService";
 import loader from "../Assets/spinner.gif";
 
 const Product = React.lazy(() => import("../Products/Product"));
@@ -10,14 +11,31 @@ function SearchedData() {
   const [params] = useSearchParams();
   const query = params.get("q");
   const decodedQuery = query?.replace(/-/g, " ");
+  const storeIdFromUrl = params.get("store_id");
+  const [storeId, setStoreId] = useState(storeIdFromUrl || localStorage.getItem("store_id") || "");
   const [products, setProducts] = useState([]);
   const [listingType, setListingType] = useState(params.get("listing_type") || "");
 
   useEffect(() => {
     let isActive = true;
 
+    async function resolveStoreId() {
+      const resolvedStoreId = storeIdFromUrl ? setActiveStoreId(storeIdFromUrl) : await getActiveStoreId();
+      if (isActive) setStoreId(resolvedStoreId || "");
+    }
+
+    resolveStoreId();
+
+    return () => {
+      isActive = false;
+    };
+  }, [storeIdFromUrl]);
+
+  useEffect(() => {
+    let isActive = true;
+
     async function fetchSearch() {
-      if (!decodedQuery) return;
+      if (!decodedQuery || !storeId) return;
 
       const searchQuery = new URLSearchParams({
         search: decodedQuery,
@@ -31,6 +49,9 @@ function SearchedData() {
 
       if (listingType) {
         searchQuery.set("listing_type", listingType);
+      }
+      if (storeId) {
+        searchQuery.set("store_id", storeId);
       }
 
       try {
@@ -49,7 +70,7 @@ function SearchedData() {
     return () => {
       isActive = false;
     };
-  }, [params, decodedQuery, listingType]);
+  }, [params, decodedQuery, listingType, storeId]);
 
   function handleListingTypeChange(type) {
     setListingType(type);

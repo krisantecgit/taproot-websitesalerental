@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axiosConfig from "../../Services/axiosConfig";
+import { getActiveStoreId } from "../../Services/storeService";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -13,12 +14,16 @@ import { useNavigate } from "react-router-dom";
 const Category = ({ listingType }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [storeId, setStoreId] = useState(localStorage.getItem("store_id") || "");
   let navigate = useNavigate();
   const swiperRef = useRef(null);
 
   async function fetchCategories() {
+    if (!storeId) return;
     try {
-      const res = await axiosConfig.get(`/catlog/with-${listingType}-or-both/?is_suspended=false`);
+      const res = await axiosConfig.get(
+        `/catlog/with-${listingType}-or-both/?is_suspended=false&store_id=${encodeURIComponent(storeId)}`
+      );
       setCategories(res.data);
     } catch (error) {
       console.error(error);
@@ -29,7 +34,25 @@ const Category = ({ listingType }) => {
 
   useEffect(() => {
     fetchCategories();
-  }, [listingType]);
+  }, [listingType, storeId]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function resolveStoreId() {
+      const resolvedStoreId = await getActiveStoreId();
+      if (isActive) {
+        setStoreId(resolvedStoreId || "");
+        if (!resolvedStoreId) setLoading(false);
+      }
+    }
+
+    resolveStoreId();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   function handleCategoryClick(slug) {
     navigate(`/${listingType}/${slug}`);

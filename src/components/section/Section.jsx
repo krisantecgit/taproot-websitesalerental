@@ -3,21 +3,30 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import "./section.css";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import axiosConfig from "../../Services/axiosConfig"
-import { useNavigate } from "react-router-dom";
+import { getActiveStoreId, setActiveStoreId } from "../../Services/storeService";
+import { useNavigate, useSearchParams } from "react-router-dom";
 function Section({ listingType }) {
   const scrollRef = useRef(null);
   const [products, setProducts] = useState([])
   let navigate = useNavigate();
+  const [params] = useSearchParams();
+  const storeIdFromUrl = params.get("store_id");
+  const [storeId, setStoreId] = useState(storeIdFromUrl || localStorage.getItem("store_id") || "");
   const fetchProducts = async () => {
+    if (!storeId) return;
     try {
       const res = await axiosConfig.get(
-        `/catlog/category-variants/?listing_type=${listingType}&is_suspended=false`
+        `/catlog/category-variants/?listing_type=${listingType}&is_suspended=false${storeId ? `&store_id=${encodeURIComponent(storeId)}` : ""}`
       );
       setProducts(res?.data?.results || []);
 
       let nextUrl = res?.data?.next;
       while (nextUrl) {
-        let fetchUrl = nextUrl.replace(/^https?:\/\/[^\/]+/, '');
+        let fetchUrl = nextUrl.replace(/^https?:\/\/[^/]+/, '');
+        if (storeId && !fetchUrl.includes("store_id=")) {
+          const joiner = fetchUrl.includes("?") ? "&" : "?";
+          fetchUrl = `${fetchUrl}${joiner}store_id=${encodeURIComponent(storeId)}`;
+        }
         const nextRes = await axiosConfig.get(fetchUrl);
         if (nextRes?.data?.results) {
           setProducts(prev => [...prev, ...nextRes.data.results]);
@@ -35,7 +44,21 @@ function Section({ listingType }) {
   }
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [listingType, storeId])
+  useEffect(() => {
+    let isActive = true;
+
+    async function resolveStoreId() {
+      const resolvedStoreId = storeIdFromUrl ? setActiveStoreId(storeIdFromUrl) : await getActiveStoreId();
+      if (isActive) setStoreId(resolvedStoreId || "");
+    }
+
+    resolveStoreId();
+
+    return () => {
+      isActive = false;
+    };
+  }, [storeIdFromUrl]);
   const scroll = (dir) => {
     const { current } = scrollRef;
     if (current) {
