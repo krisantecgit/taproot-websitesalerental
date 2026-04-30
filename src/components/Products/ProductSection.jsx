@@ -179,9 +179,13 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                       </div>
                     )}
                   </div>
-                  {product.sale_stock <= product.debug?.applied_threshold && (
+
+                  {product.sale_stock === 0 ? (
+                    <div className="stock-error">Out of stock</div>
+                  ) : product.is_low_stock === "lowstock" ? (
                     <div className="stock-error">Limited stock available</div>
-                  )}
+                  ) : null}
+
                   <div className="hover-icon">
                     {
                       location.pathname === "/my/wishlist" ? <FaTrash onClick={(e) => { e.stopPropagation(); removeProduct(product.wishlistId); }} className="delete-icon" /> : <FaArrowRight className="forward-icon" />

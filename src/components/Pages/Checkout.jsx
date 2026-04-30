@@ -657,7 +657,8 @@ function Checkout() {
                 await fetchExistingOrderData()
                 toast.success("coupon applied successfully")
             } catch (error) {
-                toast.error(error.response.data.error[0])
+                const errorMsg = error.response?.data?.non_field_errors?.[0] || error.response?.data?.error?.[0] || "Failed to apply coupon";
+                toast.error(errorMsg);
             }
         }
     }
@@ -687,7 +688,8 @@ function Checkout() {
                 await fetchExistingOrderData()
                 toast.success("coupon applied successfully")
             } catch (error) {
-                toast.error(error.response.data.error[0])
+                const errorMsg = error.response?.data?.non_field_errors?.[0] || error.response?.data?.error?.[0] || "Failed to apply coupon";
+                toast.error(errorMsg);
             }
         }
     }
