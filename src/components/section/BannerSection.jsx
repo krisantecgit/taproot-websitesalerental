@@ -60,7 +60,8 @@ function BannerSection({ data = [] }) {
   const navigate = useNavigate();
 
   // duplicate data for infinite effect
-  const infiniteData = [...data, ...data];
+  // const infiniteData = [...data, ...data];
+  const infiniteData = data;
 
   const scroll = (dir) => {
     const current = scrollRef.current;
