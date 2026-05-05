@@ -180,11 +180,19 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
                     )}
                   </div>
 
-                  {product.sale_stock === 0 ? (
-                    <div className="stock-error">Out of stock</div>
-                  ) : product.is_low_stock === "lowstock" ? (
-                    <div className="stock-error">Limited stock available</div>
-                  ) : null}
+                  {listingType === "rental" ? (
+                    product.rental_stock === 0 ? (
+                      <div className="stock-error">Out of stock</div>
+                    ) : product.is_low_stock === "lowstock" ? (
+                      <div className="stock-error">Limited stock available</div>
+                    ) : null
+                  ) : (
+                    product.sale_stock === 0 ? (
+                      <div className="stock-error">Out of stock</div>
+                    ) : product.is_low_stock === "lowstock" ? (
+                      <div className="stock-error">Limited stock available</div>
+                    ) : null
+                  )}
 
                   <div className="hover-icon">
                     {
