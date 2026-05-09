@@ -20,7 +20,6 @@ axiosInstance.interceptors.request.use((config) => {
 const host = window.location.hostname.replace("www.", "");
 
 config.headers["domain"] = host;
-
   return config;
 });
 

@@ -639,7 +639,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             fetchProductsFromURL();
         }
 
-    }, [friendlyData, categoryurl, activeListingType, searchParams, storeId]); // Re-fetch when filters or listing type change
+    }, [friendlyData, categoryurl, activeListingType, storeId]); // Re-fetch when filters or listing type change //add searchParams if needed
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {

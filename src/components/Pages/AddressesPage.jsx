@@ -296,9 +296,8 @@ function AddressesPage() {
 
                     {zipcodeStatus && (
                       <div
-                        className={`zip-info ${
-                          zipcodeStatus?.status === "Available" ? "success" : "error"
-                        }`}
+                        className={`zip-info ${zipcodeStatus?.status === "Available" ? "success" : "error"
+                          }`}
                       >
                         {zipcodeStatus?.status === "Available"
                           ? "Service available"
@@ -525,9 +524,13 @@ function AddressesPage() {
                           required
                           maxLength={5}
                           value={formData.zipcode}
-                          onChange={(e) =>
-                            setFormData({ ...formData, zipcode: e.target.value })
-                          }
+                          // onChange={(e) =>
+                          //   setFormData({ ...formData, zipcode: e.target.value })
+                          // }
+                          onChange={(e) => {
+                            const onlyNumbers = e.target.value.replace(/[^0-9]/g, ''); // Removes anything not 0-9
+                            setFormData({ ...formData, zipcode: onlyNumbers });
+                          }}
                         />
                       </div>
                       <div className="input-field">
