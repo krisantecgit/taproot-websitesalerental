@@ -15,11 +15,11 @@ axiosInstance.interceptors.request.use((config) => {
   // config.headers["domain"] = "192.168.0.180"; 
   // config.headers["domain"] = "192.168.100.114";
   // config.headers["domain"] = "central";
-  // config.headers["domain"] = window.location.hostname.replace("www.", "");
+  config.headers["domain"] = window.location.hostname.replace("www.", "");
 
-const host = window.location.hostname.replace("www.", "");
+// const host = window.location.hostname.replace("www.", "");
+// config.headers["domain"] = host;
 
-config.headers["domain"] = host;
 
   return config;
 });

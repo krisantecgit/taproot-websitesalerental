@@ -5,6 +5,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./product.css";
 import { FaArrowRight, FaTrash } from "react-icons/fa";
 import { FaPalette, FaRuler } from "react-icons/fa";
+import { BsBoxSeam } from "react-icons/bs";
+
 import axiosConfig from "../../Services/axiosConfig";
 
 function ImageSlider({ images, product }) {
@@ -95,7 +97,24 @@ function ProductSection({ products = [], loading = false, searchListingType, onR
   }
   if (loading) return <img src={loader} alt="loading" />;
 
-  if (!loading && products.length === 0) return <p className="d-flex justify-content-center align-items-center">No products found.</p>;
+  if (!loading && products.length === 0) return (
+  <div style={{
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", padding: "80px 20px", width: "100%", gridColumn: "1 / -1"
+  }}>
+    <div style={{ fontSize: "64px", marginBottom: "16px" }}>
+      <BsBoxSeam style={{ fontSize: "64px", color: "#ccc", marginBottom: "16px" }} />
+
+
+    </div>
+    <h3 style={{ fontSize: "20px", fontWeight: "600", margin: "0 0 8px", color: "#1a1a1a" }}>
+      No products found
+    </h3>
+    <p style={{ fontSize: "14px", color: "#888", margin: 0, textAlign: "center", maxWidth: "280px" }}>
+      Try adjusting your filters or search with a different keyword.
+    </p>
+  </div>
+);
 
   return (
     <div className="products">

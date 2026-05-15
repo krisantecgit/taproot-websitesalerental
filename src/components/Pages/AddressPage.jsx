@@ -61,7 +61,7 @@ export default function AddressPage() {
     const [selected, setSelected] = useState(null);
     const [scriptLoaded, setScriptLoaded] = useState(false);
     const [addresses, setAddresses] = useState([]);
-     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const [zipcodeCheck, setZipcodeCheck] = useState("");
     const [zipcodeStatus, setZipcodeStatus] = useState(null);
     const [checkingZip, setCheckingZip] = useState(false);
@@ -93,30 +93,30 @@ export default function AddressPage() {
         script.onload = () => setScriptLoaded(true);
         document.head.appendChild(script);
     }, []);
-  
+
     async function fetchAddress() {
-    try {
-        const res = await axiosConfig.get(`/accounts/address/?user=${userId}&is_suspended=false`);
+        try {
+            const res = await axiosConfig.get(`/accounts/address/?user=${userId}&is_suspended=false`);
 
-        const list = res?.data?.results ?? [];
+            const list = res?.data?.results ?? [];
 
-        setAddresses(list);
-        dispatch(setAddress(list));
+            setAddresses(list);
+            dispatch(setAddress(list));
 
-        // 🔥 set default based on saved ID
-        const savedId = localStorage.getItem("defaultAddressId");
+            // 🔥 set default based on saved ID
+            const savedId = localStorage.getItem("defaultAddressId");
 
-        if (savedId) {
-            const index = list.findIndex(a => String(a?.id) === String(savedId));
-            if (index !== -1) {
-                setSelectedIndex(index);
+            if (savedId) {
+                const index = list.findIndex(a => String(a?.id) === String(savedId));
+                if (index !== -1) {
+                    setSelectedIndex(index);
+                }
             }
-        }
 
-    } catch (error) {
-        console.log(error);
+        } catch (error) {
+            console.log(error);
+        }
     }
-}
 
     useEffect(() => {
         fetchAddress()
@@ -265,8 +265,8 @@ export default function AddressPage() {
                 addressType === "sale"
                     ? result.sale_zipcode?.status === "Available"
                     : addressType === "rental"
-                    ? result.rental_zipcode?.status === "Available"
-                    : result.sale_zipcode?.status === "Available" && result.rental_zipcode?.status !== "Unavailable";
+                        ? result.rental_zipcode?.status === "Available"
+                        : result.sale_zipcode?.status === "Available" && result.rental_zipcode?.status !== "Unavailable";
 
             if (isAvailable) {
                 if (addressType === 'sale') {
@@ -392,8 +392,8 @@ export default function AddressPage() {
                                                         {addressType === 'sale'
                                                             ? 'Use for Sale Delivery'
                                                             : addressType === 'rental'
-                                                            ? 'Use for Rental Delivery'
-                                                            : 'Use this Delivery Address'}
+                                                                ? 'Use for Rental Delivery'
+                                                                : 'Use this Delivery Address'}
                                                     </button>
                                                 )}
                                             </div>

@@ -244,11 +244,17 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
         const apiParams = new URLSearchParams({
             search: query || "",
             category: selectedCategory,
-            subcategory,
             price_min: priceMin,
             price_max: priceMax,
             options: optionNames,
         });
+
+        if (subcategory) {
+            const subcats = typeof subcategory === "string" ? subcategory.split(",") : subcategory;
+            subcats.forEach(sub => {
+                if (sub.trim()) apiParams.append("subcategory", sub.trim());
+            });
+        }
 
         if (storeId) {
             apiParams.set("store_id", storeId);
@@ -435,12 +441,22 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
     const handlePriceRangeSelect = (rangeId, min, max, isChecked) => {
         setSelectedPriceRanges(prev => {
             if (isChecked) {
-                // return [...prev, { id: rangeId, min, max }];
                 return [{ id: rangeId, min, max }];
             } else {
-                // return prev.filter(range => range.id !== rangeId);
                 return [];
             }
+        });
+
+        setSearchParams((prev) => {
+            const next = Object.fromEntries([...prev]);
+            if (isChecked) {
+                next.price_min = min;
+                next.price_max = max;
+            } else {
+                delete next.price_min;
+                delete next.price_max;
+            }
+            return next;
         });
     };
     // async function handleCategoryClick(slug, id) {
@@ -804,17 +820,13 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                             {priceRanges.map((range) => (
                                 <label key={range.id}>
                                     <input
-                                        type="checkbox"
+                                        type="radio"
                                         checked={selectedPriceRanges.some(r => r.id === range.id)}
                                         onChange={(e) => handlePriceRangeSelect(range.id, range.min, range.max, e.target.checked)}
                                     />
                                     {range.label}
                                 </label>
                             ))}
-
-                            <div className="confirm-btn">
-                                <button onClick={applyFilters}>APPLY PRICE FILTER</button>
-                            </div>
                         </div>
                         <IoArrowDown />
                     </div>
