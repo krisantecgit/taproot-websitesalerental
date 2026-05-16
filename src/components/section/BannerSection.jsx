@@ -121,7 +121,7 @@ function BannerSection({ data = [] }) {
             </div>
           ))}
 
-          <div className="banner-btn">
+          {/* <div className="banner-btn">
             <div
               className="buy"
               onClick={() => {
@@ -141,7 +141,7 @@ function BannerSection({ data = [] }) {
             >
               Rent Product <IoIosArrowRoundForward />
             </div>
-          </div>
+          </div> */}
         </div>
 
         <button className="banner-arrow right" onClick={() => scroll("right")}>
