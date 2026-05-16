@@ -23,8 +23,8 @@ function Header() {
   const [query, setQuery] = useState(search || "");
   const [products, setProducts] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [siteData, setSiteData] = useState()
   const debouncedSearchTerm = useDebouncedValue(query, 1000)
-
   const [currentLocation, setCurrentLocation] = useState(
     localStorage.getItem("userLocation") || "Detect location"
   );
@@ -38,6 +38,14 @@ function Header() {
     if (location.pathname.startsWith("/rent")) return "rent"
   }
   const { buyCart, rentCart } = useSelector(state => state.cart)
+  async function getSiteData() {
+    try {
+      let res = await axiosConfig("/sitedata/site/");
+      setSiteData(res?.data?.results)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
     // if (!query) setShowSuggestions(false);
     if (!debouncedSearchTerm) return;
@@ -56,7 +64,9 @@ function Header() {
   useEffect(() => {
     setPath(getUrl());
   }, [location]);
-
+  useEffect(() => {
+    getSiteData()
+  }, [])
   useEffect(() => {
     const q = searchParams.get("q");
     if (q !== null) {
@@ -162,7 +172,7 @@ function Header() {
   }, []); // Run on mount only (empty array = not on every render)
 
 
-
+  console.log(siteData, "hello")
   const handleSearchClick = () => {
     setShowSuggestions(true)
   }
@@ -195,8 +205,11 @@ function Header() {
       {/* Left Content */}
       <div className="left-content">
         <div className="logo" onClick={() => navigate("/")}>
-          <img src={logo} alt="logo" />
-        </div>
+          {!siteData ? (
+            <img src={logo} alt="loading logo" />
+          ) : (
+            <img src={siteData[0]?.logo?.image || logo} alt="logo" />
+          )}        </div>
 
         <div className="location" onClick={() => detectLocation(true)}>
           <IoLocationOutline className="icon" />

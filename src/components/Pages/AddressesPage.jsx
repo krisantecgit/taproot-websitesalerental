@@ -462,7 +462,10 @@ function AddressesPage() {
                         maxLength={10}
                         value={formData.mobileno}
                         onChange={(e) =>
-                          setFormData({ ...formData, mobileno: e.target.value })
+                          setFormData({
+                            ...formData,
+                            mobileno: e.target.value.replace(/\D/g, "").slice(0, 10),
+                          })
                         }
                       />
                     </div>
@@ -533,19 +536,7 @@ function AddressesPage() {
                           }}
                         />
                       </div>
-                      <div className="input-field">
-                        <label htmlFor="floor">City <span className="sup-color">*</span></label>
-                        <input
-                          type="text"
-                          className="input-box-address"
-                          placeholder="City"
-                          required
-                          value={formData.city}
-                          onChange={(e) =>
-                            setFormData({ ...formData, city: e.target.value })
-                          }
-                        />
-                      </div>
+                     
                       <div className="input-field">
                         <label htmlFor="houseNo">State <span className="sup-color">*</span></label>
                         <select
@@ -563,6 +554,20 @@ function AddressesPage() {
                             </option>
                           ))}
                         </select>
+                      </div>
+
+                       <div className="input-field">
+                        <label htmlFor="floor">City <span className="sup-color">*</span></label>
+                        <input
+                          type="text"
+                          className="input-box-address"
+                          placeholder="City"
+                          required
+                          value={formData.city}
+                          onChange={(e) =>
+                            setFormData({ ...formData, city: e.target.value })
+                          }
+                        />
                       </div>
                     </div>
                   </div>
