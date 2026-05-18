@@ -249,12 +249,9 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             options: optionNames,
         });
 
-        if (subcategory) {
-            const subcats = typeof subcategory === "string" ? subcategory.split(",") : subcategory;
-            subcats.forEach(sub => {
-                if (sub.trim()) apiParams.append("subcategory", sub.trim());
-            });
-        }
+        subcategory?.split(",").forEach((sub) => {
+            apiParams.append("subcategory", sub);
+        });
 
         if (storeId) {
             apiParams.set("store_id", storeId);
@@ -284,31 +281,25 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const optionNames = buildOptionString(selectedOptions);
             let priceMin = "";
             let priceMax = "";
-
-            if (selectedPriceRanges.length > 0) {
-                const allMins = selectedPriceRanges.map(r => Number(r.min));
-                const allMaxs = selectedPriceRanges.map(r => Number(r.max));
+            const currentPriceRanges = selectedPriceRanges;
+            if (currentPriceRanges.length > 0) {
+                const allMins = currentPriceRanges.map(r => Number(r.min));
+                const allMaxs = currentPriceRanges.map(r => Number(r.max));
                 priceMin = Math.min(...allMins);
                 priceMax = Math.max(...allMaxs);
             }
-            setAppliedFilters({
-                subcategory: [...selectedSubcats],
-                options: selectedOptions,
-                price: selectedPriceRanges,
-            });
-            setAppliedFilters({
-                subcategory: [...selectedSubcats],
-                options: selectedOptions,
-                price: selectedPriceRanges,
-            });
+
+
             // Ensure store_id stays in the URL so subsequent requests keep scoping to the right store.
             // (React Router's setSearchParams with an object replaces the whole querystring.)
             setSearchParams((prev) => {
                 const next = Object.fromEntries([...prev]);
                 next.subcategory = subcatParam || "";
                 next.options = optionNames || "";
-                next.price_min = priceMin || "";
-                next.price_max = priceMax || "";
+                // next.price_min = priceMin || "";
+                // next.price_max = priceMax || "";
+                next.price_min = priceMin ?? "";
+                next.price_max = priceMax ?? "";
                 if (storeId) next.store_id = storeId;
                 return next;
             });
@@ -323,7 +314,11 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                     includeSuspended: false,
                 })
             );
-
+            setAppliedFilters({
+                subcategory: [...selectedSubcats],
+                options: selectedOptions,
+                price: currentPriceRanges,
+            });
             setTotalCount(res?.data?.count || 0);
             onProductsChange(res.data.results || []);
             if (res.data.next) {
@@ -344,21 +339,23 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const selectedCategory = getSelectedCategory();
             const optionNames = buildOptionString(selectedOptions);
             const subcatParam = selectedSubcats.join(",");
-            let priceMin = "";
-            let priceMax = "";
+            let priceMin = searchParams.get("price_min") || "";
+            let priceMax = searchParams.get("price_max") || "";
 
-            if (selectedPriceRanges.length > 0) {
-                const allMins = selectedPriceRanges.map(range => range.min).filter(min => min !== "");
-                const allMaxs = selectedPriceRanges.map(range => range.max).filter(max => max !== "");
-                priceMin = allMins.length > 0 ? Math.min(...allMins) : "";
-                priceMax = allMaxs.length > 0 ? Math.max(...allMaxs) : "";
-            }
+            // if (selectedPriceRanges.length > 0) {
+            //     const allMins = selectedPriceRanges.map(range => range.min).filter(min => min !== "");
+            //     const allMaxs = selectedPriceRanges.map(range => range.max).filter(max => max !== "");
+            //     priceMin = allMins.length > 0 ? Math.min(...allMins) : "";
+            //     priceMax = allMaxs.length > 0 ? Math.max(...allMaxs) : "";
+            // }
             setSearchParams((prev) => {
                 const next = Object.fromEntries([...prev]);
                 next.subcategory = subcatParam || "";
                 next.options = optionNames || "";
-                next.price_min = priceMin || "";
-                next.price_max = priceMax || "";
+                // next.price_min = priceMin || "";
+                // next.price_max = priceMax || "";
+                next.price_min = priceMin ?? "";
+                next.price_max = priceMax ?? "";
                 if (storeId) next.store_id = storeId;
                 return next;
             });
@@ -437,7 +434,6 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             return next;
         });
     }
-
     const handlePriceRangeSelect = (rangeId, min, max, isChecked) => {
         setSelectedPriceRanges(prev => {
             if (isChecked) {
@@ -446,19 +442,19 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                 return [];
             }
         });
-
-        setSearchParams((prev) => {
-            const next = Object.fromEntries([...prev]);
-            if (isChecked) {
-                next.price_min = min;
-                next.price_max = max;
-            } else {
-                delete next.price_min;
-                delete next.price_max;
-            }
-            return next;
-        });
     };
+    //uncomment if doesnt work
+    // const handlePriceRangeSelect = (rangeId, min, max, isChecked) => {
+    //     setSelectedPriceRanges(prev => {
+    //         if (isChecked) {
+    //             // return [...prev, { id: rangeId, min, max }];
+    //             return [{ id: rangeId, min, max }];
+    //         } else {
+    //             // return prev.filter(range => range.id !== rangeId);
+    //             return [];
+    //         }
+    //     });
+    // };
     // async function handleCategoryClick(slug, id) {
     //     if (slug !== friendlyurl) {
     //         navigate(`/${categoryurl}/${slug}`);
@@ -655,7 +651,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             fetchProductsFromURL();
         }
 
-    }, [friendlyData, categoryurl, activeListingType, storeId]); // Re-fetch when filters or listing type change //add searchParams if needed
+    }, [friendlyData, categoryurl, activeListingType, searchParams, storeId]); // Re-fetch when filters or listing type change //add searchParams if needed
 
     const formatPrice = (price) =>
         price?.toLocaleString("en-US", {
@@ -677,7 +673,7 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
             const updated = current.filter(item => item !== value);
             setSelectedSubcats(updated);
             setAppliedFilters(prev => ({ ...prev, subcategory: updated }));
-            if (updated.length) params.set("subcategory", encodeURIComponent(updated.join(",")));
+            if (updated.length) params.set("subcategory", updated.join(","));
             else params.delete("subcategory");
         }
 
@@ -820,13 +816,17 @@ function FilterSection({ friendlyData, isPromotional, onProductsChange, onLoadin
                             {priceRanges.map((range) => (
                                 <label key={range.id}>
                                     <input
-                                        type="radio"
+                                        type="checkbox"
                                         checked={selectedPriceRanges.some(r => r.id === range.id)}
                                         onChange={(e) => handlePriceRangeSelect(range.id, range.min, range.max, e.target.checked)}
                                     />
                                     {range.label}
                                 </label>
                             ))}
+
+                            <div className="confirm-btn">
+                                <button onClick={applyFilters}>APPLY PRICE FILTER</button>
+                            </div>
                         </div>
                         <IoArrowDown />
                     </div>
